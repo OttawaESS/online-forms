@@ -40,7 +40,7 @@ export default function Login() {
           className="btn btn-outline-primary"
           style={{ minWidth: '80px' }}
         >
-          {language === 'en' ? '🇫🇷 FR' : '🇬🇧 EN'}
+          {language === 'en' ? 'FR' : 'EN'}
         </button>
       </div>
       <div className="row justify-content-center">

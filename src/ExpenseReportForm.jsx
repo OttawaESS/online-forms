@@ -204,21 +204,29 @@ const officers = [
 
 
   return (
-    <div className="container p-5">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <button 
-          onClick={toggleLanguage} 
-          className="btn btn-outline-primary"
-          style={{ minWidth: '80px' }}
-        >
-          {language === 'en' ? '🇫🇷 FR' : '🇬🇧 EN'}
-        </button>
-        <a href="/login" className="btn btn-outline-secondary">{t('adminLogin')}</a>
-      </div>
-      <div className="container-fluid text-center mb-3">
-        <img src="/ess-banner.png" alt="ESS Logo" className="mb-3 w-50"></img>
-        <h1><strong>{t('reimbursementForm')}</strong></h1>
-      </div>
+    <div style={{ background: 'linear-gradient(120deg, #2d0a4e 0%, #52009a 50%, #ffffff 100%)', minHeight: '100vh', padding: '20px' }}>
+      <div className="container">
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <a href="/" className="btn btn-outline-light">{t('backHome')}</a>
+          <button 
+            onClick={toggleLanguage} 
+            className="btn btn-light"
+            style={{ minWidth: '80px' }}
+          >
+            {language === 'en' ? 'FR' : 'EN'}
+          </button>
+          <a href="/login" className="btn btn-outline-light">{t('adminLogin')}</a>
+        </div>
+        <div className="row justify-content-center">
+          <div className="col-lg-8 col-xl-7">
+            <div className="card shadow-lg">
+              <div className="card-header bg-white border-bottom">
+                <div className="text-center mb-3">
+                  <img src="/ess-banner.png" alt="ESS Logo" className="mb-3" style={{ maxWidth: '200px', height: 'auto' }}></img>
+                  <h1 className="fw-bold mb-0" style={{ color: '#52009a' }}>{t('reimbursementForm')}</h1>
+                </div>
+              </div>
+              <div className="card-body">
 
       <p>{t('intro1')}</p>
 
@@ -481,6 +489,14 @@ const officers = [
         </div>
       </form>
 
+      <p className="text-muted text-center small mt-3 mb-2">{t('disclaimer')}</p>
+      <p className="text-muted text-center small mb-0" style={{ fontSize: '0.75rem' }}>© 2025–2026 Cyrus Choi. All rights reserved.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Submission Success Modal */}
       <div className={`modal ${showModal ? 'show' : ''}`} style={{ display: showModal ? 'block' : 'none' }} tabIndex="-1">
         <div className="modal-dialog">
@@ -499,7 +515,6 @@ const officers = [
         </div>
       </div>
       {showModal && <div className="modal-backdrop show"></div>}
-
     </div>
   );
 }
