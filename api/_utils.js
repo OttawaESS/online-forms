@@ -13,28 +13,31 @@ function isBlobAccessMismatchError(err) {
   return message.includes('Cannot use public access on a private store') || message.includes('Cannot use private access on a public store');
 }
 
+function isAccessOptionCompatibilityError(err) {
+  const message = String(err?.message || '');
+  return message.includes('access must be "public"');
+}
+
 function getPreferredBlobAccess() {
   const configured = String(process.env.BLOB_ACCESS || process.env.BLOB_STORE_ACCESS || process.env.BLOB_OBJECT_ACCESS || 'public').toLowerCase();
   return configured === 'private' ? 'private' : 'public';
 }
 
-function toggleBlobAccess(access) {
-  return access === 'public' ? 'private' : 'public';
-}
-
 export async function putWithStoreAccess(pathname, body, options = {}) {
   const { access, ...rest } = options;
   const preferredAccess = access || getPreferredBlobAccess();
+  const putOptions = preferredAccess === 'public'
+    ? { ...rest, access: 'public' }
+    : { ...rest };
 
   try {
-    return await put(pathname, body, { ...rest, access: preferredAccess });
+    return await put(pathname, body, putOptions);
   } catch (err) {
-    if (!isBlobAccessMismatchError(err)) {
+    if (!isBlobAccessMismatchError(err) && !isAccessOptionCompatibilityError(err)) {
       throw err;
     }
 
-    const fallbackAccess = toggleBlobAccess(preferredAccess);
-    return put(pathname, body, { ...rest, access: fallbackAccess });
+    return put(pathname, body, { ...rest });
   }
 }
 
