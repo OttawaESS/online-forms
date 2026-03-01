@@ -79,14 +79,10 @@ export default async function handler(req, res) {
           borrowerEmail,
           'Equipment Loan Request Confirmation',
           submitterEmailHtml,
-          'vpfa@uottawaess.ca, financecomm@uottawaess.ca'
+          'vpfa@uottawaess.ca', 'financecomm@uottawaess.ca', 'internal@uottawaess.ca', 'printing@uottawaess.ca', 'merch@uottawaess.ca'
         )
       );
     }
-
-    emailPromises.push(
-      sendEmail(borrowerEmail, 'New Equipment Loan Request', adminEmailHtml, 'vpfa@uottawaess.ca, financecomm@uottawaess.ca')
-    );
 
     const emailResults = await Promise.allSettled(emailPromises);
     const failedEmails = emailResults.filter(
