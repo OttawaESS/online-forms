@@ -27,7 +27,7 @@ export default async function handler(req, res) {
       name: body.fullName || body.name || '',
       email: body.email || '',
       date: body.startDate || body.date || '',
-      items: equipmentItems,
+      equipmentItems,
       timestamp: new Date().toISOString()
     };
 

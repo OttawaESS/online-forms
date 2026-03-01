@@ -164,73 +164,68 @@ export function requireAdmin(req, res) {
   return true;
 }
 
-const SUBMISSIONS_INDEX_KEY = 'submissions-index.json';
+const EQUIPMENT_LOAN_TYPE = 'equipment-loan';
+const EXPENSE_TYPE = 'expense';
+
+function getSubmissionType(submission = {}, pathname = '') {
+  if (submission?.type === EQUIPMENT_LOAN_TYPE) return EQUIPMENT_LOAN_TYPE;
+  if (pathname.startsWith(`${EQUIPMENT_LOAN_TYPE}/`)) return EQUIPMENT_LOAN_TYPE;
+  return EXPENSE_TYPE;
+}
+
+function getSubmissionBlobPath(submissionId, type) {
+  if (!submissionId) return '';
+  return `${type}/submission-${submissionId}.json`;
+}
+
+function toCompactJson(value) {
+  return JSON.stringify(value);
+}
+
+function normalizeSubmissionForStorage(submission) {
+  const type = getSubmissionType(submission);
+  const normalized = { ...submission };
+
+  if (type === EQUIPMENT_LOAN_TYPE) {
+    normalized.type = EQUIPMENT_LOAN_TYPE;
+
+    if (
+      Array.isArray(normalized.equipmentItems) &&
+      Array.isArray(normalized.items) &&
+      normalized.equipmentItems.length === normalized.items.length
+    ) {
+      delete normalized.items;
+    }
+  } else {
+    delete normalized.type;
+  }
+
+  return { type, normalized };
+}
 
 // Metadata-only version for listing (avoids loading full submission data)
 export async function loadSubmissionsMetadata(limit = 50, offset = 0) {
-  try {
-    const { blobs } = await list();
-    const indexBlob = blobs.find((b) => b.pathname === SUBMISSIONS_INDEX_KEY);
-
-    if (!indexBlob) {
-      // Check for old single file
-      const oldBlob = blobs.find((b) => b.pathname === 'submissions.json');
-      if (oldBlob) {
-        const response = await fetch(oldBlob.downloadUrl || oldBlob.url);
-        if (response.ok) {
-          const submissions = await response.json();
-          if (Array.isArray(submissions)) {
-            await migrateToNewSystem(submissions);
-            return submissions.slice(offset, offset + limit).map(createMetadata);
-          }
-        }
-      }
-      return [];
-    }
-
-    const indexResponse = await fetch(indexBlob.downloadUrl || indexBlob.url);
-    if (!indexResponse.ok) return [];
-
-    const index = await indexResponse.json();
-    const submissionIds = Array.isArray(index.submissionIds) ? index.submissionIds : [];
-
-    // Load metadata for the requested range
-    const metadata = [];
-    const endIndex = Math.min(submissionIds.length, offset + limit);
-
-    for (let i = offset; i < endIndex; i++) {
-      const submissionId = submissionIds[i];
-      try {
-        const submissionBlob = blobs.find((b) => b.pathname === `submission-${submissionId}.json`);
-        if (submissionBlob) {
-          const response = await fetch(submissionBlob.downloadUrl || submissionBlob.url);
-          if (response.ok) {
-            const submission = await response.json();
-            metadata.push(createMetadata(submission));
-          }
-        }
-      } catch (err) {
-        console.error(`Failed to load metadata for ${submissionId}:`, err);
-      }
-    }
-
-    return metadata;
-  } catch (err) {
-    console.error('Error loading submissions metadata:', err);
-    return [];
-  }
+  const submissions = await loadSubmissions();
+  return submissions.slice(offset, offset + limit).map(createMetadata);
 }
 
 // Load full submission data by ID
 export async function loadSubmission(submissionId) {
   try {
     const { blobs } = await list();
-    const submissionBlob = blobs.find((b) => b.pathname === `submission-${submissionId}.json`);
+    const submissionBlob =
+      blobs.find((b) => b.pathname === getSubmissionBlobPath(submissionId, EXPENSE_TYPE)) ||
+      blobs.find((b) => b.pathname === getSubmissionBlobPath(submissionId, EQUIPMENT_LOAN_TYPE)) ||
+      blobs.find((b) => b.pathname === `submission-${submissionId}.json`);
 
     if (!submissionBlob) return null;
 
     const response = await fetch(submissionBlob.downloadUrl || submissionBlob.url);
-    return response.ok ? await response.json() : null;
+    if (!response.ok) return null;
+
+    const submission = await response.json();
+    const type = getSubmissionType(submission, submissionBlob.pathname);
+    return type === EQUIPMENT_LOAN_TYPE ? { ...submission, type } : submission;
   } catch (err) {
     console.error(`Error loading submission ${submissionId}:`, err);
     return null;
@@ -261,13 +256,13 @@ function createMetadata(submission) {
 // Migrate from old single-file system to new system
 async function migrateToNewSystem(submissions) {
 
-  const submissionIds = [];
   for (const submission of submissions) {
     const submissionId = submission.id;
-    submissionIds.push(submissionId);
+    const { type, normalized } = normalizeSubmissionForStorage(submission);
+    const pathname = getSubmissionBlobPath(submissionId, type);
 
     try {
-      await putWithStoreAccess(`submission-${submissionId}.json`, JSON.stringify(submission, null, 2), {
+      await putWithStoreAccess(pathname, toCompactJson(normalized), {
         contentType: 'application/json'
       });
     } catch (err) {
@@ -275,20 +270,16 @@ async function migrateToNewSystem(submissions) {
     }
   }
 
-  // Save index
-  const index = { submissionIds, migratedAt: new Date().toISOString() };
-  await putWithStoreAccess(SUBMISSIONS_INDEX_KEY, JSON.stringify(index, null, 2), {
-    contentType: 'application/json'
-  });
-
 }
 
 export async function saveSubmission(submission) {
   try {
     const submissionId = submission.id;
+    const { type, normalized } = normalizeSubmissionForStorage(submission);
+    const pathname = getSubmissionBlobPath(submissionId, type);
 
     // Save the full submission
-    await putWithStoreAccess(`submission-${submissionId}.json`, JSON.stringify(submission, null, 2), {
+    await putWithStoreAccess(pathname, toCompactJson(normalized), {
       contentType: 'application/json'
     });
 
@@ -303,8 +294,14 @@ export async function loadSubmissions() {
   try {
     const { blobs } = await list();
 
-    // Find all submission blobs
-    const submissionBlobs = blobs.filter((b) => b.pathname.startsWith('submission-') && b.pathname.endsWith('.json'));
+    // Find all submission blobs (new typed paths + legacy flat paths)
+    const submissionBlobs = blobs.filter((b) =>
+      b.pathname.endsWith('.json') && (
+        b.pathname.startsWith(`${EXPENSE_TYPE}/submission-`) ||
+        b.pathname.startsWith(`${EQUIPMENT_LOAN_TYPE}/submission-`) ||
+        b.pathname.startsWith('submission-')
+      )
+    );
 
     const submissions = [];
     for (const blob of submissionBlobs) {
@@ -316,7 +313,8 @@ export async function loadSubmissions() {
         }
 
         const submission = await submissionResponse.json();
-        submissions.push(submission);
+        const type = getSubmissionType(submission, blob.pathname);
+        submissions.push(type === EQUIPMENT_LOAN_TYPE ? { ...submission, type } : submission);
       } catch (err) {
         console.error(`Error loading submission from ${blob.pathname}:`, err);
       }
@@ -334,7 +332,7 @@ export async function loadSubmissions() {
 
 export async function saveSubmissions(submissions) {
   try {
-    const jsonString = JSON.stringify(submissions, null, 2);
+    const jsonString = toCompactJson(submissions);
 
     const result = await putWithStoreAccess('submissions.json', jsonString, {
       contentType: 'application/json'
@@ -347,7 +345,7 @@ export async function saveSubmissions(submissions) {
 
   // Also save to local file for development
   try {
-    await fs.writeFile('./submissions.json', JSON.stringify(submissions, null, 2));
+    await fs.writeFile('./submissions.json', toCompactJson(submissions));
   } catch (err) {
     // Local file write is optional, don't fail if it errors
     console.error('Failed to save submissions to local file:', err);
@@ -358,7 +356,14 @@ export async function saveSubmissions(submissions) {
 export async function loadSubmissionById(id) {
   try {
     const { blobs } = await list();
-    const submissionBlob = blobs.find((b) => b.pathname === `submission-${id}.json`);
+    const submissionBlob =
+      blobs.find((b) => b.pathname === getSubmissionBlobPath(id, EXPENSE_TYPE)) ||
+      blobs.find((b) => b.pathname === getSubmissionBlobPath(id, EQUIPMENT_LOAN_TYPE)) ||
+      blobs.find((b) => b.pathname === `submission-${id}.json`);
+
+    if (!submissionBlob) {
+      return null;
+    }
 
     const submissionResponse = await fetch(submissionBlob.downloadUrl || submissionBlob.url);
     if (!submissionResponse.ok) {
@@ -367,7 +372,8 @@ export async function loadSubmissionById(id) {
     }
 
     const submission = await submissionResponse.json();
-    return submission;
+    const type = getSubmissionType(submission, submissionBlob.pathname);
+    return type === EQUIPMENT_LOAN_TYPE ? { ...submission, type } : submission;
   } catch (err) {
     console.error('Error loading submission by ID:', id, err);
     return null;
