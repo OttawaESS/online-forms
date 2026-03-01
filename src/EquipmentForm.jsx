@@ -48,6 +48,7 @@ function EquipmentForm() {
 
   const organizations = [
     'AÉG // ESS',
+    'Engiqueers uOttawa',
     'IEEE uOttawa',
     'AÉGCi // CESA',
     'AÉGC // ChESS',
