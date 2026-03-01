@@ -1,6 +1,5 @@
 import crypto from 'crypto';
-import { put } from '@vercel/blob';
-import { saveSubmission, parseJsonBody, sendEmail } from './_utils.js';
+import { saveSubmission, parseJsonBody, sendEmail, putWithStoreAccess } from './_utils.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -29,8 +28,7 @@ export default async function handler(req, res) {
             const buffer = Buffer.from(base64, 'base64');
             const filename = `${submissionId}_${i}_${j}_${r.name || 'receipt'}`;
             
-            const blob = await put(filename, buffer, {
-              access: 'public',
+            const blob = await putWithStoreAccess(filename, buffer, {
               contentType: r.type || 'application/octet-stream'
             });
             

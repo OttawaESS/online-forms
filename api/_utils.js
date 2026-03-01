@@ -8,6 +8,36 @@ import path from 'path';
 import imageSize from 'image-size';
 import nodemailer from 'nodemailer';
 
+function isBlobAccessMismatchError(err) {
+  const message = String(err?.message || '');
+  return message.includes('Cannot use public access on a private store') || message.includes('Cannot use private access on a public store');
+}
+
+function getPreferredBlobAccess() {
+  const configured = String(process.env.BLOB_ACCESS || process.env.BLOB_STORE_ACCESS || process.env.BLOB_OBJECT_ACCESS || 'public').toLowerCase();
+  return configured === 'private' ? 'private' : 'public';
+}
+
+function toggleBlobAccess(access) {
+  return access === 'public' ? 'private' : 'public';
+}
+
+export async function putWithStoreAccess(pathname, body, options = {}) {
+  const { access, ...rest } = options;
+  const preferredAccess = access || getPreferredBlobAccess();
+
+  try {
+    return await put(pathname, body, { ...rest, access: preferredAccess });
+  } catch (err) {
+    if (!isBlobAccessMismatchError(err)) {
+      throw err;
+    }
+
+    const fallbackAccess = toggleBlobAccess(preferredAccess);
+    return put(pathname, body, { ...rest, access: fallbackAccess });
+  }
+}
+
 export async function parseJsonBody(req) {
   const chunks = [];
   for await (const chunk of req) {
@@ -226,8 +256,7 @@ async function migrateToNewSystem(submissions) {
     submissionIds.push(submissionId);
 
     try {
-      await put(`submission-${submissionId}.json`, JSON.stringify(submission, null, 2), {
-        access: 'public',
+      await putWithStoreAccess(`submission-${submissionId}.json`, JSON.stringify(submission, null, 2), {
         contentType: 'application/json'
       });
     } catch (err) {
@@ -237,8 +266,7 @@ async function migrateToNewSystem(submissions) {
 
   // Save index
   const index = { submissionIds, migratedAt: new Date().toISOString() };
-  await put(SUBMISSIONS_INDEX_KEY, JSON.stringify(index, null, 2), {
-    access: 'public',
+  await putWithStoreAccess(SUBMISSIONS_INDEX_KEY, JSON.stringify(index, null, 2), {
     contentType: 'application/json'
   });
 
@@ -249,8 +277,7 @@ export async function saveSubmission(submission) {
     const submissionId = submission.id;
 
     // Save the full submission
-    await put(`submission-${submissionId}.json`, JSON.stringify(submission, null, 2), {
-      access: 'public',
+    await putWithStoreAccess(`submission-${submissionId}.json`, JSON.stringify(submission, null, 2), {
       contentType: 'application/json'
     });
 
@@ -298,8 +325,7 @@ export async function saveSubmissions(submissions) {
   try {
     const jsonString = JSON.stringify(submissions, null, 2);
 
-    const result = await put('submissions.json', jsonString, {
-      access: 'public',
+    const result = await putWithStoreAccess('submissions.json', jsonString, {
       contentType: 'application/json'
     });
 
