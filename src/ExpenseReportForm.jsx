@@ -219,11 +219,13 @@ const officers = [
         </div>
         <div className="row justify-content-center">
           <div className="col-lg-8 col-xl-7">
-            <div className="card shadow-lg">
-              <div className="card-header bg-white border-bottom">
-                <div className="text-center mb-3">
-                  <img src="/ess-banner.png" alt="ESS Logo" className="mb-3" style={{ maxWidth: '200px', height: 'auto' }}></img>
-                  <h1 className="fw-bold mb-0" style={{ color: '#52009a' }}>{t('reimbursementForm')}</h1>
+            <div className="card shadow-lg px-3 pt-3">
+              <div className="d-flex justify-content-between align-items-start mb-3 px-2 pt-3">
+                <div className="d-flex align-items-center gap-3">
+                  <img src="/ess-logo.png" alt="ESS Logo" style={{ height: '60px', width: 'auto' }} />
+                  <div>
+                    <h2 className="mb-0 fw-bold" style={{ color: '#52009a' }}>{t('reimbursementForm')}</h2>
+                  </div>
                 </div>
               </div>
               <div className="card-body">

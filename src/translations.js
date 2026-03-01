@@ -162,8 +162,8 @@ export const translations = {
     reimbursementForm: "Formulaire de Remboursement",
     
     // Introduction
-    intro1: "Pour assurer un processus fluide et efficace de traitement des remboursements à la Société des étudiants en génie de l'Université d'Ottawa (ÉSG), nous avons établi ce formulaire de remboursement.",
-    intro2: "Ce formulaire a été conçu pour faciliter la soumission et l'examen des dépenses engagées lors de la conduite d'activités officielles au nom de l'ÉSG. Nous apprécions votre dévouement et votre engagement envers notre mission, et nous voulons nous assurer que vous êtes remboursé rapidement et équitablement pour toutes les dépenses autorisées que vous avez engagées.",
+    intro1: "Pour assurer un processus fluide et efficace de traitement des remboursements à la Société des étudiants en génie de l'Université d'Ottawa (AÉG), nous avons établi ce formulaire de remboursement.",
+    intro2: "Ce formulaire a été conçu pour faciliter la soumission et l'examen des dépenses engagées lors de la conduite d'activités officielles au nom de l'AÉG. Nous apprécions votre dévouement et votre engagement envers notre mission, et nous voulons nous assurer que vous êtes remboursé rapidement et équitablement pour toutes les dépenses autorisées que vous avez engagées.",
     intro3: "Avant de procéder à votre demande de remboursement, veuillez prendre un moment pour lire attentivement et remplir ce formulaire dans son intégralité. Assurez-vous de fournir tous les détails nécessaires, y compris des descriptions précises des dépenses, des dates et des documents justificatifs, pour accélérer le processus de remboursement.",
     intro4: "Notre objectif est de traiter votre demande de remboursement aussi efficacement que possible, et votre coopération dans la soumission d'informations complètes et exactes aidera grandement à atteindre cet objectif. Veuillez garder à l'esprit les directives importantes suivantes :",
     
@@ -175,7 +175,7 @@ export const translations = {
     
     paymentMethod: "Mode de paiement :",
     paymentMethodDetails: "Dépôt direct (préféré) // Virement électronique",
-    closingNote: "Nous apprécions votre dévouement envers l'ÉSG et votre engagement à maintenir les normes les plus élevées de responsabilité financière. Si vous avez des questions ou avez besoin d'aide pour remplir ce formulaire, n'hésitez pas à envoyer un courriel à",
+    closingNote: "Nous apprécions votre dévouement envers l'AÉG et votre engagement à maintenir les normes les plus élevées de responsabilité financière. Si vous avez des questions ou avez besoin d'aide pour remplir ce formulaire, n'hésitez pas à envoyer un courriel à",
     
     // Form fields
     name: "Nom (Prénom + Nom de famille)",

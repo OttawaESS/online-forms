@@ -31,7 +31,7 @@ export default function LandingPage() {
   const t_landing = (key) => landingTranslations[language][key] || key;
 
   return (
-    <div className="pt-5" style={{ background: 'linear-gradient(120deg, #2d0a4e 0%, #52009a 50%, #ffffff 100%)', minHeight: '100vh'}}>
+    <div className="pt-3" style={{ background: 'linear-gradient(120deg, #2d0a4e 0%, #52009a 50%, #ffffff 100%)', minHeight: '100vh'}}>
       <div className="container d-flex flex-column h-100" style={{ minHeight: '50vh' }}>
         {/* Language Toggle */}
         <div className="d-flex justify-content-between align-items-center">
@@ -109,6 +109,7 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
+        <p className="text-light text-center small mb-0" style={{ fontSize: '0.75rem' }}>© 2025–2026 Cyrus Choi. All rights reserved.</p>
       </div>
     </div>
   );

@@ -316,7 +316,7 @@ function EquipmentForm({ onSubmit }) {
   return (
     <div className=""style={{ background: 'linear-gradient(120deg, #2d0a4e 0%, #52009a 50%, #ffffff 100%)', padding: '0 0' }}>
       <div className="d-flex align-items-center" >
-        <div className="container py-5">
+        <div className="container pb-5 pt-3">
           <div className="d-flex justify-content-between align-items-center mb-4">
           <a href="/" className="btn btn-outline-light">{t('backHome')}</a>
           <button 
