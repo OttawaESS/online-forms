@@ -22,11 +22,11 @@ function EquipmentForm() {
     projector: 0,
     amplifier: 0,
     microphones: 0,
-    microphoneStands: 0,
+    microphoneStands: '',
     speakers: 0,
-    speakerStands: 0,
+    speakerStands: '',
     subwoofers: 0,
-    mixer: 0,
+    mixer: '',
     bbq: false,
     bbqTerm1: false,
     bbqTerm2: false,
@@ -107,8 +107,8 @@ function EquipmentForm() {
   const validateStep2 = () => {
     const newErrors = {};
     const hasEquipment = formData.projector > 0 || formData.amplifier > 0 || formData.microphones > 0 ||
-                        formData.microphoneStands > 0 || formData.speakers > 0 || formData.speakerStands > 0 ||
-                        formData.subwoofers > 0 || formData.mixer > 0 || formData.bbq;
+                        formData.microphoneStands === 'yes' || formData.speakers > 0 || formData.speakerStands === 'yes' ||
+                        formData.subwoofers > 0 || formData.mixer === 'yes' || formData.bbq;
     
     if (!hasEquipment) newErrors.equipment = true;
     if (formData.bbq && (!formData.bbqTerm1 || !formData.bbqTerm2 || !formData.bbqTerm3 || !formData.bbqTermsAccepted)) {
@@ -146,7 +146,7 @@ function EquipmentForm() {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    const numericFields = ['projector', 'amplifier', 'microphones', 'microphoneStands', 'speakers', 'speakerStands', 'subwoofers', 'mixer'];
+    const numericFields = ['projector', 'amplifier', 'microphones', 'speakers', 'subwoofers'];
     setFormData((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : (type === 'number' || (type === 'radio' && numericFields.includes(name)) || (type === 'select-one' && numericFields.includes(name)) ? parseInt(value) : value),
@@ -163,13 +163,12 @@ function EquipmentForm() {
   const buildEquipmentItems = (data) => {
     const items = [];
     if (data.projector > 0) items.push({ description: 'Projector', quantity: data.projector, amount: 0, receipts: [] });
-    if (data.amplifier > 0) items.push({ description: 'Amplifier', quantity: data.amplifier, amount: 0, receipts: [] });
     if (data.microphones > 0) items.push({ description: 'Microphones', quantity: data.microphones, amount: 0, receipts: [] });
-    if (data.microphoneStands > 0) items.push({ description: 'Microphone Stands', quantity: data.microphoneStands, amount: 0, receipts: [] });
+    if (data.microphoneStands === 'yes') items.push({ description: 'Microphone Stands', quantity: 1, amount: 0, receipts: [] });
     if (data.speakers > 0) items.push({ description: 'Speakers', quantity: data.speakers, amount: 0, receipts: [] });
-    if (data.speakerStands > 0) items.push({ description: 'Speaker Stands', quantity: data.speakerStands, amount: 0, receipts: [] });
+    if (data.speakerStands === 'yes') items.push({ description: 'Speaker Stands', quantity: 1, amount: 0, receipts: [] });
     if (data.subwoofers > 0) items.push({ description: 'Subwoofers', quantity: data.subwoofers, amount: 0, receipts: [] });
-    if (data.mixer > 0) items.push({ description: 'Audio Mixer', quantity: data.mixer, amount: 0, receipts: [] });
+    if (data.mixer === 'yes') items.push({ description: 'Audio Mixer', quantity: 1, amount: 0, receipts: [] });
     if (data.bbq) items.push({ description: 'Barbecue', quantity: 1, amount: 0, receipts: [] });
     return items;
   };
@@ -188,13 +187,12 @@ function EquipmentForm() {
       equipmentUsage: '',
       needsOnSiteAssistance: '',
       projector: 0,
-      amplifier: 0,
       microphones: 0,
-      microphoneStands: 0,
+      microphoneStands: '',
       speakers: 0,
-      speakerStands: 0,
+      speakerStands: '',
       subwoofers: 0,
-      mixer: 0,
+      mixer: '',
       bbq: false,
       bbqTerm1: false,
       bbqTerm2: false,
@@ -354,13 +352,12 @@ function EquipmentForm() {
   const getEquipmentList = () => {
     const items = [];
     if (formData.projector > 0) items.push({ name: language === 'en' ? 'Projector' : 'Projecteur', qty: formData.projector });
-    if (formData.amplifier > 0) items.push({ name: language === 'en' ? 'Amplifier' : 'Amplificateur', qty: formData.amplifier });
     if (formData.microphones > 0) items.push({ name: language === 'en' ? 'Microphones' : 'Microphones', qty: formData.microphones });
-    if (formData.microphoneStands > 0) items.push({ name: language === 'en' ? 'Microphone Stands' : 'Supports pour microphones', qty: formData.microphoneStands });
+    if (formData.microphoneStands === 'yes') items.push({ name: language === 'en' ? 'Microphone Stands' : 'Supports pour microphones', qty: 1 });
     if (formData.speakers > 0) items.push({ name: language === 'en' ? 'Speakers' : 'Haut-parleurs', qty: formData.speakers });
-    if (formData.speakerStands > 0) items.push({ name: language === 'en' ? 'Speaker Stands' : 'Supports de haut-parleurs', qty: formData.speakerStands });
+    if (formData.speakerStands === 'yes') items.push({ name: language === 'en' ? 'Speaker Stands' : 'Supports de haut-parleurs', qty: 1 });
     if (formData.subwoofers > 0) items.push({ name: language === 'en' ? 'Subwoofers' : 'Caissons de basse', qty: formData.subwoofers });
-    if (formData.mixer > 0) items.push({ name: language === 'en' ? 'Audio Mixer' : 'Mixeur audio', qty: formData.mixer });
+    if (formData.mixer === 'yes') items.push({ name: language === 'en' ? 'Audio Mixer' : 'Mixeur audio', qty: 1 });
     if (formData.bbq) items.push({ name: language === 'en' ? 'Barbecue' : 'Barbecue', qty: 1 });
     return items;
   };
@@ -688,7 +685,6 @@ function EquipmentForm() {
 
                         {/* Equipment Items */}
                         {[ { name: 'projector', label: t('projectors'), detail: '1 x Epson Projector' },
-                          { name: 'amplifier', label: t('amplifiers'), detail: '1 x Ampeg BA115T' },
                         ].map((item) => (
                           <div key={item.name} className="card mb-2">
                             <div className="card-body py-3">
@@ -730,20 +726,37 @@ function EquipmentForm() {
                         {/* Microphone Stands */}
                         <div className="card mb-2">
                           <div className="card-body py-3">
-                            <label className="form-label fw-bold mb-2" htmlFor="microphoneStands">{t('microphoneStands')}</label>
+                            <label className="form-label fw-bold mb-2">{t('microphoneStands')}</label>
                             <small className="text-muted d-block mb-2">2 x Yorkville MS608B</small>
                             <small className="text-muted d-block mb-2">{language === 'en' ? '(Will be loaned based on number of microphones requested)' : '(Prêts en fonction du nombre de microphones demandés)'}</small>
-                            <select
-                              className="form-select"
-                              id="microphoneStands"
-                              name="microphoneStands"
-                              value={formData.microphoneStands}
-                              onChange={handleChange}
-                            >
-                              <option value={0}>0</option>
-                              <option value={1}>1</option>
-                              <option value={2}>2</option>
-                            </select>
+                            <div className="form-check">
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                name="microphoneStands"
+                                id="microphoneStandsYes"
+                                value="yes"
+                                checked={formData.microphoneStands === 'yes'}
+                                onChange={handleChange}
+                              />
+                              <label className="form-check-label" htmlFor="microphoneStandsYes">
+                                {t('yes')}
+                              </label>
+                            </div>
+                            <div className="form-check">
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                name="microphoneStands"
+                                id="microphoneStandsNo"
+                                value="no"
+                                checked={formData.microphoneStands === 'no'}
+                                onChange={handleChange}
+                              />
+                              <label className="form-check-label" htmlFor="microphoneStandsNo">
+                                {t('no')}
+                              </label>
+                            </div>
                           </div>
                         </div>
 
@@ -770,19 +783,36 @@ function EquipmentForm() {
                         {/* Speaker Stands */}
                         <div className="card mb-2">
                           <div className="card-body py-3">
-                            <label className="form-label fw-bold mb-2" htmlFor="speakerStands">{t('speakerStands')}</label>
+                            <label className="form-label fw-bold mb-2">{t('speakerStands')}</label>
                             <small className="text-muted d-block mb-2">{t('speakerStandsNote')}</small>
-                            <select
-                              className="form-select"
-                              id="speakerStands"
-                              name="speakerStands"
-                              value={formData.speakerStands}
-                              onChange={handleChange}
-                            >
-                              <option value={0}>0</option>
-                              <option value={1}>1</option>
-                              <option value={2}>2</option>
-                            </select>
+                            <div className="form-check">
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                name="speakerStands"
+                                id="speakerStandsYes"
+                                value="yes"
+                                checked={formData.speakerStands === 'yes'}
+                                onChange={handleChange}
+                              />
+                              <label className="form-check-label" htmlFor="speakerStandsYes">
+                                {t('yes')}
+                              </label>
+                            </div>
+                            <div className="form-check">
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                name="speakerStands"
+                                id="speakerStandsNo"
+                                value="no"
+                                checked={formData.speakerStands === 'no'}
+                                onChange={handleChange}
+                              />
+                              <label className="form-check-label" htmlFor="speakerStandsNo">
+                                {t('no')}
+                              </label>
+                            </div>
                           </div>
                         </div>
 
@@ -808,18 +838,36 @@ function EquipmentForm() {
                         {/* Audio Mixer */}
                         <div className="card mb-2">
                           <div className="card-body py-3">
-                            <label className="form-label fw-bold mb-2" htmlFor="mixer">{t('audioMixer')}</label>
+                            <label className="form-label fw-bold mb-2">{t('audioMixer')}</label>
                             <small className="text-muted d-block mb-2">1 x Allen & Heath W4 16:2</small>
-                            <select
-                              className="form-select"
-                              id="mixer"
-                              name="mixer"
-                              value={formData.mixer}
-                              onChange={handleChange}
-                            >
-                              <option value={0}>0</option>
-                              <option value={1}>1</option>
-                            </select>
+                            <div className="form-check">
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                name="mixer"
+                                id="mixerYes"
+                                value="yes"
+                                checked={formData.mixer === 'yes'}
+                                onChange={handleChange}
+                              />
+                              <label className="form-check-label" htmlFor="mixerYes">
+                                {t('yes')}
+                              </label>
+                            </div>
+                            <div className="form-check">
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                name="mixer"
+                                id="mixerNo"
+                                value="no"
+                                checked={formData.mixer === 'no'}
+                                onChange={handleChange}
+                              />
+                              <label className="form-check-label" htmlFor="mixerNo">
+                                {t('no')}
+                              </label>
+                            </div>
                           </div>
                         </div>
 
