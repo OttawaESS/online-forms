@@ -2,7 +2,7 @@
 import { useLanguage } from './LanguageContext';
 import '../styles/EquipmentForm.css';
 
-function EquipmentForm({ onSubmit }) {
+function EquipmentForm() {
   const { language, toggleLanguage, t } = useLanguage();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -44,6 +44,7 @@ function EquipmentForm({ onSubmit }) {
   const [errors, setErrors] = useState({});
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const organizations = [
     'AÉG // ESS',
@@ -158,7 +159,58 @@ function EquipmentForm({ onSubmit }) {
     }
   };
 
-  const handleSubmit = (e) => {
+  const buildEquipmentItems = (data) => {
+    const items = [];
+    if (data.projector > 0) items.push({ description: 'Projector', quantity: data.projector, amount: 0, receipts: [] });
+    if (data.amplifier > 0) items.push({ description: 'Amplifier', quantity: data.amplifier, amount: 0, receipts: [] });
+    if (data.microphones > 0) items.push({ description: 'Microphones', quantity: data.microphones, amount: 0, receipts: [] });
+    if (data.microphoneStands > 0) items.push({ description: 'Microphone Stands', quantity: data.microphoneStands, amount: 0, receipts: [] });
+    if (data.speakers > 0) items.push({ description: 'Speakers', quantity: data.speakers, amount: 0, receipts: [] });
+    if (data.speakerStands > 0) items.push({ description: 'Speaker Stands', quantity: data.speakerStands, amount: 0, receipts: [] });
+    if (data.subwoofers > 0) items.push({ description: 'Subwoofers', quantity: data.subwoofers, amount: 0, receipts: [] });
+    if (data.mixer > 0) items.push({ description: 'Audio Mixer', quantity: data.mixer, amount: 0, receipts: [] });
+    if (data.bbq) items.push({ description: 'Barbecue', quantity: 1, amount: 0, receipts: [] });
+    return items;
+  };
+
+  const resetForm = () => {
+    setFormData({
+      fullName: '',
+      email: '',
+      organization: '',
+      otherOrganization: '',
+      startDate: '',
+      endDate: '',
+      pickupTime: '',
+      dropoffTime: '',
+      onCampus: '',
+      equipmentUsage: '',
+      needsOnSiteAssistance: '',
+      projector: 0,
+      amplifier: 0,
+      microphones: 0,
+      microphoneStands: 0,
+      speakers: 0,
+      speakerStands: 0,
+      subwoofers: 0,
+      mixer: 0,
+      bbq: false,
+      bbqTerm1: false,
+      bbqTerm2: false,
+      bbqTerm3: false,
+      bbqPropane: '',
+      bbqTermsAccepted: false,
+      finalComments: '',
+      contractAccepted: false,
+      signatureName: '',
+      signatureData: '',
+      signatureDate: '',
+    });
+    clearCanvas();
+    setStep(1);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
       if (step === 1) {
@@ -166,42 +218,41 @@ function EquipmentForm({ onSubmit }) {
       } else if (step === 2) {
         setStep(3);
       } else if (step === 3) {
-        onSubmit(formData);
-        // Reset form
-        setFormData({
-          fullName: '',
-          email: '',
-          organization: '',
-          otherOrganization: '',
-          startDate: '',
-          endDate: '',
-          pickupTime: '',
-          dropoffTime: '',
-          onCampus: '',
-          equipmentUsage: '',
-          needsOnSiteAssistance: '',
-          projector: 0,
-          amplifier: 0,
-          microphones: 0,
-          microphoneStands: 0,
-          speakers: 0,
-          speakerStands: 0,
-          subwoofers: 0,
-          mixer: 0,
-          bbq: false,
-          bbqTerm1: false,
-          bbqTerm2: false,
-          bbqTerm3: false,
-          bbqPropane: '',
-          bbqTermsAccepted: false,
-          finalComments: '',
-          contractAccepted: false,
-          signatureName: '',
-          signatureData: '',
-          signatureDate: '',
-        });
-        clearCanvas();
-        setStep(1);
+        setIsSubmitting(true);
+        try {
+          const payload = {
+            ...formData,
+            type: 'equipment-loan',
+            name: formData.fullName,
+            date: formData.startDate,
+            equipmentItems: buildEquipmentItems(formData)
+          };
+
+          const response = await fetch('/api/submit-equipment', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) {
+            throw new Error(`Submission failed: ${response.status}`);
+          }
+
+          const result = await response.json();
+          if (!result.success) {
+            throw new Error('Submission failed');
+          }
+
+          alert(t('thankYou'));
+          resetForm();
+        } catch (error) {
+          console.error('Equipment submission error:', error);
+          alert(language === 'en' ? 'Failed to submit equipment loan request. Please try again.' : 'Échec de la soumission de la demande de prêt d\'équipement. Veuillez réessayer.');
+        } finally {
+          setIsSubmitting(false);
+        }
       }
     }
   };
@@ -1076,8 +1127,8 @@ function EquipmentForm({ onSubmit }) {
                           {t('back')}
                         </button>
                       )}
-                      <button type="submit" className="btn btn-primary btn-ess-purple">
-                        {step === 3 ? t('submit') : t('next')}
+                      <button type="submit" className="btn btn-primary btn-ess-purple" disabled={step === 3 && isSubmitting}>
+                        {step === 3 && isSubmitting ? (language === 'en' ? 'Submitting...' : 'Soumission...') : (step === 3 ? t('submit') : t('next'))}
                       </button>
                     </div>
 
