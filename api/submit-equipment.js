@@ -77,10 +77,7 @@ export default async function handler(req, res) {
     if (borrowerEmail) {
       emailPromises.push(
         sendEmail(
-          borrowerEmail,
-          'Equipment Loan Request Confirmation',
-          submitterEmailHtml,
-          'vpfa@uottawaess.ca', 'financecomm@uottawaess.ca', 'internal@uottawaess.ca', 'printing@uottawaess.ca', 'merch@uottawaess.ca'
+          borrowerEmail,'Equipment Loan Request Confirmation', submitterEmailHtml,'vpfa@uottawaess.ca, financecomm@uottawaess.ca, internal@uottawaess.ca, printing@uottawaess.ca, merch@uottawaess.ca'
         )
       );
     }
