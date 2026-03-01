@@ -18,22 +18,18 @@ function isAccessOptionCompatibilityError(err) {
   return message.includes('access must be "public"');
 }
 
-function getPreferredBlobAccess() {
-  const configured = String(process.env.BLOB_ACCESS || process.env.BLOB_STORE_ACCESS || process.env.BLOB_OBJECT_ACCESS || 'public').toLowerCase();
-  return configured === 'private' ? 'private' : 'public';
-}
-
 export async function putWithStoreAccess(pathname, body, options = {}) {
-  const { access, ...rest } = options;
-  const preferredAccess = access || getPreferredBlobAccess();
-  const putOptions = preferredAccess === 'public'
-    ? { ...rest, access: 'public' }
-    : { ...rest };
+  const { access: _ignoredAccess, ...rest } = options;
+  const putOptions = { ...rest, access: 'public' };
 
   try {
     return await put(pathname, body, putOptions);
   } catch (err) {
-    if (!isBlobAccessMismatchError(err) && !isAccessOptionCompatibilityError(err)) {
+    if (isAccessOptionCompatibilityError(err)) {
+      return put(pathname, body, { ...rest, access: 'public' });
+    }
+
+    if (!isBlobAccessMismatchError(err)) {
       throw err;
     }
 
