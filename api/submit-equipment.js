@@ -53,6 +53,7 @@ export default async function handler(req, res) {
         <li><strong>End Date:</strong> ${payload.endDate || 'N/A'}</li>
         <li><strong>Pickup Time:</strong> ${payload.pickupTime || 'N/A'}</li>
         <li><strong>Dropoff Time:</strong> ${payload.dropoffTime || 'N/A'}</li>
+        <li><p><strong>Usage:</strong> ${payload.equipmentUsage || 'N/A'}</p></li>
       </ul>
       <p><strong>Requested Equipment:</strong></p>
       <ul>${selectedItemsHtml}</ul>
