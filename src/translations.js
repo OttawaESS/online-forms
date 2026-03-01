@@ -151,6 +151,8 @@ export const translations = {
     signatureRequired: "Please provide your signature",
     nameRequired: "Please type your name",
     dateRequired: "Please provide the date",
+    equipmentSubmissionSuccessTitle: "Submission Successful",
+    equipmentSubmissionSuccessMessage: "Your equipment loan request has been submitted successfully! ✅",
   },
   
   fr: {
@@ -305,5 +307,7 @@ export const translations = {
     signatureRequired: "Veuillez fournir votre signature",
     nameRequired: "Veuillez taper votre nom",
     dateRequired: "Veuillez fournir la date",
+    equipmentSubmissionSuccessTitle: "Soumission réussie",
+    equipmentSubmissionSuccessMessage: "Votre demande de prêt d'équipement a été soumise avec succès! ✅",
   }
 };

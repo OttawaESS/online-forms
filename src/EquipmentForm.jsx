@@ -45,6 +45,7 @@ function EquipmentForm() {
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const organizations = [
     'AÉG // ESS',
@@ -244,8 +245,7 @@ function EquipmentForm() {
             throw new Error('Submission failed');
           }
 
-          alert(t('thankYou'));
-          resetForm();
+          setShowModal(true);
         } catch (error) {
           console.error('Equipment submission error:', error);
           alert(language === 'en' ? 'Failed to submit equipment loan request. Please try again.' : 'Échec de la soumission de la demande de prêt d\'équipement. Veuillez réessayer.');
@@ -1190,6 +1190,25 @@ function EquipmentForm() {
           </div>
         </div>
       </div>
+
+      {/* Submission Success Modal */}
+      <div className={`modal ${showModal ? 'show' : ''}`} style={{ display: showModal ? 'block' : 'none' }} tabIndex="-1">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">{t('equipmentSubmissionSuccessTitle')}</h5>
+              <button type="button" className="btn-close" onClick={() => { setShowModal(false); resetForm(); }}></button>
+            </div>
+            <div className="modal-body">
+              {t('equipmentSubmissionSuccessMessage')}
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-secondary" onClick={() => { setShowModal(false); resetForm(); }}>{t('close')}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {showModal && <div className="modal-backdrop show"></div>}
     </div>
   );
 }

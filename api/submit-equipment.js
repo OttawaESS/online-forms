@@ -42,7 +42,27 @@ export default async function handler(req, res) {
       : '<li>No equipment selected</li>';
 
     const submitterEmailHtml = `
-      <h2>Equipment Loan Request Submitted</h2>
+      <h2>Demande de prêt d'équipement soumise / Equipment Loan Request Submitted</h2>
+
+      <p>Cher(ère) ${borrowerName},</p>
+      <p>Votre demande de prêt d'équipement a été soumise avec succès.</p>
+      <p><strong>Détails de la demande:</strong></p>
+      <ul>
+        <li><strong>ID de la demande:</strong> ${submissionId}</li>
+        <li><strong>Organisation:</strong> ${payload.organization || 'N/A'}</li>
+        <li><strong>Date de début:</strong> ${payload.startDate || payload.date || 'N/A'}</li>
+        <li><strong>Date de fin:</strong> ${payload.endDate || 'N/A'}</li>
+        <li><strong>Heure de ramassage:</strong> ${payload.pickupTime || 'N/A'}</li>
+        <li><strong>Heure de dépôt:</strong> ${payload.dropoffTime || 'N/A'}</li>
+        <li><strong>Utilisation:</strong> ${payload.equipmentUsage || 'N/A'}</li>
+      </ul>
+      <p><strong>Équipement demandé:</strong></p>
+      <ul>${selectedItemsHtml}</ul>
+      <p>Notre équipe examinera votre demande et vous contactera si nécessaire.</p>
+      <p>Si vous avez des questions, veuillez contacter merch@uottawaess.ca.</p>
+      
+      <hr style="margin: 30px 0; border: none; border-top: 2px solid #ccc;">
+
       <p>Dear ${borrowerName},</p>
       <p>Your equipment loan request has been submitted successfully.</p>
       <p><strong>Request Details:</strong></p>
@@ -53,7 +73,7 @@ export default async function handler(req, res) {
         <li><strong>End Date:</strong> ${payload.endDate || 'N/A'}</li>
         <li><strong>Pickup Time:</strong> ${payload.pickupTime || 'N/A'}</li>
         <li><strong>Dropoff Time:</strong> ${payload.dropoffTime || 'N/A'}</li>
-        <li><p><strong>Usage:</strong> ${payload.equipmentUsage || 'N/A'}</p></li>
+        <li><strong>Usage:</strong> ${payload.equipmentUsage || 'N/A'}</li>
       </ul>
       <p><strong>Requested Equipment:</strong></p>
       <ul>${selectedItemsHtml}</ul>
@@ -61,23 +81,14 @@ export default async function handler(req, res) {
       <p>If you have any questions, please contact merch@uottawaess.ca.</p>
     `;
 
-    const adminEmailHtml = `
-      <h2>New Equipment Loan Request</h2>
-      <p>A new equipment loan request has been submitted and may require review.</p>
-      <p><strong>Borrower:</strong> ${borrowerName}</p>
-      <p><strong>Email:</strong> ${borrowerEmail || 'N/A'}</p>
-      <p><strong>Organization:</strong> ${payload.organization || 'N/A'}</p>
-      <p><strong>Date Range:</strong> ${payload.startDate || payload.date || 'N/A'} to ${payload.endDate || 'N/A'}</p>
-      <p><strong>Usage:</strong> ${payload.equipmentUsage || 'N/A'}</p>
-      <p><strong>Requested Equipment:</strong></p>
-      <ul>${selectedItemsHtml}</ul>
-    `;
-
     const emailPromises = [];
     if (borrowerEmail) {
       emailPromises.push(
         sendEmail(
-          borrowerEmail,'Equipment Loan Request Confirmation', submitterEmailHtml,'vpfa@uottawaess.ca, financecomm@uottawaess.ca, internal@uottawaess.ca, printing@uottawaess.ca, merch@uottawaess.ca'
+          borrowerEmail,
+          'Confirmation de demande de prêt d\'équipement / Equipment Loan Request Confirmation',
+          submitterEmailHtml,
+          'vpfa@uottawaess.ca, financecomm@uottawaess.ca, internal@uottawaess.ca, printing@uottawaess.ca, merch@uottawaess.ca'
         )
       );
     }
