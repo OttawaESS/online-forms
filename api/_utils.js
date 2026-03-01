@@ -18,6 +18,10 @@ function isAccessOptionCompatibilityError(err) {
   return message.includes('access must be "public"');
 }
 
+function isBlobStoreNotFoundError(err) {
+  return err?.name === 'BlobStoreNotFoundError' || String(err?.message || '').includes('This store does not exist');
+}
+
 export async function putWithStoreAccess(pathname, body, options = {}) {
   const { access: _ignoredAccess, ...rest } = options;
   const putOptions = { ...rest, access: 'public' };
@@ -25,6 +29,12 @@ export async function putWithStoreAccess(pathname, body, options = {}) {
   try {
     return await put(pathname, body, putOptions);
   } catch (err) {
+    if (isBlobStoreNotFoundError(err)) {
+      throw new Error(
+        'Vercel Blob store not found. Regenerate BLOB_READ_WRITE_TOKEN from an existing Blob store (Storage > Blob) and update this project env var, then redeploy.'
+      );
+    }
+
     if (isAccessOptionCompatibilityError(err)) {
       return put(pathname, body, { ...rest, access: 'public' });
     }
@@ -33,7 +43,9 @@ export async function putWithStoreAccess(pathname, body, options = {}) {
       throw err;
     }
 
-    return put(pathname, body, { ...rest });
+    throw new Error(
+      'Vercel Blob store/token access mismatch. This app requires a public Blob store. Update BLOB_READ_WRITE_TOKEN to a token from a public store.'
+    );
   }
 }
 
