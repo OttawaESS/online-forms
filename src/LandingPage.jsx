@@ -11,7 +11,7 @@ export default function LandingPage() {
     en: {
       welcome: 'Welcome',
       selectForm: 'Select a Form',
-      expenseReport: 'Expense Report / Reimbursement',
+      expenseReport: 'Expense Report',
       expenseReportDesc: 'Submit your expenses and request reimbursement',
       equipmentLoan: 'Equipment Loan',
       equipmentLoanDesc: 'Request to borrow equipment for your event',
@@ -22,7 +22,7 @@ export default function LandingPage() {
     fr: {
       welcome: 'Bienvenue',
       selectForm: 'Sélectionner un formulaire',
-      expenseReport: 'Rapport de dépenses / Remboursement',
+      expenseReport: 'Rapport de dépenses',
       expenseReportDesc: 'Soumettez vos dépenses et demandez leur remboursement.',
       equipmentLoan: 'Emprunt d\'équipement',
       equipmentLoanDesc: 'Demandez à emprunter de l\'équipement pour votre événement',
@@ -60,7 +60,7 @@ export default function LandingPage() {
             {/* Form Selection Cards */}
             <div className="row justify-content-center">
               {/* Expense Report Card */}
-              <div className="col-md-5 mb-4 me-md-3">
+              <div className="col-md-4 mb-4">
                 <div 
                   className="card shadow-lg h-100 cursor-pointer"
                   style={{ 
@@ -86,7 +86,7 @@ export default function LandingPage() {
               </div>
 
               {/* Equipment Loan Card */}
-              <div className="col-md-5 mb-4">
+              <div className="col-md-4 mb-4">
                 <div 
                   className="card shadow-lg h-100 cursor-pointer"
                   style={{ 
@@ -112,7 +112,7 @@ export default function LandingPage() {
               </div>
               
               {/* VEMS Request Form */}
-              <div className="col-md-5 mb-4">
+              <div className="col-md-4 mb-4">
                 <div 
                   className="card shadow-lg h-100 cursor-pointer"
                   style={{ 
