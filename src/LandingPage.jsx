@@ -138,9 +138,9 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="row justify-content-center">
+            {/* <div className="row justify-content-center">
               <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FToronto&title=ESS%20Events&showPrint=0&src=dW90dGF3YWVzcy5jYV80c2YycHVuNWJsdWZsZXJ1c25icGp1M2N2Z0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t&color=%239e69af" style="border:solid 1px #777;  width:100%" height="600" frameborder="0"></iframe>
-            </div>
+            </div> */}
           </div>
         </div>
         <p className="text-light text-center small mb-0" style={{ fontSize: '0.75rem' }}>© 2025–2026 Cyrus Choi. All rights reserved.</p>
