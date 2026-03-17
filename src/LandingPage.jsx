@@ -54,7 +54,7 @@ export default function LandingPage() {
           <div className="w-100">
             <div className="text-center mb-5">
               <h1 className="display-4 text-white mb-3">{t_landing('welcome')}</h1>
-              <p className="lead text-white-50 mb-5">{t_landing('chooseForm')}</p>
+              {/* <p className="lead text-white-50 mb-5">{t_landing('chooseForm')}</p> */}
             </div>
 
             {/* Form Selection Cards */}
@@ -137,11 +137,17 @@ export default function LandingPage() {
                 </div>
               </div>
             </div>
-
             
+            <div className="text-center">
+              <a href="https://www.essaeg.ca" target="_blank" rel="noopener noreferrer">
+                <img src="/public/ess-logo.png" alt="Landing Illustration" className="img-fluid mt-5" style={{ maxHeight: '100px', margin: '0 auto' }}/>
+              </a>
+            </div>
           </div>
         </div>
-        <p className="text-light text-center small mb-0" style={{ fontSize: '0.75rem' }}>© 2025–2026 Cyrus Choi. All rights reserved.</p>
+        <a href="https://www.cyruschoi.ca" target="_blank" rel="noopener noreferrer" className='text-decoration-none'>
+          <p className="text-light text-center small py-5" style={{ fontSize: '0.75rem' }}>© 2025–2026 Cyrus Choi. All rights reserved.</p>
+        </a>
       </div>
     </div>
   );
