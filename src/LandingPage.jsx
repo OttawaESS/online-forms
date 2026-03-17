@@ -140,12 +140,12 @@ export default function LandingPage() {
             
             <div className="text-center">
               <a href="https://www.essaeg.ca" target="_blank" rel="noopener noreferrer">
-                <img src="/public/ess-logo.png" alt="Landing Illustration" className="img-fluid mt-5" style={{ maxHeight: '100px', margin: '0 auto' }}/>
+                <img src="/ess-logo.png" alt="ESS Website" className="img-fluid mt-5" style={{ maxHeight: '100px', margin: '0 auto' }}/>
               </a>
             </div>
           </div>
         </div>
-        <a href="https://www.cyruschoi.ca" target="_blank" rel="noopener noreferrer" className='text-decoration-none'>
+        <a href="https://www.cyruschoi.ca" target="_blank" rel="noopener noreferrer" alt="Cyrus Choi Website" className='text-decoration-none'>
           <p className="text-light text-center small py-5" style={{ fontSize: '0.75rem' }}>© 2025–2026 Cyrus Choi. All rights reserved.</p>
         </a>
       </div>
