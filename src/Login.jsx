@@ -60,7 +60,7 @@ export default function Login() {
                 />
               </div>
               {error && <div className="alert alert-danger">{error}</div>}
-              <button type="submit" className="btn btn-primary w-100">{t('login')}</button>
+              <button type="submit" className="btn btn-primary w-25">{t('login')}</button>
             </form>
           </div>
         </div>
