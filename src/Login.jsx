@@ -45,7 +45,7 @@ export default function Login() {
           </button>
         </div>
         <div className="row justify-content-center">
-          <div className="col-md-6">
+          <div className="col-md-4">
             <h2 className="text-center mb-4 text-white">{t('adminLogin')}</h2>
             <form onSubmit={handleSubmit} className='w-25'>
               <div className="mb-3">
