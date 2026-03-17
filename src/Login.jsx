@@ -47,7 +47,7 @@ export default function Login() {
         <div className="row justify-content-center">
           <div className="col-md-6">
             <h2 className="text-center mb-4 text-white">{t('adminLogin')}</h2>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className='w-25'>
               <div className="mb-3">
                 <label htmlFor="password" className="form-label">{t('password')}</label>
                 <input
@@ -60,7 +60,7 @@ export default function Login() {
                 />
               </div>
               {error && <div className="alert alert-danger">{error}</div>}
-              <button type="submit" className="btn btn-primary w-25">{t('login')}</button>
+              <button type="submit" className="btn btn-primary">{t('login')}</button>
             </form>
           </div>
         </div>
