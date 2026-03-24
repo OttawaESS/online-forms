@@ -1,69 +1,5 @@
 import crypto from 'crypto';
-import { saveSubmission, parseJsonBody, sendEmail, loadSubmissions } from './_utils.js';
-
-// Equipment availability (current inventory levels)
-const EQUIPMENT_AVAILABILITY = {
-  projector: 1,      // 1 projector available
-  microphones: 2,    // 2 microphones available
-  microphoneStands: 2, // 2 microphone stands available
-  speakers: 2,       // 2 speakers available
-  speakerStands: 2,  // 2 speaker stands available
-  subwoofers: 2,     // 2 subwoofers available
-  mixer: 1,          // 1 audio mixer available
-  bbq: 1             // 1 BBQ available
-};
-
-async function validateEquipmentConflicts(newBooking) {
-  try {
-    const submissions = await loadSubmissions();
-    const equipmentBookings = submissions.filter(s => s.type === 'equipment-loan');
-
-    // Calculate requested start and end times
-    const requestedStart = new Date(`${newBooking.startDate}T${newBooking.pickupTime || '09:00'}`);
-    const requestedEnd = newBooking.endDate && newBooking.dropoffTime
-      ? new Date(`${newBooking.endDate}T${newBooking.dropoffTime}`)
-      : new Date(`${newBooking.startDate}T${newBooking.dropoffTime || '17:00'}`);
-
-    const conflicts = [];
-
-    // Check each equipment type requested
-    for (const [equipmentType, requestedQuantity] of Object.entries(newBooking)) {
-      if (requestedQuantity > 0 && EQUIPMENT_AVAILABILITY[equipmentType] !== undefined) {
-        let totalBooked = 0;
-
-        // Check overlapping bookings
-        for (const booking of equipmentBookings) {
-          if (booking.id === newBooking.id) continue; // Skip if updating existing booking
-
-          const bookingStart = new Date(`${booking.startDate}T${booking.pickupTime || '09:00'}`);
-          const bookingEnd = booking.endDate && booking.dropoffTime
-            ? new Date(`${booking.endDate}T${booking.dropoffTime}`)
-            : new Date(`${booking.startDate}T${booking.dropoffTime || '17:00'}`);
-
-          // Check for time overlap
-          if (requestedStart < bookingEnd && requestedEnd > bookingStart) {
-            const bookedQuantity = booking[equipmentType] || 0;
-            totalBooked += bookedQuantity;
-          }
-        }
-
-        const available = EQUIPMENT_AVAILABILITY[equipmentType] - totalBooked;
-        if (requestedQuantity > available) {
-          conflicts.push(`${equipmentType}: ${available} available, ${requestedQuantity} requested`);
-        }
-      }
-    }
-
-    if (conflicts.length > 0) {
-      return `Equipment conflicts detected: ${conflicts.join(', ')}`;
-    }
-
-    return null;
-  } catch (error) {
-    console.error('Error validating equipment conflicts:', error);
-    return 'Error validating equipment availability';
-  }
-}
+import { saveSubmission, parseJsonBody, sendEmail } from './_utils.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -73,15 +9,6 @@ export default async function handler(req, res) {
 
   try {
     const body = await parseJsonBody(req);
-    
-    // Validate for equipment conflicts
-    const conflictError = await validateEquipmentConflicts(body);
-    if (conflictError) {
-      res.statusCode = 409; // Conflict
-      res.setHeader('Content-Type', 'application/json');
-      return res.end(JSON.stringify({ error: conflictError }));
-    }
-
     const submissionId = crypto.randomUUID();
 
     const equipmentItems = Array.isArray(body.equipmentItems)

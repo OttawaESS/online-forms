@@ -47,6 +47,35 @@ function EquipmentForm() {
   const [isDrawing, setIsDrawing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [equipmentAvailability, setEquipmentAvailability] = useState({});
+
+  const checkEquipmentAvailability = async () => {
+    try {
+      const response = await fetch('/api/equipment-availability', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          startDate: formData.startDate,
+          endDate: formData.endDate,
+          pickupTime: formData.pickupTime,
+          dropoffTime: formData.dropoffTime
+        })
+      });
+
+      if (response.ok) {
+        const availability = await response.json();
+        setEquipmentAvailability(availability);
+      } else {
+        console.error('Failed to check equipment availability');
+        setEquipmentAvailability({});
+      }
+    } catch (error) {
+      console.error('Error checking equipment availability:', error);
+      setEquipmentAvailability({});
+    }
+  };
 
   const organizations = [
     'AÉG // ESS',
@@ -217,6 +246,8 @@ function EquipmentForm() {
     e.preventDefault();
     if (validateForm()) {
       if (step === 1) {
+        // Check equipment availability before moving to step 2
+        await checkEquipmentAvailability();
         setStep(2);
       } else if (step === 2) {
         setStep(3);
@@ -240,10 +271,6 @@ function EquipmentForm() {
           });
 
           if (!response.ok) {
-            if (response.status === 409) {
-              const errorData = await response.json();
-              throw new Error(errorData.error || 'Equipment conflict detected');
-            }
             throw new Error(`Submission failed: ${response.status}`);
           }
 
@@ -255,7 +282,7 @@ function EquipmentForm() {
           setShowModal(true);
         } catch (error) {
           console.error('Equipment submission error:', error);
-          alert(error.message || (language === 'en' ? 'Failed to submit equipment loan request. Please try again.' : 'Échec de la soumission de la demande de prêt d\'équipement. Veuillez réessayer.'));
+          alert(language === 'en' ? 'Failed to submit equipment loan request. Please try again.' : 'Échec de la soumission de la demande de prêt d\'équipement. Veuillez réessayer.');
         } finally {
           setIsSubmitting(false);
         }
@@ -266,6 +293,7 @@ function EquipmentForm() {
   const handleBack = () => {
     if (step === 2) {
       setStep(1);
+      setEquipmentAvailability(null); // Clear availability when going back to step 1
     } else if (step === 3) {
       setStep(2);
     }
@@ -701,6 +729,36 @@ function EquipmentForm() {
                         <div className="alert alert-info mb-4">
                           <strong>{language === 'en' ? 'Note:' : 'Remarque:'}</strong> {t('equipmentNote')}
                         </div>
+
+                        {/* Equipment Availability Display */}
+                        {equipmentAvailability && (
+                          <div className="alert alert-success mb-4">
+                            <h6 className="mb-3">{language === 'en' ? 'Equipment Availability' : 'Disponibilité de l\'équipement'}</h6>
+                            <div className="row">
+                              <div className="col-md-6">
+                                <strong>{language === 'en' ? 'Projectors:' : 'Projecteurs:'}</strong> {equipmentAvailability.projector || 0} {language === 'en' ? 'available' : 'disponible(s)'}
+                              </div>
+                              <div className="col-md-6">
+                                <strong>{language === 'en' ? 'Microphones:' : 'Microphones:'}</strong> {equipmentAvailability.microphones || 0} {language === 'en' ? 'available' : 'disponible(s)'}
+                              </div>
+                              <div className="col-md-6">
+                                <strong>{language === 'en' ? 'Speakers:' : 'Haut-parleurs:'}</strong> {equipmentAvailability.speakers || 0} {language === 'en' ? 'available' : 'disponible(s)'}
+                              </div>
+                              <div className="col-md-6">
+                                <strong>{language === 'en' ? 'Subwoofers:' : 'Caissons de basse:'}</strong> {equipmentAvailability.subwoofers || 0} {language === 'en' ? 'available' : 'disponible(s)'}
+                              </div>
+                              <div className="col-md-6">
+                                <strong>{language === 'en' ? 'Audio Mixer:' : 'Mixeur audio:'}</strong> {equipmentAvailability.mixer || 0} {language === 'en' ? 'available' : 'disponible(s)'}
+                              </div>
+                              <div className="col-md-6">
+                                <strong>{language === 'en' ? 'BBQ:' : 'Barbecue:'}</strong> {equipmentAvailability.bbq || 0} {language === 'en' ? 'available' : 'disponible(s)'}
+                              </div>
+                            </div>
+                            <small className="text-muted mt-2 d-block">
+                              {language === 'en' ? 'Availability is based on your selected rental period.' : 'La disponibilité est basée sur la période de location sélectionnée.'}
+                            </small>
+                          </div>
+                        )}
 
                         {errors.equipment && (
                           <div className="alert alert-danger">{t('selectEquipment')}</div>
