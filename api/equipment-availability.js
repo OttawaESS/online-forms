@@ -21,11 +21,15 @@ export default async function handler(req, res) {
   try {
     const { startDate, endDate, pickupTime, dropoffTime } = await parseJsonBody(req);
 
-    // Calculate requested start and end times
+    // Calculate requested start and end times with 30-minute buffers
     const requestedStart = new Date(`${startDate}T${pickupTime || '09:00'}`);
     const requestedEnd = endDate && dropoffTime
       ? new Date(`${endDate}T${dropoffTime}`)
       : new Date(`${startDate}T${dropoffTime || '17:00'}`);
+
+    // Add 30-minute buffer before and after the requested booking
+    const requestedStartWithBuffer = new Date(requestedStart.getTime() - 30 * 60 * 1000); // 30 minutes before
+    const requestedEndWithBuffer = new Date(requestedEnd.getTime() + 30 * 60 * 1000);   // 30 minutes after
 
     const submissions = await loadSubmissions();
     const equipmentBookings = submissions.filter(s => s.type === 'equipment-loan');
@@ -44,8 +48,11 @@ export default async function handler(req, res) {
           ? new Date(`${booking.endDate}T${booking.dropoffTime}`)
           : new Date(`${booking.startDate}T${booking.dropoffTime || '17:00'}`);
 
-        // Check for time overlap
-        if (requestedStart < bookingEnd && requestedEnd > bookingStart) {
+        // Check for time overlap with 30-minute buffers
+        // A conflict occurs if:
+        // 1. The buffered requested start overlaps with existing booking
+        // 2. The buffered requested end overlaps with existing booking
+        if (requestedStartWithBuffer < bookingEnd && requestedEndWithBuffer > bookingStart) {
           // Parse equipment items to get quantity for this equipment type
           const equipmentItems = booking.equipmentItems || [];
           const bookedItem = equipmentItems.find(item => {
