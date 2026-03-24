@@ -11,8 +11,6 @@ export default function LandingPage() {
   const navigate = useNavigate();
   const { language, toggleLanguage, t } = useLanguage();
   const [bookings, setBookings] = useState([]);
-  const [selectedBooking, setSelectedBooking] = useState(null);
-  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     fetch('/api/bookings')
@@ -33,18 +31,6 @@ export default function LandingPage() {
       vemsRequestDesc: 'Submit a VEMS request',
       chooseForm: 'Choose the form you need',
       bookingsCalendar: 'Equipment Bookings Calendar',
-      bookingDetails: 'Booking Details',
-      email: 'Email',
-      phone: 'Phone',
-      organization: 'Organization',
-      dates: 'Dates',
-      pickupTime: 'Pickup Time',
-      dropoffTime: 'Dropoff Time',
-      equipment: 'Equipment',
-      usage: 'Usage',
-      onCampus: 'On Campus',
-      needsAssistance: 'Needs On-Site Assistance',
-      close: 'Close',
     },
     fr: {
       welcome: 'Bienvenue',
@@ -57,30 +43,10 @@ export default function LandingPage() {
       vemsRequestDesc: 'Soumettre une demande VEMS',
       chooseForm: 'Choisissez le formulaire dont vous avez besoin',
       bookingsCalendar: 'Calendrier des réservations d\'équipement',
-      bookingDetails: 'Détails de la réservation',
-      email: 'Email',
-      phone: 'Téléphone',
-      organization: 'Organisation',
-      dates: 'Dates',
-      pickupTime: 'Heure de ramassage',
-      dropoffTime: 'Heure de dépôt',
-      equipment: 'Équipement',
-      usage: 'Utilisation',
-      onCampus: 'Sur le campus',
-      needsAssistance: 'Besoin d\'assistance sur site',
-      close: 'Fermer',
     },
   };
 
-  const handleEventClick = (clickInfo) => {
-    setSelectedBooking(clickInfo.event.extendedProps);
-    setShowModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setSelectedBooking(null);
-  };
+  const t_landing = (key) => landingTranslations[language][key] || key;
 
   return (
     <div className="pt-3" style={{ background: 'linear-gradient(120deg, #2d0a4e 0%, #52009a 50%, #ffffff 100%)', minHeight: '100vh'}}>
@@ -197,7 +163,6 @@ export default function LandingPage() {
               initialView="dayGridMonth"
               events={bookings}
               height="auto"
-              eventClick={handleEventClick}
               headerToolbar={{
                 left: 'prev,next today',
                 center: 'title',
@@ -217,48 +182,6 @@ export default function LandingPage() {
           <p className="text-light text-center small py-5" style={{ fontSize: '0.75rem' }}>© 2025–2026 Cyrus Choi. All rights reserved.</p>
         </a>
       </div>
-
-      {/* Booking Details Modal */}
-      {showModal && selectedBooking && (
-        <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-          <div className="modal-dialog modal-lg">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">{t_landing('bookingDetails')}</h5>
-                <button type="button" className="btn-close" onClick={handleCloseModal}></button>
-              </div>
-              <div className="modal-body">
-                <div className="row">
-                  <div className="col-md-6">
-                    <p><strong>{t_landing('organization')}:</strong> {selectedBooking.organization}</p>
-                  </div>
-                  <div className="col-md-6">
-                    <p><strong>{t_landing('dates')}:</strong> {selectedBooking.startDate} {selectedBooking.endDate && selectedBooking.endDate !== selectedBooking.startDate ? ` - ${selectedBooking.endDate}` : ''}</p>
-                    <p><strong>{t_landing('pickupTime')}:</strong> {selectedBooking.pickupTime || 'Not specified'}</p>
-                    <p><strong>{t_landing('dropoffTime')}:</strong> {selectedBooking.dropoffTime || 'Not specified'}</p>
-                    <p><strong>{t_landing('onCampus')}:</strong> {selectedBooking.onCampus === 'yes' ? 'Yes' : 'No'}</p>
-                  </div>
-                </div>
-                <div className="mt-3">
-                  <p><strong>{t_landing('equipment')}:</strong></p>
-                  <ul>
-                    {selectedBooking.equipment && selectedBooking.equipment.length > 0 ? (
-                      selectedBooking.equipment.map((item, index) => (
-                        <li key={index}>{item.description} (Quantity: {item.quantity})</li>
-                      ))
-                    ) : (
-                      <li>No equipment specified</li>
-                    )}
-                  </ul>
-                </div>
-              </div>
-              <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={handleCloseModal}>{t_landing('close')}</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -12,22 +12,13 @@ export default async function handler(req, res) {
       .filter(s => s.type === 'equipment-loan')
       .map(s => ({
         id: s.id,
-        title: s.organization || 'Unknown Organization',
+        title: `${s.name} - ${s.organization || 'Unknown'}`,
         start: s.startDate,
         end: s.endDate ? new Date(new Date(s.endDate).getTime() + 24 * 60 * 60 * 1000).toISOString().split('T')[0] : s.startDate, // End date inclusive
         allDay: true,
         extendedProps: {
           email: s.email,
-          phone: s.phone,
-          organization: s.organization,
-          startDate: s.startDate,
-          endDate: s.endDate,
-          pickupTime: s.pickupTime,
-          dropoffTime: s.dropoffTime,
-          equipment: s.equipmentItems || [],
-          usage: s.equipmentUsage,
-          onCampus: s.onCampus,
-          needsAssistance: s.needsOnSiteAssistance
+          equipment: s.equipmentItems || []
         }
       }));
 
