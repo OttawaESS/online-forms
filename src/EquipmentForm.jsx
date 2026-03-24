@@ -384,17 +384,13 @@ function EquipmentForm() {
     }
   };
 
-  const getEquipmentList = () => {
-    const items = [];
-    if (formData.projector > 0) items.push({ name: language === 'en' ? 'Projector' : 'Projecteur', qty: formData.projector });
-    if (formData.microphones > 0) items.push({ name: language === 'en' ? 'Microphones' : 'Microphones', qty: formData.microphones });
-    if (formData.microphoneStands === 'yes') items.push({ name: language === 'en' ? 'Microphone Stands' : 'Supports pour microphones', qty: 1 });
-    if (formData.speakers > 0) items.push({ name: language === 'en' ? 'Speakers' : 'Haut-parleurs', qty: formData.speakers });
-    if (formData.speakerStands === 'yes') items.push({ name: language === 'en' ? 'Speaker Stands' : 'Supports de haut-parleurs', qty: 1 });
-    if (formData.subwoofers > 0) items.push({ name: language === 'en' ? 'Subwoofers' : 'Caissons de basse', qty: formData.subwoofers });
-    if (formData.mixer === 'yes') items.push({ name: language === 'en' ? 'Audio Mixer' : 'Mixeur audio', qty: 1 });
-    if (formData.bbq) items.push({ name: language === 'en' ? 'Barbecue' : 'Barbecue', qty: 1 });
-    return items;
+  const getEquipmentOptions = (equipmentType, maxOptions) => {
+    const available = equipmentAvailability[equipmentType]?.available || maxOptions;
+    const options = [];
+    for (let i = 0; i <= Math.min(available, maxOptions); i++) {
+      options.push(<option key={i} value={i}>{i}</option>);
+    }
+    return options;
   };
 
   return (
@@ -731,28 +727,41 @@ function EquipmentForm() {
                         </div>
 
                         {/* Equipment Availability Display */}
-                        {equipmentAvailability && (
+                        {equipmentAvailability && Object.keys(equipmentAvailability).length > 0 && (
                           <div className="alert alert-success mb-4">
                             <h6 className="mb-3">{language === 'en' ? 'Equipment Availability' : 'Disponibilité de l\'équipement'}</h6>
                             <div className="row">
-                              <div className="col-md-6">
-                                <strong>{language === 'en' ? 'Projectors:' : 'Projecteurs:'}</strong> {equipmentAvailability.projector || 0} {language === 'en' ? 'available' : 'disponible(s)'}
-                              </div>
-                              <div className="col-md-6">
-                                <strong>{language === 'en' ? 'Microphones:' : 'Microphones:'}</strong> {equipmentAvailability.microphones || 0} {language === 'en' ? 'available' : 'disponible(s)'}
-                              </div>
-                              <div className="col-md-6">
-                                <strong>{language === 'en' ? 'Speakers:' : 'Haut-parleurs:'}</strong> {equipmentAvailability.speakers || 0} {language === 'en' ? 'available' : 'disponible(s)'}
-                              </div>
-                              <div className="col-md-6">
-                                <strong>{language === 'en' ? 'Subwoofers:' : 'Caissons de basse:'}</strong> {equipmentAvailability.subwoofers || 0} {language === 'en' ? 'available' : 'disponible(s)'}
-                              </div>
-                              <div className="col-md-6">
-                                <strong>{language === 'en' ? 'Audio Mixer:' : 'Mixeur audio:'}</strong> {equipmentAvailability.mixer || 0} {language === 'en' ? 'available' : 'disponible(s)'}
-                              </div>
-                              <div className="col-md-6">
-                                <strong>{language === 'en' ? 'BBQ:' : 'Barbecue:'}</strong> {equipmentAvailability.bbq || 0} {language === 'en' ? 'available' : 'disponible(s)'}
-                              </div>
+                              {Object.entries(equipmentAvailability).map(([equipmentType, data]) => {
+                                const { available, bookings } = data;
+                                const equipmentNames = {
+                                  projector: language === 'en' ? 'Projectors' : 'Projecteurs',
+                                  microphones: language === 'en' ? 'Microphones' : 'Microphones',
+                                  speakers: language === 'en' ? 'Speakers' : 'Haut-parleurs',
+                                  subwoofers: language === 'en' ? 'Subwoofers' : 'Caissons de basse',
+                                  mixer: language === 'en' ? 'Audio Mixer' : 'Mixeur audio',
+                                  bbq: language === 'en' ? 'BBQ' : 'Barbecue'
+                                };
+
+                                return (
+                                  <div key={equipmentType} className="col-md-6 mb-2">
+                                    <div className={available === 0 ? 'text-danger' : 'text-success'}>
+                                      <strong>{equipmentNames[equipmentType] || equipmentType}:</strong> {available} {language === 'en' ? 'available' : 'disponible(s)'}
+                                    </div>
+                                    {available === 0 && bookings.length > 0 && (
+                                      <div className="mt-1 small">
+                                        <div className="text-muted">
+                                          {language === 'en' ? 'Booked by:' : 'Réservé par:'}
+                                        </div>
+                                        {bookings.map((booking, index) => (
+                                          <div key={index} className="ms-2">
+                                            • {booking.organization} ({booking.startDate} {booking.pickupTime} - {booking.endDate || booking.startDate} {booking.dropoffTime})
+                                          </div>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
                             </div>
                             <small className="text-muted mt-2 d-block">
                               {language === 'en' ? 'Availability is based on your selected rental period.' : 'La disponibilité est basée sur la période de location sélectionnée.'}
@@ -767,49 +776,66 @@ function EquipmentForm() {
                         {/* Equipment Items */}
                         {[ { name: 'projector', label: t('projectors'), detail: '1 x Epson Projector' },
                         ].map((item) => (
-                          <div key={item.name} className="card mb-2">
+                          <div key={item.name} className={`card mb-2 ${equipmentAvailability[item.name]?.available === 0 ? 'border-danger' : ''}`}>
                             <div className="card-body py-3">
                               <label className="form-label fw-bold mb-2" htmlFor={item.name}>{item.label}</label>
                               <small className="text-muted d-block mb-2">{item.detail}</small>
+                              {equipmentAvailability[item.name]?.available === 0 && (
+                                <div className="alert alert-danger py-1 px-2 mb-2 small">
+                                  {language === 'en' ? 'Not available for selected dates/times' : 'Non disponible pour les dates/heures sélectionnées'}
+                                </div>
+                              )}
                               <select
                                 className="form-select"
                                 id={item.name}
                                 name={item.name}
                                 value={formData[item.name]}
                                 onChange={handleChange}
+                                disabled={equipmentAvailability[item.name]?.available === 0}
                               >
-                                <option value={0}>0</option>
-                                <option value={1}>1</option>
+                                {getEquipmentOptions(item.name, 1)}
                               </select>
                             </div>
                           </div>
                         ))}
 
                         {/* Microphones */}
-                        <div className="card mb-2">
+                        <div className={`card mb-2 ${equipmentAvailability.microphones?.available === 0 ? 'border-danger' : ''}`}>
                           <div className="card-body py-3">
                             <label className="form-label fw-bold mb-2" htmlFor="microphones">{t('microphones')}</label>
                             <small className="text-muted d-block mb-2">2 x Shure SM58</small>
+                            {equipmentAvailability.microphones?.available === 0 && (
+                              <div className="alert alert-danger py-1 px-2 mb-2 small">
+                                {language === 'en' ? 'Not available for selected dates/times' : 'Non disponible pour les dates/heures sélectionnées'}
+                              </div>
+                            )}
                             <select
                               className="form-select"
                               id="microphones"
                               name="microphones"
                               value={formData.microphones}
                               onChange={handleChange}
+                              disabled={equipmentAvailability.microphones?.available === 0}
                             >
-                              <option value={0}>0</option>
-                              <option value={1}>1</option>
-                              <option value={2}>2</option>
+                              {getEquipmentOptions('microphones', 2)}
                             </select>
                           </div>
                         </div>
 
                         {/* Microphone Stands */}
-                        <div className="card mb-2">
+                        <div className={`card mb-2 ${equipmentAvailability.microphones?.available === 0 || formData.microphones === 0 ? 'border-warning' : ''}`}>
                           <div className="card-body py-3">
                             <label className="form-label fw-bold mb-2">{t('microphoneStands')}</label>
                             <small className="text-muted d-block mb-2">2 x Yorkville MS608B</small>
                             <small className="text-muted d-block mb-2">{language === 'en' ? '(Will be loaned based on number of microphones requested)' : '(Prêts en fonction du nombre de microphones demandés)'}</small>
+                            {(equipmentAvailability.microphones?.available === 0 || formData.microphones === 0) && (
+                              <div className="alert alert-warning py-1 px-2 mb-2 small">
+                                {equipmentAvailability.microphones?.available === 0 
+                                  ? (language === 'en' ? 'Not available - microphones unavailable' : 'Non disponible - microphones non disponibles')
+                                  : (language === 'en' ? 'Select microphones first' : 'Sélectionnez d\'abord les microphones')
+                                }
+                              </div>
+                            )}
                             <div className="form-check">
                               <input
                                 className="form-check-input"
@@ -819,6 +845,7 @@ function EquipmentForm() {
                                 value="yes"
                                 checked={formData.microphoneStands === 'yes'}
                                 onChange={handleChange}
+                                disabled={equipmentAvailability.microphones?.available === 0 || formData.microphones === 0}
                               />
                               <label className="form-check-label" htmlFor="microphoneStandsYes">
                                 {t('yes')}
@@ -833,6 +860,7 @@ function EquipmentForm() {
                                 value="no"
                                 checked={formData.microphoneStands === 'no'}
                                 onChange={handleChange}
+                                disabled={equipmentAvailability.microphones?.available === 0 || formData.microphones === 0}
                               />
                               <label className="form-check-label" htmlFor="microphoneStandsNo">
                                 {t('no')}
@@ -842,30 +870,42 @@ function EquipmentForm() {
                         </div>
 
                         {/* Speakers */}
-                        <div className="card mb-2">
+                        <div className={`card mb-2 ${equipmentAvailability.speakers?.available === 0 ? 'border-danger' : ''}`}>
                           <div className="card-body py-3">
                             <label className="form-label fw-bold mb-2" htmlFor="speakers">{t('speakers')}</label>
                             <small className="text-muted d-block mb-2">2 x Yorkville PS12P</small>
                             <small className="text-muted d-block mb-2">{language === 'en' ? 'Input: Mic (XLR), Line (XLR), 3.5mm, TRS | Output: Link (XLR)' : 'Entrée: Mic (XLR), Line (XLR), 3.5mm, TRS | Sortie: Link (XLR)'}</small>
+                            {equipmentAvailability.speakers?.available === 0 && (
+                              <div className="alert alert-danger py-1 px-2 mb-2 small">
+                                {language === 'en' ? 'Not available for selected dates/times' : 'Non disponible pour les dates/heures sélectionnées'}
+                              </div>
+                            )}
                             <select
                               className="form-select"
                               id="speakers"
                               name="speakers"
                               value={formData.speakers}
                               onChange={handleChange}
+                              disabled={equipmentAvailability.speakers?.available === 0}
                             >
-                              <option value={0}>0</option>
-                              <option value={1}>1</option>
-                              <option value={2}>2</option>
+                              {getEquipmentOptions('speakers', 2)}
                             </select>
                           </div>
                         </div>
 
                         {/* Speaker Stands */}
-                        <div className="card mb-2">
+                        <div className={`card mb-2 ${equipmentAvailability.speakers?.available === 0 || formData.speakers === 0 ? 'border-warning' : ''}`}>
                           <div className="card-body py-3">
                             <label className="form-label fw-bold mb-2">{t('speakerStands')}</label>
                             <small className="text-muted d-block mb-2">{t('speakerStandsNote')}</small>
+                            {(equipmentAvailability.speakers?.available === 0 || formData.speakers === 0) && (
+                              <div className="alert alert-warning py-1 px-2 mb-2 small">
+                                {equipmentAvailability.speakers?.available === 0 
+                                  ? (language === 'en' ? 'Not available - speakers unavailable' : 'Non disponible - haut-parleurs non disponibles')
+                                  : (language === 'en' ? 'Select speakers first' : 'Sélectionnez d\'abord les haut-parleurs')
+                                }
+                              </div>
+                            )}
                             <div className="form-check">
                               <input
                                 className="form-check-input"
@@ -875,6 +915,7 @@ function EquipmentForm() {
                                 value="yes"
                                 checked={formData.speakerStands === 'yes'}
                                 onChange={handleChange}
+                                disabled={equipmentAvailability.speakers?.available === 0 || formData.speakers === 0}
                               />
                               <label className="form-check-label" htmlFor="speakerStandsYes">
                                 {t('yes')}
@@ -889,6 +930,7 @@ function EquipmentForm() {
                                 value="no"
                                 checked={formData.speakerStands === 'no'}
                                 onChange={handleChange}
+                                disabled={equipmentAvailability.speakers?.available === 0 || formData.speakers === 0}
                               />
                               <label className="form-check-label" htmlFor="speakerStandsNo">
                                 {t('no')}
@@ -898,29 +940,38 @@ function EquipmentForm() {
                         </div>
 
                         {/* Subwoofers */}
-                        <div className="card mb-2">
+                        <div className={`card mb-2 ${equipmentAvailability.subwoofers?.available === 0 ? 'border-danger' : ''}`}>
                           <div className="card-body py-3">
                             <label className="form-label fw-bold mb-2" htmlFor="subwoofers">{t('subwoofers')}</label>
                             <small className="text-muted d-block mb-2">2 x Yorkville PSA1S</small>
+                            {equipmentAvailability.subwoofers?.available === 0 && (
+                              <div className="alert alert-danger py-1 px-2 mb-2 small">
+                                {language === 'en' ? 'Not available for selected dates/times' : 'Non disponible pour les dates/heures sélectionnées'}
+                              </div>
+                            )}
                             <select
                               className="form-select"
                               id="subwoofers"
                               name="subwoofers"
                               value={formData.subwoofers}
                               onChange={handleChange}
+                              disabled={equipmentAvailability.subwoofers?.available === 0}
                             >
-                              <option value={0}>0</option>
-                              <option value={1}>1</option>
-                              <option value={2}>2</option>
+                              {getEquipmentOptions('subwoofers', 2)}
                             </select>
                           </div>
                         </div>
 
                         {/* Audio Mixer */}
-                        <div className="card mb-2">
+                        <div className={`card mb-2 ${equipmentAvailability.mixer?.available === 0 ? 'border-danger' : ''}`}>
                           <div className="card-body py-3">
                             <label className="form-label fw-bold mb-2">{t('audioMixer')}</label>
                             <small className="text-muted d-block mb-2">1 x Allen & Heath W4 16:2</small>
+                            {equipmentAvailability.mixer?.available === 0 && (
+                              <div className="alert alert-danger py-1 px-2 mb-2 small">
+                                {language === 'en' ? 'Not available for selected dates/times' : 'Non disponible pour les dates/heures sélectionnées'}
+                              </div>
+                            )}
                             <div className="form-check">
                               <input
                                 className="form-check-input"
@@ -930,6 +981,7 @@ function EquipmentForm() {
                                 value="yes"
                                 checked={formData.mixer === 'yes'}
                                 onChange={handleChange}
+                                disabled={equipmentAvailability.mixer?.available === 0}
                               />
                               <label className="form-check-label" htmlFor="mixerYes">
                                 {t('yes')}
@@ -953,8 +1005,13 @@ function EquipmentForm() {
                         </div>
 
                         {/* BBQ */}
-                        <div className="card mb-2 border-warning">
+                        <div className={`card mb-2 border-warning ${equipmentAvailability.bbq?.available === 0 ? 'border-danger' : ''}`}>
                           <div className="card-body py-3">
+                            {equipmentAvailability.bbq?.available === 0 && (
+                              <div className="alert alert-danger py-1 px-2 mb-2 small">
+                                {language === 'en' ? 'Not available for selected dates/times' : 'Non disponible pour les dates/heures sélectionnées'}
+                              </div>
+                            )}
                             <div className="form-check">
                               <input
                                 className="form-check-input"
@@ -963,6 +1020,7 @@ function EquipmentForm() {
                                 id="bbq"
                                 checked={formData.bbq}
                                 onChange={handleChange}
+                                disabled={equipmentAvailability.bbq?.available === 0}
                               />
                               <label className="form-check-label" htmlFor="bbq">
                                 <strong>{t('bbq')}</strong>

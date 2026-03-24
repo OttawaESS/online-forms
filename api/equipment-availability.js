@@ -36,6 +36,7 @@ export default async function handler(req, res) {
     // Check availability for each equipment type
     for (const [equipmentType, totalAvailable] of Object.entries(EQUIPMENT_AVAILABILITY)) {
       let totalBooked = 0;
+      const conflictingBookings = [];
 
       // Check overlapping bookings
       for (const booking of equipmentBookings) {
@@ -73,10 +74,26 @@ export default async function handler(req, res) {
           });
           const bookedQuantity = bookedItem ? Number(bookedItem.quantity || 0) : 0;
           totalBooked += bookedQuantity;
+
+          // If this booking conflicts, collect the details
+          if (bookedQuantity > 0) {
+            conflictingBookings.push({
+              organization: booking.organization || 'Unknown',
+              startDate: booking.startDate,
+              endDate: booking.endDate || booking.startDate,
+              pickupTime: booking.pickupTime || '09:00',
+              dropoffTime: booking.dropoffTime || '17:00',
+              quantity: bookedQuantity
+            });
+          }
         }
       }
 
-      availability[equipmentType] = Math.max(0, totalAvailable - totalBooked);
+      const availableQuantity = Math.max(0, totalAvailable - totalBooked);
+      availability[equipmentType] = {
+        available: availableQuantity,
+        bookings: availableQuantity === 0 ? conflictingBookings : []
+      };
     }
 
     res.setHeader('Content-Type', 'application/json');
