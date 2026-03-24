@@ -240,6 +240,10 @@ function EquipmentForm() {
           });
 
           if (!response.ok) {
+            if (response.status === 409) {
+              const errorData = await response.json();
+              throw new Error(errorData.error || 'Equipment conflict detected');
+            }
             throw new Error(`Submission failed: ${response.status}`);
           }
 
@@ -251,7 +255,7 @@ function EquipmentForm() {
           setShowModal(true);
         } catch (error) {
           console.error('Equipment submission error:', error);
-          alert(language === 'en' ? 'Failed to submit equipment loan request. Please try again.' : 'Échec de la soumission de la demande de prêt d\'équipement. Veuillez réessayer.');
+          alert(error.message || (language === 'en' ? 'Failed to submit equipment loan request. Please try again.' : 'Échec de la soumission de la demande de prêt d\'équipement. Veuillez réessayer.'));
         } finally {
           setIsSubmitting(false);
         }

@@ -2,6 +2,7 @@
   "rewrites": [
     { "source": "/admin", "destination": "/api/admin" },
     { "source": "/api/pdf", "destination": "/api/pdf" },
+    { "source": "/api/submit-equipment", "destination": "/api/submit-equipment" },
     { "source": "/login", "destination": "/api/login" },
     { "source": "/logout", "destination": "/api/logout" },
     { "source": "/submit", "destination": "/api/submit" },
