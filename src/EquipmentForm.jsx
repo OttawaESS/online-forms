@@ -204,6 +204,19 @@ function EquipmentForm() {
     return items;
   };
 
+  const getEquipmentList = () => {
+    const items = [];
+    if (formData.projector > 0) items.push({ name: t('projectors'), qty: formData.projector });
+    if (formData.microphones > 0) items.push({ name: t('microphones'), qty: formData.microphones });
+    if (formData.microphoneStands === 'yes') items.push({ name: t('microphoneStands'), qty: 1 });
+    if (formData.speakers > 0) items.push({ name: t('speakers'), qty: formData.speakers });
+    if (formData.speakerStands === 'yes') items.push({ name: t('speakerStands'), qty: 1 });
+    if (formData.subwoofers > 0) items.push({ name: t('subwoofers'), qty: formData.subwoofers });
+    if (formData.mixer === 'yes') items.push({ name: t('audioMixer'), qty: 1 });
+    if (formData.bbq) items.push({ name: t('bbq'), qty: 1 });
+    return items;
+  };
+
   const resetForm = () => {
     setFormData({
       fullName: '',
@@ -728,28 +741,28 @@ function EquipmentForm() {
                         {/* Equipment Availability Display */}
                         {equipmentAvailability && Object.keys(equipmentAvailability).length > 0 && (
                           <div className="alert alert-success mb-4">
-                            <h6 className="mb-3">{language === 'en' ? 'Equipment Availability' : 'Disponibilité de l\'équipement'}</h6>
+                            <h6 className="mb-3">{t('equipmentAvailability')}</h6>
                             <div className="row">
                               {Object.entries(equipmentAvailability).map(([equipmentType, data]) => {
                                 const { available, bookings } = data;
                                 const equipmentNames = {
-                                  projector: language === 'en' ? 'Projectors' : 'Projecteurs',
-                                  microphones: language === 'en' ? 'Microphones' : 'Microphones',
-                                  speakers: language === 'en' ? 'Speakers' : 'Haut-parleurs',
-                                  subwoofers: language === 'en' ? 'Subwoofers' : 'Caissons de basse',
-                                  mixer: language === 'en' ? 'Audio Mixer' : 'Mixeur audio',
-                                  bbq: language === 'en' ? 'BBQ' : 'Barbecue'
+                                  projector: t('projectors'),
+                                  microphones: t('microphones'),
+                                  speakers: t('speakers'),
+                                  subwoofers: t('subwoofers'),
+                                  mixer: t('audioMixer'),
+                                  bbq: t('bbq')
                                 };
 
                                 return (
                                   <div key={equipmentType} className="col-md-6 mb-2">
                                     <div className={available === 0 ? 'text-danger' : 'text-success'}>
-                                      <strong>{equipmentNames[equipmentType] || equipmentType}:</strong> {available} {language === 'en' ? 'available' : 'disponible(s)'}
+                                      <strong>{equipmentNames[equipmentType] || equipmentType}:</strong> {available} {t('available')}
                                     </div>
                                     {available === 0 && bookings.length > 0 && (
                                       <div className="mt-1 small">
                                         <div className="text-muted">
-                                          {language === 'en' ? 'Booked by:' : 'Réservé par:'}
+                                          {t('bookedBy')}
                                         </div>
                                         {bookings.map((booking, index) => (
                                           <div key={index} className="ms-2">
@@ -763,7 +776,7 @@ function EquipmentForm() {
                               })}
                             </div>
                             <small className="text-muted mt-2 d-block">
-                              {language === 'en' ? 'Availability is based on your selected rental period.' : 'La disponibilité est basée sur la période de location sélectionnée.'}
+                              {t('availabilityNote')}
                             </small>
                           </div>
                         )}
@@ -805,7 +818,7 @@ function EquipmentForm() {
                             <small className="text-muted d-block mb-2">2 x Shure SM58</small>
                             {equipmentAvailability.microphones?.available === 0 && (
                               <div className="alert alert-danger py-1 px-2 mb-2 small">
-                                {language === 'en' ? 'Not available for selected dates/times' : 'Non disponible pour les dates/heures sélectionnées'}
+                                {t('notAvailableForDates')}
                               </div>
                             )}
                             <select
@@ -826,12 +839,12 @@ function EquipmentForm() {
                           <div className="card-body py-3">
                             <label className="form-label fw-bold mb-2">{t('microphoneStands')}</label>
                             <small className="text-muted d-block mb-2">2 x Yorkville MS608B</small>
-                            <small className="text-muted d-block mb-2">{language === 'en' ? '(Will be loaned based on number of microphones requested)' : '(Prêts en fonction du nombre de microphones demandés)'}</small>
+                            <small className="text-muted d-block mb-2">{t('microphoneStandsNote')}</small>
                             {(equipmentAvailability.microphones?.available === 0 || formData.microphones === 0) && (
                               <div className="alert alert-warning py-1 px-2 mb-2 small">
                                 {equipmentAvailability.microphones?.available === 0 
-                                  ? (language === 'en' ? 'Not available - microphones unavailable' : 'Non disponible - microphones non disponibles')
-                                  : (language === 'en' ? 'Select microphones first' : 'Sélectionnez d\'abord les microphones')
+                                  ? t('notAvailableMicrophonesUnavailable')
+                                  : t('selectMicrophonesFirst')
                                 }
                               </div>
                             )}
@@ -873,10 +886,10 @@ function EquipmentForm() {
                           <div className="card-body py-3">
                             <label className="form-label fw-bold mb-2" htmlFor="speakers">{t('speakers')}</label>
                             <small className="text-muted d-block mb-2">2 x Yorkville PS12P</small>
-                            <small className="text-muted d-block mb-2">{language === 'en' ? 'Input: Mic (XLR), Line (XLR), 3.5mm, TRS | Output: Link (XLR)' : 'Entrée: Mic (XLR), Line (XLR), 3.5mm, TRS | Sortie: Link (XLR)'}</small>
+                            <small className="text-muted d-block mb-2">{t('speakersInputOutput')}</small>
                             {equipmentAvailability.speakers?.available === 0 && (
                               <div className="alert alert-danger py-1 px-2 mb-2 small">
-                                {language === 'en' ? 'Not available for selected dates/times' : 'Non disponible pour les dates/heures sélectionnées'}
+                                {t('notAvailableForDates')}
                               </div>
                             )}
                             <select
@@ -900,8 +913,8 @@ function EquipmentForm() {
                             {(equipmentAvailability.speakers?.available === 0 || formData.speakers === 0) && (
                               <div className="alert alert-warning py-1 px-2 mb-2 small">
                                 {equipmentAvailability.speakers?.available === 0 
-                                  ? (language === 'en' ? 'Not available - speakers unavailable' : 'Non disponible - haut-parleurs non disponibles')
-                                  : (language === 'en' ? 'Select speakers first' : 'Sélectionnez d\'abord les haut-parleurs')
+                                  ? t('notAvailableSpeakersUnavailable')
+                                  : t('selectSpeakersFirst')
                                 }
                               </div>
                             )}
@@ -945,7 +958,7 @@ function EquipmentForm() {
                             <small className="text-muted d-block mb-2">2 x Yorkville PSA1S</small>
                             {equipmentAvailability.subwoofers?.available === 0 && (
                               <div className="alert alert-danger py-1 px-2 mb-2 small">
-                                {language === 'en' ? 'Not available for selected dates/times' : 'Non disponible pour les dates/heures sélectionnées'}
+                                {t('notAvailableForDates')}
                               </div>
                             )}
                             <select
@@ -968,7 +981,7 @@ function EquipmentForm() {
                             <small className="text-muted d-block mb-2">1 x Allen & Heath W4 16:2</small>
                             {equipmentAvailability.mixer?.available === 0 && (
                               <div className="alert alert-danger py-1 px-2 mb-2 small">
-                                {language === 'en' ? 'Not available for selected dates/times' : 'Non disponible pour les dates/heures sélectionnées'}
+                                {t('notAvailableForDates')}
                               </div>
                             )}
                             <div className="form-check">
@@ -1292,11 +1305,11 @@ function EquipmentForm() {
                                 ))}
                               </ul>
                             ) : (
-                              <p className="text-muted mb-0">{language === 'en' ? 'No equipment selected' : 'Aucun équipement sélectionné'}</p>
+                              <p className="text-muted mb-0">{t('noEquipmentSelected')}</p>
                             )}
                           </div>
                           <div className="card-footer text-muted small">
-                            <div className="mb-1"><strong>{language === 'en' ? 'Rental Period:' : 'Période de location:'}</strong></div>
+                            <div className="mb-1"><strong>{t('rentalPeriod')}:</strong></div>
                             <div>{formatDate(formData.startDate) || '—'}</div>
                             <div>{language === 'en' ? 'to' : 'à'}</div>
                             <div>{formatDate(formData.endDate) || '—'}</div>
