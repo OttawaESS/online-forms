@@ -78,11 +78,6 @@ export default async function handler(req, res) {
 
       availability[equipmentType] = Math.max(0, totalAvailable - totalBooked);
     }
-        }
-      }
-
-      availability[equipmentType] = Math.max(0, totalAvailable - totalBooked);
-    }
 
     res.setHeader('Content-Type', 'application/json');
     res.statusCode = 200;
