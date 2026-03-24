@@ -12,7 +12,7 @@ export default async function handler(req, res) {
       .filter(s => s.type === 'equipment-loan')
       .map(s => ({
         id: s.id,
-        title: `${s.name} - ${s.organization || 'Unknown'}`,
+        title: `${s.organization || 'Unknown'}`,
         start: s.startDate,
         end: s.endDate ? new Date(new Date(s.endDate).getTime() + 24 * 60 * 60 * 1000).toISOString().split('T')[0] : s.startDate, // End date inclusive
         allDay: true,
