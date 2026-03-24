@@ -160,7 +160,7 @@ export default function LandingPage() {
           <div className="bg-white p-2 rounded shadow" style={{ maxWidth: '800px', margin: '0 auto' }}>
             <FullCalendar
               plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-              initialView="dayGridMonth"
+              initialView="timeGridWeek"
               events={bookings}
               timeZone="America/New_York"
               headerToolbar={{
