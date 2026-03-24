@@ -24,7 +24,7 @@ export const translations = {
     closingNote: "We appreciate your dedication to ESS and your commitment to maintaining the highest standards of financial responsibility. If you have any questions or require assistance while completing this form, please do not hesitate to email",
     
     // Form fields
-    name: "Non // Name (First + Last)",
+    name: "Name (First + Last)",
     email: "Email",
     phone: "Phone Number (e.g., 6131234567)",
     invoiceDate: "Invoice Date",
