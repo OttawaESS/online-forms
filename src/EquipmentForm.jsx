@@ -66,6 +66,7 @@ function EquipmentForm() {
     const newErrors = {};
     if (!formData.fullName.trim()) newErrors.fullName = true;
     if (!formData.email.trim() || !formData.email.includes('@')) newErrors.email = true;
+    if (!formData.phone.trim()) newErrors.phone = true;
     if (!formData.organization) newErrors.organization = true;
     if (formData.organization === 'Other' && !formData.otherOrganization.trim()) {
       newErrors.otherOrganization = true;
@@ -485,17 +486,18 @@ function EquipmentForm() {
 
                         <div className="mb-3">
                           <label htmlFor="phone" className="form-label fw-bold">
-                            {t('phone')}
+                            {t('phone')} <span className="text-danger">*</span>
                           </label>
                           <input
                             type="tel"
-                            className="form-control"
+                            className={`form-control ${errors.phone ? 'is-invalid' : ''}`}
                             id="phone"
                             name="phone"
                             value={formData.phone}
                             onChange={handleChange}
                             placeholder={language === 'en' ? 'Enter your phone number' : 'Entrez votre numéro de téléphone'}
                           />
+                          {errors.phone && <div className="invalid-feedback">{t('required')}</div>}
                         </div>
 
                         <div className="mb-3">
