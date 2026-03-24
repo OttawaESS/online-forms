@@ -157,12 +157,11 @@ export default function LandingPage() {
         {/* Equipment Bookings Calendar */}
         <div className="mt-5">
           <h2 className="text-white text-center mb-4">{t_landing('bookingsCalendar')}</h2>
-          <div className="bg-white p-3 rounded shadow">
+          <div className="bg-white p-2 rounded shadow" style={{ maxWidth: '800px', margin: '0 auto' }}>
             <FullCalendar
               plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
               initialView="dayGridMonth"
               events={bookings}
-              height="auto"
               timeZone="America/New_York"
               headerToolbar={{
                 left: 'prev,next today',
