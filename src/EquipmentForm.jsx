@@ -378,7 +378,7 @@ function EquipmentForm() {
           <a href="/login" className="btn btn-outline-light">{t('adminLogin')}</a>
         </div>
           <div className="row justify-content-center">
-            <div className="col-lg-8 col-xl-7">
+            <div className="col-lg-10 col-xl-9">
               <div className="card shadow-lg">
                 {/* Header */}
                 <div className="card-header bg-white border-bottom">
