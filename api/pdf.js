@@ -88,15 +88,21 @@ export default async function handler(req, res) {
         const amount = parseFloat(item.amount || 0);
         total += amount;
 
-        // Handle long descriptions
+        // Handle long descriptions and budget lines with wrapping
         const descLines = doc.splitTextToSize(item.description || 'N/A', 70);
+        const budgetLines = doc.splitTextToSize(item.budgetLine || 'N/A', 50);
+        const amountText = `$${amount.toFixed(2)}`;
+
+        // Calculate the maximum number of lines for this row
+        const maxLines = Math.max(descLines.length, budgetLines.length, 1);
+
+        // Place the text for each column
         doc.text(descLines, 20, y);
-        const descHeight = descLines.length * 5;
+        doc.text(budgetLines, 100, y);
+        doc.text(amountText, 160, y);
 
-        doc.text(item.budgetLine || 'N/A', 100, y);
-        doc.text(`$${amount.toFixed(2)}`, 160, y);
-
-        y += Math.max(descHeight, 10);
+        // Increment y based on the tallest column
+        y += maxLines * 5;
       }
     });
   }
