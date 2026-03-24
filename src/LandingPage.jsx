@@ -1,11 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from './LanguageContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
 
 export default function LandingPage() {
   const navigate = useNavigate();
   const { language, toggleLanguage, t } = useLanguage();
+  const [bookings, setBookings] = useState([]);
+
+  useEffect(() => {
+    fetch('/api/bookings')
+      .then(res => res.json())
+      .then(data => setBookings(data))
+      .catch(err => console.error('Failed to load bookings:', err));
+  }, []);
 
   const landingTranslations = {
     en: {
@@ -18,6 +30,7 @@ export default function LandingPage() {
       vemsRequest: 'VEMS Request',
       vemsRequestDesc: 'Submit a VEMS request',
       chooseForm: 'Choose the form you need',
+      bookingsCalendar: 'Equipment Bookings Calendar',
     },
     fr: {
       welcome: 'Bienvenue',
@@ -29,6 +42,7 @@ export default function LandingPage() {
       vemsRequest: 'Demande VEMS',
       vemsRequestDesc: 'Soumettre une demande VEMS',
       chooseForm: 'Choisissez le formulaire dont vous avez besoin',
+      bookingsCalendar: 'Calendrier des réservations d\'équipement',
     },
   };
 
@@ -137,14 +151,33 @@ export default function LandingPage() {
                 </div>
               </div>
             </div>
-            
-            <div className="text-center">
-              <a href="https://www.essaeg.ca" target="_blank" rel="noopener noreferrer">
-                <img src="/ess-logo.png" alt="ESS Website" className="img-fluid mt-5" style={{ maxHeight: '100px', margin: '0 auto' }}/>
-              </a>
-            </div>
           </div>
         </div>
+
+        {/* Equipment Bookings Calendar */}
+        <div className="mt-5">
+          <h2 className="text-white text-center mb-4">{t_landing('bookingsCalendar')}</h2>
+          <div className="bg-white p-3 rounded shadow">
+            <FullCalendar
+              plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+              initialView="dayGridMonth"
+              events={bookings}
+              height="auto"
+              headerToolbar={{
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+              }}
+            />
+          </div>
+        </div>
+
+        <div className="text-center">
+          <a href="https://www.essaeg.ca" target="_blank" rel="noopener noreferrer">
+            <img src="/ess-logo.png" alt="ESS Website" className="img-fluid mt-5" style={{ maxHeight: '100px', margin: '0 auto' }}/>
+          </a>
+        </div>
+
         <a href="https://www.cyruschoi.ca" target="_blank" rel="noopener noreferrer" alt="Cyrus Choi Website" className='text-decoration-none'>
           <p className="text-light text-center small py-5" style={{ fontSize: '0.75rem' }}>© 2025–2026 Cyrus Choi. All rights reserved.</p>
         </a>
