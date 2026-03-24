@@ -735,7 +735,7 @@ function EquipmentForm() {
                         <h5 className="mb-3">{t('equipmentTitle')}</h5>
                         <p className="text-muted mb-2">{t('equipmentDescription')}</p>
                         <div className="alert alert-info mb-4">
-                          <strong>{language === 'en' ? 'Note:' : 'Remarque:'}</strong> {t('equipmentNote')}
+                          <strong>{t('note')}</strong> {t('equipmentNote')}
                         </div>
 
                         {/* Equipment Availability Display */}
@@ -748,7 +748,9 @@ function EquipmentForm() {
                                 const equipmentNames = {
                                   projector: t('projectors'),
                                   microphones: t('microphones'),
+                                  microphoneStands: t('microphoneStands'),
                                   speakers: t('speakers'),
+                                  speakerStands: t('speakerStands'),
                                   subwoofers: t('subwoofers'),
                                   mixer: t('audioMixer'),
                                   bbq: t('bbq')
@@ -794,7 +796,7 @@ function EquipmentForm() {
                               <small className="text-muted d-block mb-2">{item.detail}</small>
                               {equipmentAvailability[item.name]?.available === 0 && (
                                 <div className="alert alert-danger py-1 px-2 mb-2 small">
-                                  {language === 'en' ? 'Not available for selected dates/times' : 'Non disponible pour les dates/heures sélectionnées'}
+                                  {t('notAvailableForDates')}
                                 </div>
                               )}
                               <select
@@ -1021,7 +1023,7 @@ function EquipmentForm() {
                           <div className="card-body py-3">
                             {equipmentAvailability.bbq?.available === 0 && (
                               <div className="alert alert-danger py-1 px-2 mb-2 small">
-                                {language === 'en' ? 'Not available for selected dates/times' : 'Non disponible pour les dates/heures sélectionnées'}
+                                {t('notAvailableForDates')}
                               </div>
                             )}
                             <div className="form-check">
