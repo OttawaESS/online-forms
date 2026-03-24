@@ -3,7 +3,6 @@ import { loadSubmissions, parseJsonBody } from './_utils.js';
 // Equipment availability (current inventory levels)
 const EQUIPMENT_AVAILABILITY = {
   projector: 1,      // 1 projector available
-  amplifier: 0,      // 1 amplifier available
   microphones: 2,    // 2 microphones available
   microphoneStands: 2, // 2 microphone stands available
   speakers: 2,       // 2 speakers available

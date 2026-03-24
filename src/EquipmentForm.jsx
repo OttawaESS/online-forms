@@ -21,7 +21,6 @@ function EquipmentForm() {
     needsOnSiteAssistance: '',
     // Step 2 - Equipment
     projector: 0,
-    amplifier: 0,
     microphones: 0,
     microphoneStands: '',
     speakers: 0,
@@ -138,7 +137,7 @@ function EquipmentForm() {
 
   const validateStep2 = () => {
     const newErrors = {};
-    const hasEquipment = formData.projector > 0 || formData.amplifier > 0 || formData.microphones > 0 ||
+    const hasEquipment = formData.projector > 0 || formData.microphones > 0 ||
                         formData.microphoneStands === 'yes' || formData.speakers > 0 || formData.speakerStands === 'yes' ||
                         formData.subwoofers > 0 || formData.mixer === 'yes' || formData.bbq;
     
@@ -178,7 +177,7 @@ function EquipmentForm() {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    const numericFields = ['projector', 'amplifier', 'microphones', 'speakers', 'subwoofers'];
+    const numericFields = ['projector', 'microphones', 'speakers', 'subwoofers'];
     setFormData((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : (type === 'number' || (type === 'radio' && numericFields.includes(name)) || (type === 'select-one' && numericFields.includes(name)) ? parseInt(value) : value),
