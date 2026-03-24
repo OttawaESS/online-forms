@@ -9,6 +9,7 @@ function EquipmentForm() {
     // Step 1 - Contact Info
     fullName: '',
     email: '',
+    phone: '',
     organization: '',
     otherOrganization: '',
     startDate: '',
@@ -178,6 +179,7 @@ function EquipmentForm() {
     setFormData({
       fullName: '',
       email: '',
+      phone: '',
       organization: '',
       otherOrganization: '',
       startDate: '',
@@ -479,6 +481,21 @@ function EquipmentForm() {
                             placeholder="your.email@example.com"
                           />
                           {errors.email && <div className="invalid-feedback">{t('invalidEmail')}</div>}
+                        </div>
+
+                        <div className="mb-3">
+                          <label htmlFor="phone" className="form-label fw-bold">
+                            {t('phone')}
+                          </label>
+                          <input
+                            type="tel"
+                            className="form-control"
+                            id="phone"
+                            name="phone"
+                            value={formData.phone}
+                            onChange={handleChange}
+                            placeholder={language === 'en' ? 'Enter your phone number' : 'Entrez votre numéro de téléphone'}
+                          />
                         </div>
 
                         <div className="mb-3">
