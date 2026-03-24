@@ -163,6 +163,7 @@ export default function LandingPage() {
               initialView="dayGridMonth"
               events={bookings}
               height="auto"
+              timeZone="America/New_York"
               headerToolbar={{
                 left: 'prev,next today',
                 center: 'title',
