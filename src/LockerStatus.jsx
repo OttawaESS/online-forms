@@ -222,7 +222,7 @@ export default function LockerStatus() {
 
   return (
     <div style={{ background: 'linear-gradient(120deg, #2d0a4e 0%, #52009a 50%, #ffffff 100%)', minHeight: '100vh' }}>
-      <div className="container py-5 ">
+      <div className="container pt-3 pb-5 ">
         <div className="d-flex justify-content-between align-items-center mb-4">
           <button 
             onClick={() => navigate('/')} 
