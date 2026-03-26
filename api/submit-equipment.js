@@ -88,7 +88,7 @@ export default async function handler(req, res) {
           borrowerEmail,
           'Confirmation de demande de prêt d\'équipement / Equipment Loan Request Confirmation',
           submitterEmailHtml,
-          'vpfa@uottawaess.ca, financecomm@uottawaess.ca, internal@uottawaess.ca, printing@uottawaess.ca, merch@uottawaess.ca'
+          'admin@uottawaess.ca, vpfa@uottawaess.ca, financecomm@uottawaess.ca, internal@uottawaess.ca, printing@uottawaess.ca, merch@uottawaess.ca'
         )
       );
     }
