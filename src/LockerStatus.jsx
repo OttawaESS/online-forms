@@ -4,10 +4,10 @@ import { useLanguage } from './LanguageContext';
 import * as XLSX from 'xlsx';
 
 const halls = [
-  { key: 'yellowBBlockHallway', min: 1001, max: 1076 },
   { key: 'redHallwayStemTunnels', min: 1073, max: 1121 },
-  { key: 'greenHallwayBehindC03', min: 1091, max: 1295 },
+  { key: 'yellowBBlockHallway', min: 1001, max: 1076 },
   { key: 'purpleCBlockHallway', min: 1200, max: 1284 },
+  { key: 'greenHallwayBehindC03', min: 1091, max: 1295 },
   { key: 'orangeHallwayKingEdward', min: 1, max: 371 },
   { key: 'pinkEBlockHallway', min: 540, max: 591 },
 ];
@@ -157,6 +157,33 @@ export default function LockerStatus() {
       });
   }, [t]);
 
+  if (error) {
+    return (
+      <div style={{ background: 'linear-gradient(120deg, #2d0a4e 0%, #52009a 50%, #ffffff 100%)', minHeight: '100vh' }}>
+        <div className="container mt-5 text-center">
+          <div className="d-flex justify-content-between align-items-center mb-4">
+            <button 
+              onClick={() => navigate('/')} 
+              className="btn btn-outline-light"
+            >
+              {t('backHome')}
+            </button>
+            <button 
+              onClick={toggleLanguage} 
+              className="btn btn-light"
+              style={{ minWidth: '80px' }}
+            >
+              {language === 'en' ? 'FR' : 'EN'}
+            </button>
+            <a href="/login" className="btn btn-outline-light">{t('adminLogin')}</a>
+          </div>
+          <h1 className="text-white">{t('lockerStatus')}</h1>
+          <p className="text-white">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div style={{ background: 'linear-gradient(120deg, #2d0a4e 0%, #52009a 50%, #ffffff 100%)', minHeight: '100vh' }}>
@@ -184,11 +211,14 @@ export default function LockerStatus() {
     );
   }
 
-  const groupedLockers = lockers.reduce((acc, locker) => {
-    if (!acc[locker.hall]) acc[locker.hall] = [];
-    acc[locker.hall].push(locker);
+  const groupedLockers = halls.reduce((acc, hall) => {
+    acc[hall.key] = [];
     return acc;
   }, {});
+
+  lockers.forEach(locker => {
+    groupedLockers[locker.hall].push(locker);
+  });
 
   return (
     <div style={{ background: 'linear-gradient(120deg, #2d0a4e 0%, #52009a 50%, #ffffff 100%)', minHeight: '100vh' }}>
