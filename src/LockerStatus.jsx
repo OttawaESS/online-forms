@@ -297,7 +297,7 @@ export default function LockerStatus() {
                 aria-expanded="true" 
                 aria-controls={`collapse${index}`}
               >
-                {t(hall)} ({groupedLockers[hall].length} {t('lockers')})
+                {t(hall)} ({groupedLockers[hall].filter(locker => locker.status === 'available').length}/{groupedLockers[hall].length} {t('lockers')})
               </button>
             </h2>
             <div 
