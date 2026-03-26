@@ -1,5 +1,4 @@
 import { useState, useRef } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
 import SignatureCanvas from 'react-signature-canvas';
 import { useLanguage } from './LanguageContext';
 

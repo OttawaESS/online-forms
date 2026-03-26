@@ -1,23 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from './LanguageContext';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import interactionPlugin from '@fullcalendar/interaction';
 
 export default function LandingPage() {
   const navigate = useNavigate();
   const { language, toggleLanguage, t } = useLanguage();
-  const [bookings, setBookings] = useState([]);
-
-  useEffect(() => {
-    fetch('/api/bookings')
-      .then(res => res.json())
-      .then(data => setBookings(data))
-      .catch(err => console.error('Failed to load bookings:', err));
-  }, []);
 
   const landingTranslations = {
     en: {
@@ -31,6 +18,8 @@ export default function LandingPage() {
       vemsRequestDesc: 'Submit a VEMS request',
       chooseForm: 'Choose the form you need',
       bookingsCalendar: 'Equipment Bookings Calendar',
+      lockerStatus: 'CBY Lockers',
+      lockerStatusDesc: 'View the current status of lockers',
     },
     fr: {
       welcome: 'Bienvenue',
@@ -43,6 +32,8 @@ export default function LandingPage() {
       vemsRequestDesc: 'Soumettre une demande VEMS',
       chooseForm: 'Choisissez le formulaire dont vous avez besoin',
       bookingsCalendar: 'Calendrier des réservations d\'équipement',
+      lockerStatus: 'Casiers CBY',
+      lockerStatusDesc: 'Voir le statut actuel des casiers',
     },
   };
 
@@ -74,7 +65,7 @@ export default function LandingPage() {
             {/* Form Selection Cards */}
             <div className="row justify-content-center">
               {/* Expense Report Card */}
-              <div className="col-md-4 mb-4">
+              <div className="col-md-3 mb-4">
                 <div 
                   className="card shadow-lg h-100 cursor-pointer"
                   style={{ 
@@ -100,7 +91,7 @@ export default function LandingPage() {
               </div>
 
               {/* Equipment Loan Card */}
-              <div className="col-md-4 mb-4">
+              <div className="col-md-3 mb-4">
                 <div 
                   className="card shadow-lg h-100 cursor-pointer"
                   style={{ 
@@ -126,7 +117,7 @@ export default function LandingPage() {
               </div>
               
               {/* VEMS Request Form */}
-              <div className="col-md-4 mb-4">
+              <div className="col-md-3 mb-4">
                 <div 
                   className="card shadow-lg h-100 cursor-pointer"
                   style={{ 
@@ -150,25 +141,33 @@ export default function LandingPage() {
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
 
-        {/* Equipment Bookings Calendar */}
-        <div className="mt-5">
-          <h2 className="text-white text-center mb-4">{t_landing('bookingsCalendar')}</h2>
-          <div className="bg-white p-2 rounded shadow" style={{ maxWidth: '800px', margin: '0 auto' }}>
-            <FullCalendar
-              plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-              initialView="timeGridWeek"
-              events={bookings}
-              timeZone="America/New_York"
-              headerToolbar={{
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay'
-              }}
-            />
+              {/* Locker Status */}
+              <div className="col-md-3 mb-4">
+                <div 
+                  className="card shadow-lg h-100 cursor-pointer"
+                  style={{ 
+                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                    cursor: 'pointer',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-10px)';
+                    e.currentTarget.style.boxShadow = '0 15px 35px rgba(0,0,0,0.3)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 5px 15px rgba(0,0,0,0.1)';
+                  }}
+                  onClick={() => navigate('/locker-status')}
+                >
+                  <div className="card-body text-center p-5">
+                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔒</div>
+                    <h3 className="card-title mb-3">{t_landing('lockerStatus')}</h3>
+                    <p className="card-text text-muted">{t_landing('lockerStatusDesc')}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 

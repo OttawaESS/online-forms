@@ -1,6 +1,10 @@
 ﻿import { useState, useRef, useEffect } from 'react';
 import { useLanguage } from './LanguageContext';
 import '../styles/EquipmentForm.css';
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
 
 function EquipmentForm() {
   const { language, toggleLanguage, t } = useLanguage();
@@ -47,6 +51,14 @@ function EquipmentForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [equipmentAvailability, setEquipmentAvailability] = useState({});
+  const [bookings, setBookings] = useState([]);
+
+  useEffect(() => {
+    fetch('/api/bookings')
+      .then(res => res.json())
+      .then(data => setBookings(data))
+      .catch(err => console.error('Failed to load bookings:', err));
+  }, []);
 
   const checkEquipmentAvailability = async () => {
     try {
@@ -488,6 +500,25 @@ function EquipmentForm() {
 
                 {/* Form Body */}
                 <div className="card-body p-4">
+                  {/* Equipment Bookings Calendar */}
+                  <div className="mb-4">
+                    <h4 className="mb-3">{t('bookingsCalendar')}</h4>
+                    <div className="bg-light p-3 rounded">
+                      <FullCalendar
+                        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+                        initialView="timeGridWeek"
+                        events={bookings}
+                        timeZone="America/New_York"
+                        headerToolbar={{
+                          left: 'prev,next today',
+                          center: 'title',
+                          right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                        }}
+                        height="400px"
+                      />
+                    </div>
+                  </div>
+
                   <form onSubmit={handleSubmit}>
                     {step === 1 && (
                       <>
