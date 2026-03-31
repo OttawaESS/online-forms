@@ -515,6 +515,11 @@ function EquipmentForm() {
                           right: 'dayGridMonth,timeGridWeek,timeGridDay'
                         }}
                         height="600px"
+                        slotMinTime="00:00:00"
+                        slotMaxTime="24:00:00"
+                        scrollTime="09:00:00"
+                        slotDuration="00:30:00"
+                        allDaySlot={false}
                       />
                     </div>
                   </div>
