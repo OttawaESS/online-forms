@@ -78,7 +78,7 @@ export default async function handler(req, res) {
       </ul>
       <p><strong>Requested Equipment:</strong></p>
       <ul>${selectedItemsHtml}</ul>
-      <p><strong>Standard Operating Procedure for Equipment:</strong> <a href="https://docs.google.com/document/d/1DIWm48rJwUKE8kA478f9o84BgBrrskJF1u9XuFjAi8A/edit?tab=t.0">View the Standard Operating Procedure for Equipment here</a></p>
+      <p><strong>Standard Operating Procedure for Audio-Visual Equipment:</strong> <a href="https://docs.google.com/document/d/1DIWm48rJwUKE8kA478f9o84BgBrrskJF1u9XuFjAi8A/edit?tab=t.0">View the Standard Operating Procedure for Equipment here</a></p>
       <p>Our team will review your request and contact you if needed.</p>
       <p>If you have any questions, please contact merch@uottawaess.ca.</p>
     `;

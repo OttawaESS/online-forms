@@ -514,20 +514,8 @@ function EquipmentForm() {
                           center: 'title',
                           right: 'dayGridMonth,timeGridWeek,timeGridDay'
                         }}
-                        height="400px"
+                        height="600px"
                       />
-                    </div>
-                  </div>
-
-                  {/* Embedded Document */}
-                  <div className="mb-4">
-                    <div className="bg-light p-3 rounded">
-                      <iframe
-                        src="https://docs.google.com/document/d/1DIWm48rJwUKE8kA478f9o84BgBrrskJF1u9XuFjAi8A/preview"
-                        width="100%"
-                        height="600"
-                        title="Equipment Guidelines Document"
-                      ></iframe>
                     </div>
                   </div>
 
