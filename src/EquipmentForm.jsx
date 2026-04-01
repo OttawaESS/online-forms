@@ -37,6 +37,8 @@ function EquipmentForm() {
     bbqTerm3: false,
     bbqPropane: '',
     bbqTermsAccepted: false,
+    griddleBlackDecker: false,
+    griddleStarfrit: false,
     finalComments: '',
     // Step 3 - Contract
     contractAccepted: false,
@@ -151,7 +153,7 @@ function EquipmentForm() {
     const newErrors = {};
     const hasEquipment = formData.projector > 0 || formData.microphones > 0 ||
                         formData.microphoneStands === 'yes' || formData.speakers > 0 || formData.speakerStands === 'yes' ||
-                        formData.subwoofers > 0 || formData.mixer === 'yes' || formData.bbq;
+                        formData.subwoofers > 0 || formData.mixer === 'yes' || formData.bbq || formData.griddleBlackDecker || formData.griddleStarfrit;
     
     if (!hasEquipment) newErrors.equipment = true;
     if (formData.bbq && (!formData.bbqTerm1 || !formData.bbqTerm2 || !formData.bbqTerm3 || !formData.bbqTermsAccepted)) {
@@ -213,6 +215,8 @@ function EquipmentForm() {
     if (data.subwoofers > 0) items.push({ description: 'Subwoofers', quantity: data.subwoofers, amount: 0, receipts: [] });
     if (data.mixer === 'yes') items.push({ description: 'Audio Mixer', quantity: 1, amount: 0, receipts: [] });
     if (data.bbq) items.push({ description: 'Barbecue', quantity: 1, amount: 0, receipts: [] });
+    if (data.griddleBlackDecker) items.push({ description: 'BLACK + DECKER Family-Sized Electric Griddle (18" x 10")', quantity: 1, amount: 0, receipts: [] });
+    if (data.griddleStarfrit) items.push({ description: 'Starfrit The Rock Electric Griddle (19" x 13") - 1500W', quantity: 1, amount: 0, receipts: [] });
     return items;
   };
 
@@ -226,6 +230,8 @@ function EquipmentForm() {
     if (formData.subwoofers > 0) items.push({ name: t('subwoofers'), qty: formData.subwoofers });
     if (formData.mixer === 'yes') items.push({ name: t('audioMixer'), qty: 1 });
     if (formData.bbq) items.push({ name: t('bbq'), qty: 1 });
+    if (formData.griddleBlackDecker) items.push({ name: 'BLACK + DECKER Family-Sized Electric Griddle', qty: 1 });
+    if (formData.griddleStarfrit) items.push({ name: 'Starfrit The Rock Electric Griddle - Family Size (19" x 13") - Rock.Tec Non-Stick - Variable Temperature Control - 1500W', qty: 1 });
     return items;
   };
 
@@ -256,6 +262,8 @@ function EquipmentForm() {
       bbqTerm3: false,
       bbqPropane: '',
       bbqTermsAccepted: false,
+      griddleBlackDecker: false,
+      griddleStarfrit: false,
       finalComments: '',
       contractAccepted: false,
       signatureName: '',
@@ -789,7 +797,9 @@ function EquipmentForm() {
                                   speakerStands: t('speakerStands'),
                                   subwoofers: t('subwoofers'),
                                   mixer: t('audioMixer'),
-                                  bbq: t('bbq')
+                                  bbq: t('bbq'),
+                                  griddleBlackDecker: 'BLACK + DECKER Family-Sized Electric Griddle',
+                                  griddleStarfrit: 'Starfrit The Rock Electric Griddle'
                                 };
 
                                 return (
@@ -1182,6 +1192,55 @@ function EquipmentForm() {
                                 {errors.bbqTermsAccepted && <div className="text-danger small mt-2">{t('acceptBbqTerms')}</div>}
                               </div>
                             )}
+                          </div>
+                        </div>
+
+                        {/* Griddles */}
+                        <div className={`card mb-2 ${(equipmentAvailability.griddleBlackDecker?.available === 0 && equipmentAvailability.griddleStarfrit?.available === 0) ? 'border-danger' : ''}`}>
+                          <div className="card-body py-3">
+                            <label className="form-label fw-bold mb-2">{t('griddles')}</label>
+                            <small className="text-muted d-block mb-2">{t('selectGriddleTypes')}</small>
+                            {(equipmentAvailability.griddleBlackDecker?.available === 0 && equipmentAvailability.griddleStarfrit?.available === 0) && (
+                              <div className="alert alert-danger py-1 px-2 mb-2 small">
+                                {t('notAvailableForDates')}
+                              </div>
+                            )}
+                            <div className="mb-2">
+                              <div className="form-check">
+                                <input
+                                  className="form-check-input"
+                                  type="checkbox"
+                                  id="griddleBlackDecker"
+                                  name="griddleBlackDecker"
+                                  checked={formData.griddleBlackDecker}
+                                  onChange={handleChange}
+                                  disabled={equipmentAvailability.griddleBlackDecker?.available === 0}
+                                />
+                                <label className="form-check-label" htmlFor="griddleBlackDecker">
+                                  BLACK + DECKER Electric Griddle (18" x 10")
+                                  {equipmentAvailability.griddleBlackDecker?.available === 0 && (
+                                    <span className="text-danger small"> ({t('notAvailableForDates')})</span>
+                                  )}
+                                </label>
+                              </div>
+                              <div className="form-check">
+                                <input
+                                  className="form-check-input"
+                                  type="checkbox"
+                                  id="griddleStarfrit"
+                                  name="griddleStarfrit"
+                                  checked={formData.griddleStarfrit}
+                                  onChange={handleChange}
+                                  disabled={equipmentAvailability.griddleStarfrit?.available === 0}
+                                />
+                                <label className="form-check-label" htmlFor="griddleStarfrit">
+                                  Starfrit The Rock Electric Griddle (19" x 13") - 1500W
+                                  {equipmentAvailability.griddleStarfrit?.available === 0 && (
+                                    <span className="text-danger small"> ({t('notAvailableForDates')})</span>
+                                  )}
+                                </label>
+                              </div>
+                            </div>
                           </div>
                         </div>
 

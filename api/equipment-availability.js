@@ -9,7 +9,9 @@ const EQUIPMENT_AVAILABILITY = {
   speakerStands: 2,  // 2 speaker stands available
   subwoofers: 2,     // 2 subwoofers available
   mixer: 1,          // 1 audio mixer available
-  bbq: 1             // 1 BBQ available
+  bbq: 1,            // 1 BBQ available
+  griddleBlackDecker: 1, // 1 BLACK + DECKER griddle available
+  griddleStarfrit: 1     // 1 Starfrit griddle available
 };
 
 export default async function handler(req, res) {
@@ -74,6 +76,10 @@ export default async function handler(req, res) {
                 return desc.includes('audio mixer') || desc.includes('mixeur audio');
               case 'bbq':
                 return desc.includes('barbecue') || desc.includes('bbq');
+              case 'griddleBlackDecker':
+                return desc.includes('BLACK + DECKER Family-Sized Electric Griddle');
+              case 'griddleStarfrit':
+                return desc.includes('Starfrit The Rock Electric Griddle');
               default:
                 return false;
             }
