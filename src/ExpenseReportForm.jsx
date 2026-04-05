@@ -217,7 +217,7 @@ const officers = [
           <a href="/login" className="btn btn-outline-light">{t('adminLogin')}</a>
         </div>
         <div className="row justify-content-center">
-          <div className="col-lg-10 col-xl-9">
+          <div className="col-md">
             <div className="card shadow-lg px-3 pt-3">
               <div className="d-flex justify-content-between align-items-start mb-3 px-2 pt-3">
                 <div className="d-flex align-items-center gap-3">

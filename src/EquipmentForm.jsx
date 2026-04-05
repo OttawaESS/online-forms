@@ -441,7 +441,7 @@ function EquipmentForm() {
           <a href="/login" className="btn btn-outline-light">{t('adminLogin')}</a>
         </div>
           <div className="row justify-content-center">
-            <div className="col-lg-10 col-xl-9">
+            <div className="col-md">
               <div className="card shadow-lg">
                 {/* Header */}
                 <div className="card-header bg-white border-bottom">
@@ -622,7 +622,7 @@ function EquipmentForm() {
                         )}
 
                         <div className="row">
-                          <div className="col-md-6 mb-3">
+                          <div className="col-md mb-3">
                             <label htmlFor="startDate" className="form-label fw-bold">
                               {t('startDate')} <span className="text-danger">*</span>
                             </label>
@@ -637,7 +637,7 @@ function EquipmentForm() {
                             {errors.startDate && <div className="invalid-feedback">{t(errors.startDate === 'required' ? 'required' : errors.startDate)}</div>}
                           </div>
 
-                          <div className="col-md-6 mb-3">
+                          <div className="col-md mb-3">
                             <label htmlFor="endDate" className="form-label fw-bold">
                               {t('endDate')} <span className="text-danger">*</span>
                             </label>
@@ -654,7 +654,7 @@ function EquipmentForm() {
                         </div>
 
                         <div className="row">
-                          <div className="col-md-6 mb-3">
+                          <div className="col-md mb-3">
                             <label htmlFor="pickupTime" className="form-label fw-bold">
                               {t('pickupTime')} <span className="text-danger">*</span>
                             </label>
@@ -669,7 +669,7 @@ function EquipmentForm() {
                             {errors.pickupTime && <div className="invalid-feedback">{t('required')}</div>}
                           </div>
 
-                          <div className="col-md-6 mb-3">
+                          <div className="col-md mb-3">
                             <label htmlFor="dropoffTime" className="form-label fw-bold">
                               {t('dropoffTime')} <span className="text-danger">*</span>
                             </label>
@@ -803,7 +803,7 @@ function EquipmentForm() {
                                 };
 
                                 return (
-                                  <div key={equipmentType} className="col-md-6 mb-2">
+                                  <div key={equipmentType} className="col-md mb-2">
                                     <div className={available === 0 ? 'text-danger' : 'text-success'}>
                                       <strong>{equipmentNames[equipmentType] || equipmentType}:</strong> {available} {t('available')}
                                     </div>

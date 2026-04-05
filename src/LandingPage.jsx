@@ -20,6 +20,8 @@ export default function LandingPage() {
       bookingsCalendar: 'Equipment Bookings Calendar',
       lockerStatus: 'CBY Lockers',
       lockerStatusDesc: 'View the current status of lockers',
+      patchArchive: 'Patch Archive',
+      patchArchiveDesc: 'Manage and view patch archives',
     },
     fr: {
       welcome: 'Bienvenue',
@@ -34,6 +36,8 @@ export default function LandingPage() {
       bookingsCalendar: 'Calendrier des réservations d\'équipement',
       lockerStatus: 'Casiers CBY',
       lockerStatusDesc: 'Voir le statut actuel des casiers',
+      patchArchive: 'Archive de Patch',
+      patchArchiveDesc: 'Gérer et voir les archives de patch',
     },
   };
 
@@ -164,6 +168,32 @@ export default function LandingPage() {
                     <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔒</div>
                     <h3 className="card-title mb-3">{t_landing('lockerStatus')}</h3>
                     <p className="card-text text-muted">{t_landing('lockerStatusDesc')}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Patch Archive */}
+              <div className="col-md-3 mb-4">
+                <div 
+                  className="card shadow-lg h-100 cursor-pointer"
+                  style={{ 
+                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                    cursor: 'pointer',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-10px)';
+                    e.currentTarget.style.boxShadow = '0 15px 35px rgba(0,0,0,0.3)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 5px 15px rgba(0,0,0,0.1)';
+                  }}
+                  onClick={() => navigate('/patch-archive')}
+                >
+                  <div className="card-body text-center p-5">
+                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📦</div>
+                    <h3 className="card-title mb-3">{t_landing('patchArchive')}</h3>
+                    <p className="card-text text-muted">{t_landing('patchArchiveDesc')}</p>
                   </div>
                 </div>
               </div>

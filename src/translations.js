@@ -1,8 +1,9 @@
 export const translations = {
   en: {
-    // Common
-    adminLogin: "Admin Login",
-    backHome: "← Home",
+    // Patch Archive
+    patchArchive: "Patch Archive",
+    availablePatches: "Available Patches",
+    purchasePatches: "Purchase Patches",
     
     // Form Header
     reimbursementForm: "Reimbursement Form",
@@ -204,6 +205,11 @@ export const translations = {
     // Common
     adminLogin: "Connexion Admin",
     backHome: "← Accueil",
+    
+    // Patch Archive
+    patchArchive: "Archive d'Écussons",
+    availablePatches: "Écussons Disponibles",
+    purchasePatches: "Acheter des Écussons",
     
     // Form Header
     reimbursementForm: "Formulaire de Remboursement",

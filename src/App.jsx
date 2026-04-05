@@ -4,6 +4,7 @@ import ExpenseReportForm from "./ExpenseReportForm";
 import EquipmentForm from "./EquipmentForm";
 import LockerStatus from "./LockerStatus";
 import Login from "./Login";
+import PatchArchive from "./PatchArchive";
 import { LanguageProvider } from './LanguageContext';
 
 export default function App() {
@@ -17,6 +18,7 @@ export default function App() {
             <Route path="/equipment-loan" element={<EquipmentForm />} />
             <Route path="/locker-status" element={<LockerStatus />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/patch-archive" element={<PatchArchive />} />
           </Routes>
         </div>
       </Router>
