@@ -76,7 +76,7 @@ const PatchArchive = () => {
                                   />
                                 )}
                                 <h5 className="card-title h6">{patch.name[language] || patch.name.en}</h5>
-                                <p className="card-text text-muted small">Est. {patch.dateCreated}</p>
+                                <p className="card-text text-muted small">{t('estimated')} {patch.dateCreated}</p>
                               </div>
                             </div>
                           </div>

@@ -4,6 +4,7 @@ export const translations = {
     patchArchive: "Patch Archive",
     availablePatches: "Available Patches",
     purchasePatches: "Purchase Patches",
+    estimated: "Est.",
     
     // Form Header
     reimbursementForm: "Reimbursement Form",
@@ -210,6 +211,7 @@ export const translations = {
     patchArchive: "Archive d'Écussons",
     availablePatches: "Écussons Disponibles",
     purchasePatches: "Acheter des Écussons",
+    estimated: "Étab.",
     
     // Form Header
     reimbursementForm: "Formulaire de Remboursement",
