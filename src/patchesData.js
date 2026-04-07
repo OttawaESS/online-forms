@@ -54,6 +54,7 @@ export const patchCategories = {
       { name: { en: "Bugs Bunny DUSTED Patch (Summer 2024)", fr: "Écusson Bugs Bunny DUSTED (Été 2024)" }, dateCreated: "2024", image: "/patches/dusted-summer2024.JPG" },
       { name: { en: "Rubiks Cube DUSTED Patch (Winter 2024)", fr: "Écusson Rubiks Cube DUSTED (Hiver 2024)" }, dateCreated: "2024", image: "/patches/dusted-winter2024.jpg" },
       { name: { en: "Fireball DUSTED Patch (Fall 2023)", fr: "Écusson Fireball DUSTED (Automne 2023)" }, dateCreated: "2023", image: "/patches/fireball-dusted-patch-fall-2023.jpg" },
+      { name: { en: "Condom DUSTED Patch (Fall 2022)", fr: "Écusson Condom DUSTED (Automne 2022)" }, dateCreated: "2022", image: "/patches/dusted-fall2022.jpeg" },
       { name: { en: "Tequila DUSTED Patch (Fall 2021)", fr: "Écusson Tequila DUSTED (Automne 2021)" }, dateCreated: "2021", image: "/patches/dusted-fall2021.JPG" },
       { name: { en: "Tiktok DUSTED Patch (Winter 2020)", fr: "Écusson Tiktok DUSTED (Hiver 2020)" }, dateCreated: "2020", image: "/patches/dusted-winter2020.JPG" },      
     ]
