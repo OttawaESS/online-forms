@@ -10,6 +10,9 @@ export const patchCategories = {
       { name: { en: "Hack the Hill Patch", fr: "Écusson Hack the Hill" }, dateCreated: "2024", image: "/patches/hack-the-hill-patch.jpg" },
       { name: { en: "Concrete Toboggan Patch", fr: "Écusson de Toboggan en Béton" }, dateCreated: "----", image: "/patches/concrete-toboggan-patch.jpg" },
       { name: { en: "IEEE Patch", fr: "Écusson IEEE" }, dateCreated: "----", image: "/patches/ieee-patch.jpg" },
+      { name: { en: "ESS Logo 2021-2022", fr: "Logo AEG 2021-2022" }, dateCreated: "2021", image: "/patches/ess-logo2021.jpg" },
+      { name: { en: "WISE Logo", fr: "WISE Logo" }, dateCreated: "----", image: "/patches/WISE.jpg" },
+      { name: { en: "Engineering Logo", fr: "Logo Ingénierie" }, dateCreated: "----", image: "/patches/engineering-logo.jpg" },
     ]
   },
   programs: {
@@ -43,10 +46,16 @@ export const patchCategories = {
     title: { en: "DUSTED Patches", fr: "Écussons DUSTED" },
     patches: [
       { name: { en: "Pitbull DUSTED Patch (Winter 2026)", fr: "Écusson Pitbull DUSTED (Hiver 2026)" }, dateCreated: "2026", image: "/patches/pitbull-dusted-patch-winter-2026.jpg" },
-      { name: { en: "Labubu DUSTED Patch (Summer 2025)", fr: "Écusson Labubu DUSTED (Été 2025)" }, dateCreated: "2025", image: "/patches/labubu-dusted-patch-summer-2025.jpg" },
-      { name: { en: "Shrek DUSTED Patch (Fall 2025)", fr: "Écusson Shrek DUSTED (Automne 2025)" }, dateCreated: "2025", image: "/patches/shrek-dusted-patch-fall-2025.jpg" },
-      { name: { en: "Fireball DUSTED Patch (Fall 2023)", fr: "Écusson Fireball DUSTED (Automne 2023)" }, dateCreated: "2023", image: "/patches/fireball-dusted-patch-fall-2023.jpg" },
       { name: { en: "Pitbull DUSTED Patch (FR) (Winter 2026)", fr: "Écusson Pitbull DUSTED (FR) (Hiver 2026)" }, dateCreated: "2026", image: "/patches/pitbull-dusted-patch-fr-winter-2026.jpg" },
+      { name: { en: "Shrek DUSTED Patch (Fall 2025)", fr: "Écusson Shrek DUSTED (Automne 2025)" }, dateCreated: "2025", image: "/patches/shrek-dusted-patch-fall-2025.jpg" },
+      { name: { en: "Labubu DUSTED Patch (Summer 2025)", fr: "Écusson Labubu DUSTED (Été 2025)" }, dateCreated: "2025", image: "/patches/labubu-dusted-patch-summer-2025.jpg" },
+      { name: { en: "Dungeons and Dragons DUSTED Patch (Winter 2025)", fr: "Écusson Dungeons and Dragons DUSTED (Hiver 2025)" }, dateCreated: "2025", image: "/patches/dusted-winter2025.jpg" },
+      { name: { en: "Code Blue DUSTED Patch (Fall 2024)", fr: "Écusson Code Blue DUSTED (Automne 2024)" }, dateCreated: "2024", image: "/patches/dusted-fall2024.jpg" },
+      { name: { en: "Bugs Bunny DUSTED Patch (Summer 2024)", fr: "Écusson Bugs Bunny DUSTED (Été 2024)" }, dateCreated: "2024", image: "/patches/dusted-summer2024.JPG" },
+      { name: { en: "Rubiks Cube DUSTED Patch (Winter 2024)", fr: "Écusson Rubiks Cube DUSTED (Hiver 2024)" }, dateCreated: "2024", image: "/patches/dusted-winter2024.jpg" },
+      { name: { en: "Fireball DUSTED Patch (Fall 2023)", fr: "Écusson Fireball DUSTED (Automne 2023)" }, dateCreated: "2023", image: "/patches/fireball-dusted-patch-fall-2023.jpg" },
+      { name: { en: "Tequila DUSTED Patch (Fall 2021)", fr: "Écusson Tequila DUSTED (Automne 2021)" }, dateCreated: "2021", image: "/patches/dusted-fall2021.JPG" },
+      { name: { en: "Tiktok DUSTED Patch (Winter 2020)", fr: "Écusson Tiktok DUSTED (Hiver 2020)" }, dateCreated: "2020", image: "/patches/dusted-winter2020.JPG" },      
     ]
   },
 
@@ -86,7 +95,15 @@ export const patchCategories = {
       { name: { en: "on Wednesdays we wear covies", fr: "le mercredi nous portons des covies" }, dateCreated: "2024", image: "/patches/on-wednesdays-we-wear-covies.jpg" },
       { name: { en: "Paul the Pineapple", fr: "Paul l'ananas" }, dateCreated: "2025", image: "/patches/paul-the-pineapple.jpg" },
       { name: { en: "ESSCO ESSO", fr: "ESSCO ESSO" }, dateCreated: "2025", image: "/patches/essco-esso.jpg" },
+      { name: { en: "That's Cap", fr: "That's Cap" }, dateCreated: "2023", image: "/patches/thatscap.jpg" },
+      { name: { en: "Floppy Disk", fr: "Floppy Disk" }, dateCreated: "2023", image: "/patches/floppy.jpg" },
       { name: { en: "WIE Wine&Cheese", fr: "WIE Vin&Fromage" }, dateCreated: "----", image: "/patches/wie-wine-cheese.jpg" },
+      
+      
+      { name: { en: "Drunk Bunny 1", fr: "Lapin ivre 1" }, dateCreated: "----", image: "/patches/drunkbunny1.jpg" },
+      { name: { en: "Drunk Bunny 2", fr: "Lapin ivre 2" }, dateCreated: "----", image: "/patches/drunkbunny2.jpg" },
+      { name: { en: "PM 2021", fr: "PM 2021" }, dateCreated: "2021", image: "/patches/pm-2021.JPG" },
+      { name: { en: "101 Week 2022", fr: "Semaine 101 2022" }, dateCreated: "2022", image: "/patches/101week2022.jpg" },
 
     ]
   }
