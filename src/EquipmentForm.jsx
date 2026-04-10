@@ -1,4 +1,5 @@
 ﻿import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from './LanguageContext';
 import '../styles/EquipmentForm.css';
 import FullCalendar from '@fullcalendar/react';
@@ -8,6 +9,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 
 function EquipmentForm() {
   const { language, toggleLanguage, t } = useLanguage();
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     // Step 1 - Contact Info
@@ -1445,13 +1447,13 @@ function EquipmentForm() {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">{t('equipmentSubmissionSuccessTitle')}</h5>
-              <button type="button" className="btn-close" onClick={() => { setShowModal(false); resetForm(); }}></button>
+              <button type="button" className="btn-close" onClick={() => navigate('/')}></button>
             </div>
             <div className="modal-body">
               {t('equipmentSubmissionSuccessMessage')}
             </div>
             <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" onClick={() => { setShowModal(false); resetForm(); }}>{t('close')}</button>
+              <button type="button" className="btn btn-secondary" onClick={() => navigate('/')}>{t('close')}</button>
             </div>
           </div>
         </div>

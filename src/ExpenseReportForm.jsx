@@ -1,9 +1,11 @@
 import { useState, useRef } from "react";
+import { useNavigate } from 'react-router-dom';
 import SignatureCanvas from 'react-signature-canvas';
 import { useLanguage } from './LanguageContext';
 
 export default function ExpenseReportForm() {
   const { language, toggleLanguage, t } = useLanguage();
+  const navigate = useNavigate();
   const today = new Date().toLocaleDateString('en-CA');
   const sigCanvas = useRef(null);
   const [form, setForm] = useState({
@@ -504,13 +506,13 @@ const officers = [
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">Submission Successful</h5>
-              <button type="button" className="btn-close" onClick={() => setShowModal(false)}></button>
+              <button type="button" className="btn-close" onClick={() => navigate('/')}></button>
             </div>
             <div className="modal-body">
               Your expense report has been submitted successfully! ✅
             </div>
             <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Close</button>
+              <button type="button" className="btn btn-secondary" onClick={() => navigate('/')}>Close</button>
             </div>
           </div>
         </div>
