@@ -11,23 +11,42 @@ export default async function handler(req, res) {
   }
 
   try {
-    const response = await fetch('https://api.zeffy.com/api/v1/payments', {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      }
-    });
+    let allPayments = [];
+    let hasMore = true;
+    let startingAfter = null;
 
-    if (!response.ok) {
-      res.statusCode = response.status;
-      return res.end(`Error fetching payments: ${response.statusText}`);
+    while (hasMore) {
+      const url = startingAfter
+        ? `https://api.zeffy.com/api/v1/payments?starting_after=${startingAfter}&limit=100`
+        : 'https://api.zeffy.com/api/v1/payments?limit=100';
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        res.statusCode = response.status;
+        return res.end(`Error fetching payments: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      allPayments = allPayments.concat(data.data || []);
+      hasMore = data.has_more;
+      startingAfter = data.next_cursor;
     }
 
-    const data = await response.json();
+    // Filter for Locker Rental payments
+    const lockerPayments = allPayments.filter(payment =>
+      payment.description && payment.description.toLowerCase().includes('locker rental')
+    );
+
     res.setHeader('Content-Type', 'application/json');
     res.statusCode = 200;
-    res.end(JSON.stringify(data));
+    res.end(JSON.stringify({ data: lockerPayments, has_more: false }));
   } catch (error) {
     console.error('Error fetching from Zeffy API:', error);
     res.statusCode = 500;

@@ -61,25 +61,51 @@ export default function LockerStatus() {
 
         // Merge with Zeffy payments data
         payments.forEach(payment => {
-          const description = payment.description || '';
           const buyer = payment.buyer || {};
           const buyerName = `${buyer.first_name || ''} ${buyer.last_name || ''}`.trim();
           const buyerEmail = buyer.email || '';
 
-          // Extract locker number from description, e.g., "Locker 123" or "locker 123"
-          const lockerMatch = description.match(/locker\s+(\d+)/i);
-          if (lockerMatch) {
-            const lockerId = parseInt(lockerMatch[1]);
-            if (!isNaN(lockerId) && allIds.has(lockerId)) {
-              const locker = allLockers.find(l => l.id === lockerId);
-              if (locker) {
-                locker.status = payment.status === 'succeeded' ? 'occupied' : 'pending';
-                locker.buyerName = buyerName;
-                locker.buyerEmail = buyerEmail;
-                locker.notes = description;
-                locker.ticketNumber = payment.id;
-                locker.ticketType = payment.campaign_type || 'donation';
+          // Extract locker number from buyer_questions custom field
+          let lockerId = null;
+          if (payment.buyer_questions && Array.isArray(payment.buyer_questions)) {
+            const lockerQuestion = payment.buyer_questions.find(q =>
+              q.question && q.question.toLowerCase().includes('locker')
+            );
+            if (lockerQuestion && lockerQuestion.answer) {
+              const match = lockerQuestion.answer.match(/(\d+)/);
+              if (match) {
+                lockerId = parseInt(match[1]);
               }
+            }
+          }
+
+          // Fallback to items questions if not found
+          if (!lockerId && payment.items && Array.isArray(payment.items)) {
+            for (const item of payment.items) {
+              if (item.questions && Array.isArray(item.questions)) {
+                const lockerQuestion = item.questions.find(q =>
+                  q.question && q.question.toLowerCase().includes('locker')
+                );
+                if (lockerQuestion && lockerQuestion.answer) {
+                  const match = lockerQuestion.answer.match(/(\d+)/);
+                  if (match) {
+                    lockerId = parseInt(match[1]);
+                    break;
+                  }
+                }
+              }
+            }
+          }
+
+          if (lockerId && !isNaN(lockerId) && allIds.has(lockerId)) {
+            const locker = allLockers.find(l => l.id === lockerId);
+            if (locker) {
+              locker.status = payment.status === 'succeeded' ? 'occupied' : 'pending';
+              locker.buyerName = buyerName;
+              locker.buyerEmail = buyerEmail;
+              locker.notes = payment.description || '';
+              locker.ticketNumber = payment.id;
+              locker.ticketType = payment.campaign_type || 'donation';
             }
           }
         });
