@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from './LanguageContext';
-import * as XLSX from 'xlsx';
 
 const halls = [
   { key: 'redHallwayStemTunnels', min: 1073, max: 1121 },
@@ -28,21 +27,16 @@ export default function LockerStatus() {
   const [selectedLocker, setSelectedLocker] = useState(null);
 
   useEffect(() => {
-    // Fetch and parse the Google Sheet CSV
-    fetch('https://docs.google.com/spreadsheets/d/1rssIHYu4FBb6E54NA92eEB5nxSUALcHIKYAcwU28vn8/export?format=csv&gid=0')
+    // Fetch payments from Zeffy API
+    fetch('/api/payments')
       .then(res => {
-        if (!res.ok) throw new Error('Failed to fetch Google Sheet');
-        return res.text();
+        if (!res.ok) throw new Error('Failed to fetch payments');
+        return res.json();
       })
       .then(data => {
-        const workbook = XLSX.read(data, { type: 'string' });
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        const jsonData = XLSX.utils.sheet_to_json(worksheet);
-        console.log('Workbook sheets:', workbook.SheetNames);
-        console.log('Raw Excel data length:', jsonData.length);
-        console.log('First row keys:', jsonData.length > 0 ? Object.keys(jsonData[0]) : 'No data');
-        console.log('First row:', jsonData.length > 0 ? jsonData[0] : 'No data');
+        const payments = data.data || [];
+        console.log('Payments data length:', payments.length);
+        console.log('First payment:', payments.length > 0 ? payments[0] : 'No data');
 
         // Generate all unique lockers
         const allIds = new Set();
@@ -65,49 +59,28 @@ export default function LockerStatus() {
           hall: getHall(id)
         }));
 
-        // Merge with Google Sheet data
-        jsonData.forEach(row => {
-          console.log('Processing row:', row);
-          const answers = String(row['Attendees Ticket Answers Answer'] || '');
-          if (!answers) return;
-          const trimmed = answers.trim();
-          let lockerId, status, email, studentNumber, guestName, ticketType, notes;
+        // Merge with Zeffy payments data
+        payments.forEach(payment => {
+          const description = payment.description || '';
+          const buyer = payment.buyer || {};
+          const buyerName = `${buyer.first_name || ''} ${buyer.last_name || ''}`.trim();
+          const buyerEmail = buyer.email || '';
 
-          if (/^\d+$/.test(trimmed)) {
-            // Manual input: just locker number
-            lockerId = parseInt(trimmed);
-            status = 'occupied';
-            email = null;
-            studentNumber = null;
-            guestName = (row['Firstname'] || '') + ' ' + (row['Lastname'] || '').trim();
-            ticketType = row['Details: Ticket Title'] || '';
-            notes = row['Inline Summary of Transaction Content'] || '';
-          } else {
-            // Full format: email,studentNumber,lockerId,checkedIn
-            const parts = trimmed.split(',');
-            if (parts.length < 4) return;
-            email = parts[0].trim();
-            studentNumber = parts[1].trim();
-            lockerId = parseInt(parts[2].trim());
-            const checkedIn = parts[3].trim().toLowerCase() === 'true';
-            status = checkedIn ? 'occupied' : 'not checked in';
-            guestName = (row['Firstname'] || '') + ' ' + (row['Lastname'] || '').trim();
-            ticketType = row['Details: Ticket Title'] || '';
-            notes = row['Inline Summary of Transaction Content'] || '';
-          }
-
-          const locker = allLockers.find(l => l.id === lockerId);
-          if (locker) {
-            locker.status = status;
-            locker.guestName = guestName;
-            locker.buyerEmail = email;
-            locker.ticketType = ticketType;
-            locker.email = email;
-            locker.studentNumber = studentNumber;
-            locker.notes = notes;
-            console.log('Updated locker:', locker.id, locker.status);
-          } else {
-            console.log('Locker not found for ID:', lockerId);
+          // Extract locker number from description, e.g., "Locker 123" or "locker 123"
+          const lockerMatch = description.match(/locker\s+(\d+)/i);
+          if (lockerMatch) {
+            const lockerId = parseInt(lockerMatch[1]);
+            if (!isNaN(lockerId) && allIds.has(lockerId)) {
+              const locker = allLockers.find(l => l.id === lockerId);
+              if (locker) {
+                locker.status = payment.status === 'succeeded' ? 'occupied' : 'pending';
+                locker.buyerName = buyerName;
+                locker.buyerEmail = buyerEmail;
+                locker.notes = description;
+                locker.ticketNumber = payment.id;
+                locker.ticketType = payment.campaign_type || 'donation';
+              }
+            }
           }
         });
 

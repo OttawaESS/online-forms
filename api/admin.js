@@ -1,4 +1,4 @@
-import { loadSubmissions, requireAdmin, saveSubmissions } from './_utils.js';
+import { loadSubmissions, requireAdmin } from './_utils.js';
 
 export default async function handler(req, res) {
   if (!requireAdmin(req, res)) {
@@ -19,6 +19,31 @@ export default async function handler(req, res) {
   } catch (err) {
     console.error('Failed to load submissions:', err);
     // Continue with empty array
+  }
+
+  // Fetch payments from Zeffy
+  let payments = [];
+  try {
+    const apiKey = process.env.ZEFFY_APIKEY;
+    if (apiKey) {
+      const response = await fetch('https://api.zeffy.com/api/v1/payments', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        payments = data.data || [];
+      } else {
+        console.error('Failed to fetch payments:', response.statusText);
+      }
+    } else {
+      console.log('ZEFFY_APIKEY not set, skipping payments fetch');
+    }
+  } catch (err) {
+    console.error('Error fetching payments:', err);
   }
 
   submissions = submissions.sort((a, b) => {
@@ -47,6 +72,8 @@ export default async function handler(req, res) {
       : 0;
     return sum + sTotal;
   }, 0);
+
+  const totalPayments = payments.reduce((sum, p) => sum + (p.amount || 0), 0) / 100; // assuming amount in cents
 
   const formatPhone = (phone) => {
     if (!phone) return 'N/A';
@@ -177,6 +204,28 @@ export default async function handler(req, res) {
     })
     .join('');
 
+  const paymentsRowsHtml = payments
+    .map((p) => {
+      const amount = (p.amount || 0) / 100; // assuming cents
+      const currency = p.currency?.toUpperCase() || 'USD';
+      const date = p.created ? new Date(p.created * 1000).toLocaleDateString() : 'N/A';
+      const buyer = p.buyer ? `${p.buyer.first_name || ''} ${p.buyer.last_name || ''}`.trim() : 'N/A';
+      const email = p.buyer?.email || 'N/A';
+      const status = p.status || 'N/A';
+
+      return `
+        <tr>
+          <td>${date}</td>
+          <td>${buyer}</td>
+          <td>${email}</td>
+          <td>${p.description || 'N/A'}</td>
+          <td>$${amount.toFixed(2)} ${currency}</td>
+          <td>${status}</td>
+        </tr>
+      `;
+    })
+    .join('');
+
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.statusCode = 200;
   res.end(`
@@ -252,6 +301,31 @@ export default async function handler(req, res) {
             </div>
           </div>
         </div>
+        ${payments.length > 0 ? `
+        <div class="card shadow-sm mt-4">
+          <div class="card-body">
+            <h5 class="mb-3">Zeffy Payments</h5>
+            <small class="text-muted">Total: $${totalPayments.toFixed(2)}</small>
+            <div class="table-responsive mt-3">
+              <table class="table table-striped align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th>Date</th>
+                    <th>Buyer</th>
+                    <th>Email</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${paymentsRowsHtml}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        ` : ''}
       </main>
 
       <script>
