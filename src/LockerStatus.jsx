@@ -47,8 +47,6 @@ export default function LockerStatus() {
       })
       .then(data => {
         const payments = data.data || [];
-        console.log('Payments data length:', payments.length);
-        console.log('First payment:', payments.length > 0 ? payments[0] : 'No data');
 
         // Generate all unique lockers
         const allIds = new Set();
@@ -155,7 +153,6 @@ export default function LockerStatus() {
           }
         });
 
-        console.log('Final lockers:', allLockers); // Debug log
         setLockers(allLockers);
         setLoading(false);
       })
