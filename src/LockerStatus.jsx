@@ -39,7 +39,7 @@ const extractTerm = (payment) => {
   // Check buyer_questions
   if (payment.buyer_questions && Array.isArray(payment.buyer_questions)) {
     for (const question of payment.buyer_questions) {
-      if (question.answer) {
+      if (question.answer && typeof question.answer === 'string') {
         const answer = question.answer.toLowerCase();
         if (answer.includes('fall 2025') && answer.includes('winter 2026')) {
           return 'Fall 2025 & Winter 2026';
@@ -57,7 +57,7 @@ const extractTerm = (payment) => {
     for (const item of payment.items) {
       if (item.questions && Array.isArray(item.questions)) {
         for (const question of item.questions) {
-          if (question.answer) {
+          if (question.answer && typeof question.answer === 'string') {
             const answer = question.answer.toLowerCase();
             if (answer.includes('fall 2025') && answer.includes('winter 2026')) {
               return 'Fall 2025 & Winter 2026';
@@ -117,7 +117,7 @@ export default function LockerStatus() {
             const lockerQuestion = payment.buyer_questions.find(q =>
               q.question && q.question.toLowerCase().includes('locker')
             );
-            if (lockerQuestion && lockerQuestion.answer) {
+            if (lockerQuestion && lockerQuestion.answer && typeof lockerQuestion.answer === 'string') {
               const match = lockerQuestion.answer.match(/(\d+)/);
               if (match) {
                 lockerId = parseInt(match[1]);
