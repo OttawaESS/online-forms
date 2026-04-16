@@ -18,8 +18,11 @@ const getHall = (lockerNumber) => {
 };
 
 const extractTerm = (payment) => {
+  console.log('Extracting term from payment:', payment);
+  
   // Check description first
   if (payment.description) {
+    console.log('Payment description:', payment.description);
     // Handle combined terms like "Fall 2025 & Winter 2026"
     const combinedMatch = payment.description.match(/Fall\s+(\d{4})\s*&\s*Winter\s+(\d{4})/i);
     if (combinedMatch) {
@@ -38,15 +41,40 @@ const extractTerm = (payment) => {
   
   // Check buyer_questions
   if (payment.buyer_questions && Array.isArray(payment.buyer_questions)) {
+    console.log('Payment buyer_questions:', payment.buyer_questions);
     for (const question of payment.buyer_questions) {
+      console.log('Question:', question);
+      // Check question text for term info
+      if (question.question && typeof question.question === 'string') {
+        const qText = question.question.toLowerCase();
+        console.log('Question text (lowercase):', qText);
+        if (qText.includes('term') || qText.includes('semester') || qText.includes('session')) {
+          console.log('Found term-related question');
+        }
+      }
       if (question.answer && typeof question.answer === 'string') {
         const answer = question.answer.toLowerCase();
+        console.log('Answer (lowercase):', answer);
         if (answer.includes('fall 2025') && answer.includes('winter 2026')) {
           return 'Fall 2025 & Winter 2026';
         } else if (answer.includes('fall 2025')) {
           return 'Fall 2025';
         } else if (answer.includes('winter 2026')) {
           return 'Winter 2026';
+        } else if (answer.includes('fall') && answer.includes('2025')) {
+          return 'Fall 2025';
+        } else if (answer.includes('winter') && answer.includes('2026')) {
+          return 'Winter 2026';
+        } else if (answer.includes('fall')) {
+          return 'Fall 2025'; // Assume current year
+        } else if (answer.includes('winter')) {
+          return 'Winter 2026'; // Assume current year
+        } else if (answer.includes('f25') || answer.includes('fall25')) {
+          return 'Fall 2025';
+        } else if (answer.includes('w26') || answer.includes('winter26')) {
+          return 'Winter 2026';
+        } else if (answer.includes('2025') && answer.includes('2026')) {
+          return 'Fall 2025 & Winter 2026'; // Assume combined if both years present
         }
       }
     }
@@ -54,20 +82,71 @@ const extractTerm = (payment) => {
   
   // Check items
   if (payment.items && Array.isArray(payment.items)) {
+    console.log('Payment items:', payment.items);
     for (const item of payment.items) {
       if (item.questions && Array.isArray(item.questions)) {
+        console.log('Item questions:', item.questions);
         for (const question of item.questions) {
+          console.log('Item question:', question);
+          // Check question text for term info
+          if (question.question && typeof question.question === 'string') {
+            const qText = question.question.toLowerCase();
+            console.log('Item question text (lowercase):', qText);
+            if (qText.includes('term') || qText.includes('semester') || qText.includes('session')) {
+              console.log('Found term-related item question');
+            }
+          }
           if (question.answer && typeof question.answer === 'string') {
             const answer = question.answer.toLowerCase();
+            console.log('Item answer (lowercase):', answer);
             if (answer.includes('fall 2025') && answer.includes('winter 2026')) {
               return 'Fall 2025 & Winter 2026';
             } else if (answer.includes('fall 2025')) {
               return 'Fall 2025';
             } else if (answer.includes('winter 2026')) {
               return 'Winter 2026';
+            } else if (answer.includes('fall') && answer.includes('2025')) {
+              return 'Fall 2025';
+            } else if (answer.includes('winter') && answer.includes('2026')) {
+              return 'Winter 2026';
+            } else if (answer.includes('fall')) {
+              return 'Fall 2025'; // Assume current year
+            } else if (answer.includes('winter')) {
+              return 'Winter 2026'; // Assume current year
+            } else if (answer.includes('f25') || answer.includes('fall25')) {
+              return 'Fall 2025';
+            } else if (answer.includes('w26') || answer.includes('winter26')) {
+              return 'Winter 2026';
+            } else if (answer.includes('2025') && answer.includes('2026')) {
+              return 'Fall 2025 & Winter 2026'; // Assume combined if both years present
             }
           }
         }
+      }
+    }
+  console.log('Full payment object keys:', Object.keys(payment));
+  
+  // Check for other potential fields that might contain term info
+  const potentialFields = ['metadata', 'custom_fields', 'attributes', 'tags'];
+  for (const field of potentialFields) {
+    if (payment[field]) {
+      console.log(`Payment ${field}:`, payment[field]);
+      // Try to extract term from these fields too
+      const fieldStr = JSON.stringify(payment[field]).toLowerCase();
+      if (fieldStr.includes('fall 2025') && fieldStr.includes('winter 2026')) {
+        return 'Fall 2025 & Winter 2026';
+      } else if (fieldStr.includes('fall 2025')) {
+        return 'Fall 2025';
+      } else if (fieldStr.includes('winter 2026')) {
+        return 'Winter 2026';
+      } else if (fieldStr.includes('fall') && fieldStr.includes('2025')) {
+        return 'Fall 2025';
+      } else if (fieldStr.includes('winter') && fieldStr.includes('2026')) {
+        return 'Winter 2026';
+      } else if (fieldStr.includes('f25') || fieldStr.includes('fall25')) {
+        return 'Fall 2025';
+      } else if (fieldStr.includes('w26') || fieldStr.includes('winter26')) {
+        return 'Winter 2026';
       }
     }
   }
