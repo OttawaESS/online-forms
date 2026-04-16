@@ -17,6 +17,18 @@ const getHall = (lockerNumber) => {
   return hall ? hall.key : 'other';
 };
 
+const extractTerm = (description) => {
+  if (!description) return 'Unknown';
+  const terms = ['Fall', 'Winter', 'Spring', 'Summer'];
+  for (const term of terms) {
+    const match = description.match(new RegExp(`${term}\\s+(\\d{4})`, 'i'));
+    if (match) {
+      return `${term} ${match[1]}`;
+    }
+  }
+  return 'Unknown';
+};
+
 export default function LockerStatus() {
   const navigate = useNavigate();
   const { language, toggleLanguage, t } = useLanguage();
@@ -53,6 +65,7 @@ export default function LockerStatus() {
           buyerEmail: null,
           ticketNumber: null,
           ticketType: null,
+          term: null,
           email: null,
           studentNumber: null,
           notes: null,
@@ -106,6 +119,7 @@ export default function LockerStatus() {
               locker.notes = payment.description || '';
               locker.ticketNumber = payment.id;
               locker.ticketType = payment.campaign_type || 'donation';
+              locker.term = extractTerm(payment.description);
             }
           }
         });
@@ -116,9 +130,9 @@ export default function LockerStatus() {
         const currentMonth = estDate.getMonth(); // 0-11
 
         allLockers.forEach(locker => {
-          if (locker.ticketType && locker.status !== 'available') {
-            const hasFall = locker.ticketType.includes('Fall');
-            const hasWinter = locker.ticketType.includes('Winter');
+          if (locker.term && locker.status !== 'available') {
+            const hasFall = locker.term.includes('Fall');
+            const hasWinter = locker.term.includes('Winter');
             let expired = false;
 
             if (hasFall && !hasWinter) {
@@ -332,7 +346,7 @@ export default function LockerStatus() {
                           </td>
                           {/* <td>{locker.guestName || '-'}</td>
                           <td>{locker.buyerName || '-'}</td> */}
-                          <td>{locker.ticketType || '-'}</td>
+                          <td>{locker.term || '-'}</td>
                           {/* <td>{locker.notes || '-'}</td> */}
                         </tr>
                       ))}
@@ -357,7 +371,7 @@ export default function LockerStatus() {
                 <button type="button" className="btn-close btn-close-white" onClick={() => setShowModal(false)}></button>
               </div>
               <div className="modal-body">
-                <p>{t('locker')} {selectedLocker.id} - {t('previouslyBookedFor')} {selectedLocker.ticketType || 'Unknown'}</p>
+                <p>{t('locker')} {selectedLocker.id} - {t('previouslyBookedFor')} {selectedLocker.term || 'Unknown'}</p>
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-light" onClick={() => setShowModal(false)}>{t('close')}</button>
