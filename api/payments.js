@@ -44,6 +44,7 @@ export default async function handler(req, res) {
       payment.description && payment.description.toLowerCase().includes('locker rental')
     );
 
+    res.setHeader('Cache-Control', 'public, max-age=300'); // Cache for 5 minutes
     res.setHeader('Content-Type', 'application/json');
     res.statusCode = 200;
     res.end(JSON.stringify({ data: lockerPayments, has_more: false }));
