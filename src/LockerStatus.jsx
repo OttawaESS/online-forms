@@ -33,7 +33,6 @@ export default function LockerStatus() {
   const navigate = useNavigate();
   const { language, toggleLanguage, t } = useLanguage();
   const [lockers, setLockers] = useState([]);
-  const [campaignId, setCampaignId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -74,9 +73,6 @@ export default function LockerStatus() {
         }));
 
         // Merge with Zeffy payments data
-        if (payments.length > 0) {
-          setCampaignId(payments[0].campaign_id);
-        }
         payments.forEach(payment => {
           const buyer = payment.buyer || {};
           const buyerName = `${buyer.first_name || ''} ${buyer.last_name || ''}`.trim();
@@ -361,7 +357,7 @@ export default function LockerStatus() {
                             {locker.status === 'available' ? (
                               <button 
                                 className="btn btn-primary btn-sm"
-                                onClick={() => window.open(`https://zeffy.com/campaign/${campaignId}?locker=${locker.id}`, '_blank')}
+                                onClick={() => window.open('https://www.zeffy.com/en-CA/ticketing/locker-rental-2025--2026-2', '_blank')}
                               >
                                 {t('purchase')}
                               </button>
