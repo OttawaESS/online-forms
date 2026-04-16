@@ -18,11 +18,8 @@ const getHall = (lockerNumber) => {
 };
 
 const extractTerm = (payment) => {
-  console.log('Extracting term from payment:', payment);
-  
   // Check description first
   if (payment.description) {
-    console.log('Payment description:', payment.description);
     // Handle combined terms like "Fall 2025 & Winter 2026"
     const combinedMatch = payment.description.match(/Fall\s+(\d{4})\s*&\s*Winter\s+(\d{4})/i);
     if (combinedMatch) {
@@ -41,7 +38,6 @@ const extractTerm = (payment) => {
   
   // Check buyer_questions
   if (payment.buyer_questions && Array.isArray(payment.buyer_questions)) {
-    console.log('Payment buyer_questions:', payment.buyer_questions);
     for (const question of payment.buyer_questions) {
       console.log('Question:', question);
       // Check question text for term info
@@ -124,6 +120,8 @@ const extractTerm = (payment) => {
         }
       }
     }
+  }
+  
   console.log('Full payment object keys:', Object.keys(payment));
   
   // Check for other potential fields that might contain term info
