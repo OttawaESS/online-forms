@@ -114,11 +114,7 @@ export default function LockerStatus() {
             const locker = allLockers.find(l => l.id === lockerId);
             if (locker) {
               locker.status = payment.status === 'succeeded' ? 'occupied' : 'pending';
-              locker.buyerName = buyerName;
-              locker.buyerEmail = buyerEmail;
-              locker.notes = payment.description || '';
-              locker.ticketNumber = payment.id;
-              locker.ticketType = payment.campaign_type || 'donation';
+              
               locker.term = extractTerm(payment.description);
             }
           }
