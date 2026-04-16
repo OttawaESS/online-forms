@@ -19,6 +19,14 @@ const getHall = (lockerNumber) => {
 
 const extractTerm = (description) => {
   if (!description) return 'Unknown';
+  
+  // Handle combined terms like "Fall 2025 & Winter 2026"
+  const combinedMatch = description.match(/Fall\s+(\d{4})\s*&\s*Winter\s+(\d{4})/i);
+  if (combinedMatch) {
+    return `Fall ${combinedMatch[1]} & Winter ${combinedMatch[2]}`;
+  }
+  
+  // Handle single terms
   const terms = ['Fall', 'Winter', 'Spring', 'Summer'];
   for (const term of terms) {
     const match = description.match(new RegExp(`${term}\\s+(\\d{4})`, 'i'));
@@ -26,6 +34,7 @@ const extractTerm = (description) => {
       return `${term} ${match[1]}`;
     }
   }
+  
   return 'Unknown';
 };
 
@@ -58,24 +67,15 @@ export default function LockerStatus() {
         const allLockers = Array.from(allIds).map(id => ({
           id: id,
           status: 'available',
-          guestName: null,
-          buyerName: null,
-          buyerEmail: null,
           ticketNumber: null,
           ticketType: null,
           term: null,
-          email: null,
-          studentNumber: null,
           notes: null,
           hall: getHall(id)
         }));
 
         // Merge with Zeffy payments data
         payments.forEach(payment => {
-          const buyer = payment.buyer || {};
-          const buyerName = `${buyer.first_name || ''} ${buyer.last_name || ''}`.trim();
-          const buyerEmail = buyer.email || '';
-
           // Extract locker number from buyer_questions custom field
           let lockerId = null;
           if (payment.buyer_questions && Array.isArray(payment.buyer_questions)) {
@@ -125,23 +125,24 @@ export default function LockerStatus() {
 
         allLockers.forEach(locker => {
           if (locker.term && locker.status !== 'available') {
-            const hasFall = locker.term.includes('Fall');
-            const hasWinter = locker.term.includes('Winter');
+            const currentYear = estDate.getFullYear();
+            const currentMonth = estDate.getMonth(); // 0-11
+            
             let expired = false;
-
-            if (hasFall && !hasWinter) {
-              // Fall only: remove if after Fall (Jan-Apr, months 0-3)
-              if (currentMonth >= 0 && currentMonth <= 3) {
+            
+            if (locker.term.includes('Fall 2025') && locker.term.includes('Winter 2026')) {
+              // Combined term: expires after Winter 2026 (assume May 2026)
+              if (currentYear > 2026 || (currentYear === 2026 && currentMonth >= 4)) {
                 expired = true;
               }
-            } else if (hasWinter && !hasFall) {
-              // Winter only: remove if after Winter (May-Dec, months 4-11)
-              if (currentMonth >= 4) {
+            } else if (locker.term.includes('Winter 2026')) {
+              // Winter 2026 only: expires after Winter 2026
+              if (currentYear > 2026 || (currentYear === 2026 && currentMonth >= 4)) {
                 expired = true;
               }
-            } else if (hasFall && hasWinter) {
-              // Both terms: remove if after Winter (May-Dec, months 4-11)
-              if (currentMonth >= 4) {
+            } else if (locker.term.includes('Fall 2025')) {
+              // Fall 2025 only: expires after Fall 2025 (assume Jan 2026)
+              if (currentYear > 2025 || (currentYear === 2025 && currentMonth >= 0)) {
                 expired = true;
               }
             }
