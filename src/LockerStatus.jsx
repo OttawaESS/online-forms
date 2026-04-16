@@ -17,21 +17,58 @@ const getHall = (lockerNumber) => {
   return hall ? hall.key : 'other';
 };
 
-const extractTerm = (description) => {
-  if (!description) return 'Unknown';
-  
-  // Handle combined terms like "Fall 2025 & Winter 2026"
-  const combinedMatch = description.match(/Fall\s+(\d{4})\s*&\s*Winter\s+(\d{4})/i);
-  if (combinedMatch) {
-    return `Fall ${combinedMatch[1]} & Winter ${combinedMatch[2]}`;
+const extractTerm = (payment) => {
+  // Check description first
+  if (payment.description) {
+    // Handle combined terms like "Fall 2025 & Winter 2026"
+    const combinedMatch = payment.description.match(/Fall\s+(\d{4})\s*&\s*Winter\s+(\d{4})/i);
+    if (combinedMatch) {
+      return `Fall ${combinedMatch[1]} & Winter ${combinedMatch[2]}`;
+    }
+    
+    // Handle single terms
+    const terms = ['Fall', 'Winter', 'Spring', 'Summer'];
+    for (const term of terms) {
+      const match = payment.description.match(new RegExp(`${term}\\s+(\\d{4})`, 'i'));
+      if (match) {
+        return `${term} ${match[1]}`;
+      }
+    }
   }
   
-  // Handle single terms
-  const terms = ['Fall', 'Winter', 'Spring', 'Summer'];
-  for (const term of terms) {
-    const match = description.match(new RegExp(`${term}\\s+(\\d{4})`, 'i'));
-    if (match) {
-      return `${term} ${match[1]}`;
+  // Check buyer_questions
+  if (payment.buyer_questions && Array.isArray(payment.buyer_questions)) {
+    for (const question of payment.buyer_questions) {
+      if (question.answer) {
+        const answer = question.answer.toLowerCase();
+        if (answer.includes('fall 2025') && answer.includes('winter 2026')) {
+          return 'Fall 2025 & Winter 2026';
+        } else if (answer.includes('fall 2025')) {
+          return 'Fall 2025';
+        } else if (answer.includes('winter 2026')) {
+          return 'Winter 2026';
+        }
+      }
+    }
+  }
+  
+  // Check items
+  if (payment.items && Array.isArray(payment.items)) {
+    for (const item of payment.items) {
+      if (item.questions && Array.isArray(item.questions)) {
+        for (const question of item.questions) {
+          if (question.answer) {
+            const answer = question.answer.toLowerCase();
+            if (answer.includes('fall 2025') && answer.includes('winter 2026')) {
+              return 'Fall 2025 & Winter 2026';
+            } else if (answer.includes('fall 2025')) {
+              return 'Fall 2025';
+            } else if (answer.includes('winter 2026')) {
+              return 'Winter 2026';
+            }
+          }
+        }
+      }
     }
   }
   
@@ -67,8 +104,6 @@ export default function LockerStatus() {
         const allLockers = Array.from(allIds).map(id => ({
           id: id,
           status: 'available',
-          ticketNumber: null,
-          ticketType: null,
           term: null,
           notes: null,
           hall: getHall(id)
@@ -113,7 +148,7 @@ export default function LockerStatus() {
             if (locker) {
               locker.status = payment.status === 'succeeded' ? 'occupied' : 'pending';
               
-              locker.term = extractTerm(payment.description);
+              locker.term = extractTerm(payment);
             }
           }
         });
@@ -326,7 +361,7 @@ export default function LockerStatus() {
                         <th>{t('status')}</th>
                         {/* <th>{t('guestName')}</th>
                         <th>{t('buyerName')}</th> */}
-                        <th>{t('ticketType')}</th>
+                        <th>{t('term')}</th>
                         <th>{t('action')}</th>
                         {/* <th>{t('notes')}</th> */}
                       </tr>
