@@ -3,10 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from './LanguageContext';
 
 const halls = [
-  { key: 'redHallwayStemTunnels', min: 1073, max: 1121 },
-  { key: 'yellowBBlockHallway', min: 1001, max: 1076 },
+  { key: 'redHallwayStemTunnels', min: 1073, max: 1090 },
+  { key: 'yellowBBlockHallway', min: 1001, max: 1072 },
   { key: 'purpleCBlockHallway', min: 1200, max: 1284 },
-  { key: 'greenHallwayBehindC03', min: 1091, max: 1295 },
+  { key: 'greenHallwayBehindC03', min: 1091, max: 1199 },
   { key: 'orangeHallwayKingEdward', min: 1, max: 371 },
   { key: 'pinkEBlockHallway', min: 540, max: 591 },
 ];
@@ -194,8 +194,9 @@ export default function LockerStatus() {
             const lockerQuestion = payment.buyer_questions.find(q =>
               q.question && q.question.toLowerCase().includes('locker')
             );
-            if (lockerQuestion && lockerQuestion.answer && typeof lockerQuestion.answer === 'string') {
-              const match = lockerQuestion.answer.match(/(\d+)/);
+            if (lockerQuestion && lockerQuestion.answer) {
+              const answerStr = typeof lockerQuestion.answer === 'string' ? lockerQuestion.answer : JSON.stringify(lockerQuestion.answer);
+              const match = answerStr.match(/(\d+)/);
               if (match) {
                 lockerId = parseInt(match[1]);
               }
@@ -210,11 +211,27 @@ export default function LockerStatus() {
                   q.question && q.question.toLowerCase().includes('locker')
                 );
                 if (lockerQuestion && lockerQuestion.answer) {
-                  const match = lockerQuestion.answer.match(/(\d+)/);
+                  const answerStr = typeof lockerQuestion.answer === 'string' ? lockerQuestion.answer : JSON.stringify(lockerQuestion.answer);
+                  const match = answerStr.match(/(\d+)/);
                   if (match) {
                     lockerId = parseInt(match[1]);
                     break;
                   }
+                }
+              }
+            }
+          }
+
+          // Check other potential nested fields for locker number
+          if (!lockerId) {
+            const potentialFields = ['custom_fields', 'metadata', 'attributes'];
+            for (const field of potentialFields) {
+              if (payment[field]) {
+                const str = JSON.stringify(payment[field]).toLowerCase();
+                const match = str.match(/locker.*?(\d+)/);
+                if (match) {
+                  lockerId = parseInt(match[1]);
+                  break;
                 }
               }
             }
