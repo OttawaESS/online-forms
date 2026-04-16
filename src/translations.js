@@ -198,6 +198,8 @@ export const translations = {
     locker: "Locker",
     lockers: "lockers",
     expiredLockerDetails: "Expired Locker Details",
+    action: "Action",
+    purchase: "Purchase",
     previouslyBookedFor: "Previously booked for",
     close: "Close",
   },
@@ -406,6 +408,8 @@ export const translations = {
     lockers: "casiers",
     expiredLockerDetails: "Détails du casier expiré",
     previouslyBookedFor: "Précédemment réservé pour",
+    action: "Action",
+    purchase: "Acheter",
     close: "Fermer",
   }
 };

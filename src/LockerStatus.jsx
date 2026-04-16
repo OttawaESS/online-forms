@@ -33,6 +33,7 @@ export default function LockerStatus() {
   const navigate = useNavigate();
   const { language, toggleLanguage, t } = useLanguage();
   const [lockers, setLockers] = useState([]);
+  const [campaignId, setCampaignId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -73,6 +74,9 @@ export default function LockerStatus() {
         }));
 
         // Merge with Zeffy payments data
+        if (payments.length > 0) {
+          setCampaignId(payments[0].campaign_id);
+        }
         payments.forEach(payment => {
           const buyer = payment.buyer || {};
           const buyerName = `${buyer.first_name || ''} ${buyer.last_name || ''}`.trim();
@@ -218,7 +222,12 @@ export default function LockerStatus() {
             <a href="/login" className="btn btn-outline-light">{t('adminLogin')}</a>
           </div>
           <h1 className="text-white">{t('lockerStatus')}</h1>
-          <p className="text-white">{t('loading')}</p>
+          <div className="d-flex justify-content-center align-items-center">
+            <div className="spinner-border text-light me-3" role="status">
+              <span className="visually-hidden">{t('loading')}</span>
+            </div>
+            <p className="text-white mb-0">{t('loading')}</p>
+          </div>
         </div>
       </div>
     );
@@ -328,6 +337,7 @@ export default function LockerStatus() {
                         {/* <th>{t('guestName')}</th>
                         <th>{t('buyerName')}</th> */}
                         <th>{t('ticketType')}</th>
+                        <th>{t('action')}</th>
                         {/* <th>{t('notes')}</th> */}
                       </tr>
                     </thead>
@@ -347,6 +357,18 @@ export default function LockerStatus() {
                           {/* <td>{locker.guestName || '-'}</td>
                           <td>{locker.buyerName || '-'}</td> */}
                           <td>{locker.term || '-'}</td>
+                          <td>
+                            {locker.status === 'available' ? (
+                              <button 
+                                className="btn btn-primary btn-sm"
+                                onClick={() => window.open(`https://zeffy.com/campaign/${campaignId}?locker=${locker.id}`, '_blank')}
+                              >
+                                {t('purchase')}
+                              </button>
+                            ) : (
+                              '-'
+                            )}
+                          </td>
                           {/* <td>{locker.notes || '-'}</td> */}
                         </tr>
                       ))}
