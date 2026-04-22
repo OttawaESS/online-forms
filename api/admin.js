@@ -258,30 +258,19 @@ export default async function handler(req, res) {
         const search = document.getElementById('search');
         const table = document.getElementById('submissionsTable');
         if (search && table) {
-          console.log('Search and table found');
           search.addEventListener('input', () => {
             const q = search.value.toLowerCase();
-            console.log('Search query:', q);
             const tbody = table.tBodies[0];
-            console.log('tbody:', tbody);
             if (!tbody) return;
             const rows = tbody.rows;
-            console.log('Rows count:', rows.length);
             for (let i = 0; i < rows.length; i++) {
               const row = rows[i];
-              console.log('Checking row', i, row.tagName, row.className, row.hasAttribute('data-bs-toggle'));
-              if (row.classList.contains('collapse')) {
-                console.log('Skipping row', i);
-                continue;
-              }
+              if (row.classList.contains('collapse')) continue;
               const detailRow = rows[i + 1];
               const match = row.textContent.toLowerCase().includes(q) || (detailRow && detailRow.textContent.toLowerCase().includes(q));
-              console.log('Row', i, 'match:', match, 'text:', row.textContent.slice(0, 50));
               row.classList.toggle('d-none', !match);
             }
           });
-        } else {
-          console.log('Search or table not found', search, table);
         }
       </script>
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
