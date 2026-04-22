@@ -204,28 +204,6 @@ export default async function handler(req, res) {
     })
     .join('');
 
-  const paymentsRowsHtml = payments
-    .map((p) => {
-      const amount = (p.amount || 0) / 100; // assuming cents
-      const currency = p.currency?.toUpperCase() || 'USD';
-      const date = p.created ? new Date(p.created * 1000).toLocaleDateString() : 'N/A';
-      const buyer = p.buyer ? `${p.buyer.first_name || ''} ${p.buyer.last_name || ''}`.trim() : 'N/A';
-      const email = p.buyer?.email || 'N/A';
-      const status = p.status || 'N/A';
-
-      return `
-        <tr>
-          <td>${date}</td>
-          <td>${buyer}</td>
-          <td>${email}</td>
-          <td>${p.description || 'N/A'}</td>
-          <td>$${amount.toFixed(2)} ${currency}</td>
-          <td>${status}</td>
-        </tr>
-      `;
-    })
-    .join('');
-
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.statusCode = 200;
   res.end(`
