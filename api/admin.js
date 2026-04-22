@@ -21,31 +21,6 @@ export default async function handler(req, res) {
     // Continue with empty array
   }
 
-  // Fetch payments from Zeffy
-  let payments = [];
-  try {
-    const apiKey = process.env.ZEFFY_APIKEY;
-    if (apiKey) {
-      const response = await fetch('https://api.zeffy.com/api/v1/payments', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        payments = data.data || [];
-      } else {
-        console.error('Failed to fetch payments:', response.statusText);
-      }
-    } else {
-      console.log('ZEFFY_APIKEY not set, skipping payments fetch');
-    }
-  } catch (err) {
-    console.error('Error fetching payments:', err);
-  }
-
   submissions = submissions.sort((a, b) => {
     switch (sortBy) {
       case 'name':
@@ -72,8 +47,6 @@ export default async function handler(req, res) {
       : 0;
     return sum + sTotal;
   }, 0);
-
-  const totalPayments = payments.reduce((sum, p) => sum + (p.amount || 0), 0) / 100; // assuming amount in cents
 
   const formatPhone = (phone) => {
     if (!phone) return 'N/A';
@@ -279,31 +252,6 @@ export default async function handler(req, res) {
             </div>
           </div>
         </div>
-        ${payments.length > 0 ? `
-        <div class="card shadow-sm mt-4">
-          <div class="card-body">
-            <h5 class="mb-3">Zeffy Payments</h5>
-            <small class="text-muted">Total: $${totalPayments.toFixed(2)}</small>
-            <div class="table-responsive mt-3">
-              <table class="table table-striped align-middle">
-                <thead class="table-light">
-                  <tr>
-                    <th>Date</th>
-                    <th>Buyer</th>
-                    <th>Email</th>
-                    <th>Description</th>
-                    <th>Amount</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${paymentsRowsHtml}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-        ` : ''}
       </main>
 
       <script>
