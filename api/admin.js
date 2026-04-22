@@ -270,7 +270,7 @@ export default async function handler(req, res) {
             for (let i = 0; i < rows.length; i++) {
               const row = rows[i];
               console.log('Checking row', i, row.tagName, row.className, row.hasAttribute('data-bs-toggle'));
-              if (!row.querySelector('[data-bs-toggle="collapse"]')) {
+              if (row.classList.contains('collapse')) {
                 console.log('Skipping row', i);
                 continue;
               }
