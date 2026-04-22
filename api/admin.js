@@ -267,9 +267,6 @@ export default async function handler(req, res) {
               const detailRow = rows[i + 1];
               const match = row.textContent.toLowerCase().includes(q) || (detailRow && detailRow.textContent.toLowerCase().includes(q));
               row.style.display = match ? '' : 'none';
-              if (detailRow && detailRow.classList.contains('collapse')) {
-                detailRow.style.display = match ? '' : 'none';
-              }
             }
           });
         }
