@@ -262,11 +262,18 @@ export default async function handler(req, res) {
           search.addEventListener('input', () => {
             const q = search.value.toLowerCase();
             console.log('Search query:', q);
-            const rows = table.tBodies[0].rows;
+            const tbody = table.tBodies[0];
+            console.log('tbody:', tbody);
+            if (!tbody) return;
+            const rows = tbody.rows;
             console.log('Rows count:', rows.length);
             for (let i = 0; i < rows.length; i++) {
               const row = rows[i];
-              if (!row.querySelector('[data-bs-toggle="collapse"]')) continue;
+              console.log('Checking row', i, row.tagName, row.className, row.hasAttribute('data-bs-toggle'));
+              if (!row.querySelector('[data-bs-toggle="collapse"]')) {
+                console.log('Skipping row', i);
+                continue;
+              }
               const detailRow = rows[i + 1];
               const match = row.textContent.toLowerCase().includes(q) || (detailRow && detailRow.textContent.toLowerCase().includes(q));
               console.log('Row', i, 'match:', match, 'text:', row.textContent.slice(0, 50));
