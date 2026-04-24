@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import dotenv from 'dotenv';
 import { list, put } from '@vercel/blob';
 import { parse as parseCookie, serialize as serializeCookie } from 'cookie';
 import fs from 'fs/promises';
@@ -7,6 +8,8 @@ import fsSync from 'fs';
 import path from 'path';
 import imageSize from 'image-size';
 import nodemailer from 'nodemailer';
+
+dotenv.config();
 
 function isBlobAccessMismatchError(err) {
   const message = String(err?.message || '');

@@ -1,5 +1,8 @@
 import crypto from 'crypto';
+import dotenv from 'dotenv';
 import { parseFormBody, setCookie } from './_utils.js';
+
+dotenv.config();
 
 const ESS_PASSWORD_HASH = process.env.ESS_PASSWORD_HASH;
 

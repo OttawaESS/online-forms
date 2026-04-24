@@ -1,4 +1,7 @@
+import dotenv from 'dotenv';
 import { clearCookie } from './_utils.js';
+
+dotenv.config();
 
 export default async function handler(req, res) {
   clearCookie(res, 'ess_token');

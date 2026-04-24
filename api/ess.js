@@ -1,4 +1,7 @@
+import dotenv from 'dotenv';
 import { requireESS, loadProfile, saveProfile, searchProfiles, parseFormBody } from './_utils.js';
+
+dotenv.config();
 
 function renderPortal(searchQuery = '', profiles = [], selectedProfile = null, message = '') {
   const profileList = profiles.map(profile => `

@@ -1,4 +1,7 @@
+import dotenv from 'dotenv';
 import { loadSubmissions, requireAdmin } from './_utils.js';
+
+dotenv.config();
 
 export default async function handler(req, res) {
   if (!requireAdmin(req, res)) {

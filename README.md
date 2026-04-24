@@ -61,7 +61,7 @@ All emails include submission details and links to the admin dashboard for revie
    ADMIN_SESSION_SECRET=your-admin-session-secret
 
    # ESS Officer authentication
-   ESS_PASSWORD_HASH=your-ess-password-hash
+   ESS_PASSWORD_HASH=1d8b4cf854cd42f4868849c4ce329da72c406cc11983b4bf45acdae0805f7a72  # Hash for "beer"
    ESS_SESSION_SECRET=your-ess-session-secret
    ```
 
