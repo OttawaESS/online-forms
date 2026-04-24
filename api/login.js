@@ -1,8 +1,5 @@
 import crypto from 'crypto';
-import dotenv from 'dotenv';
 import { parseFormBody, setCookie } from './_utils.js';
-
-dotenv.config();
 
 const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH;
 
