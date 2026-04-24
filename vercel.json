@@ -6,6 +6,9 @@
     { "source": "/login", "destination": "/api/login" },
     { "source": "/logout", "destination": "/api/logout" },
     { "source": "/submit", "destination": "/api/submit" },
+    { "source": "/ess-login", "destination": "/api/ess-login" },
+    { "source": "/ess", "destination": "/api/ess" },
+    { "source": "/ess-logout", "destination": "/api/ess-logout" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

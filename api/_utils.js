@@ -164,6 +164,15 @@ export function requireAdmin(req, res) {
   return true;
 }
 
+export function requireESS(req, res) {
+  const secret = process.env.ESS_SESSION_SECRET;
+  if (!secret) return false;
+  const cookies = getCookies(req);
+  const payload = verifyToken(cookies.ess_token, secret);
+  if (!payload || !payload.exp || Date.now() > payload.exp) return false;
+  return true;
+}
+
 const EQUIPMENT_LOAN_TYPE = 'equipment-loan';
 const EXPENSE_TYPE = 'expense';
 
@@ -438,4 +447,71 @@ export async function sendEmail(to, subject, html, cc = null) {
     console.error('Error response:', error.response);
     return false;
   }
+}
+
+// Profile management functions
+export async function loadProfiles() {
+  try {
+    const { blobs } = await list();
+    const profileBlobs = blobs.filter((b) => b.pathname.startsWith('profiles/profile-'));
+
+    const profiles = [];
+    for (const blob of profileBlobs) {
+      try {
+        const response = await fetch(blob.downloadUrl || blob.url);
+        if (!response.ok) continue;
+        const profile = await response.json();
+        profiles.push(profile);
+      } catch (err) {
+        console.error(`Error loading profile from ${blob.pathname}:`, err);
+      }
+    }
+
+    return profiles;
+  } catch (err) {
+    console.error('Error loading profiles:', err);
+    return [];
+  }
+}
+
+export async function loadProfile(profileId) {
+  try {
+    const { blobs } = await list();
+    const profileBlob = blobs.find((b) => b.pathname === `profiles/profile-${profileId}.json`);
+
+    if (!profileBlob) return null;
+
+    const response = await fetch(profileBlob.downloadUrl || profileBlob.url);
+    if (!response.ok) return null;
+
+    return await response.json();
+  } catch (err) {
+    console.error(`Error loading profile ${profileId}:`, err);
+    return null;
+  }
+}
+
+export async function saveProfile(profile) {
+  try {
+    const profileId = profile.id;
+    const pathname = `profiles/profile-${profileId}.json`;
+
+    await putWithStoreAccess(pathname, toCompactJson(profile), {
+      contentType: 'application/json'
+    });
+  } catch (err) {
+    console.error('Error saving profile:', err);
+    throw err;
+  }
+}
+
+export async function searchProfiles(query) {
+  const profiles = await loadProfiles();
+  const lowerQuery = query.toLowerCase();
+  return profiles.filter(profile =>
+    profile.name?.toLowerCase().includes(lowerQuery) ||
+    profile.email?.toLowerCase().includes(lowerQuery) ||
+    profile.rfid?.toLowerCase().includes(lowerQuery) ||
+    profile.id?.toLowerCase().includes(lowerQuery)
+  );
 }
