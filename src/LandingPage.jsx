@@ -147,7 +147,7 @@ export default function LandingPage() {
               </div>
 
               {/* Locker Status */}
-              <div className="col-md-3 mb-4">
+              {/* <div className="col-md-3 mb-4">
                 <div 
                   className="card shadow-lg h-100 cursor-pointer"
                   style={{ 
@@ -170,7 +170,7 @@ export default function LandingPage() {
                     <p className="card-text text-muted">{t_landing('lockerStatusDesc')}</p>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               {/* Patch Archive */}
               <div className="col-md-3 mb-4">
