@@ -70,7 +70,7 @@ export const translations = {
     
     // Confirmations
     budgetConfirmTitle: "Please confirm the nature of the expense below:",
-    budgetConfirmText: "Yes, this expense has been budgeted for and is within the budgeted limits according to the latest edition of the 2025-26 budget that has been approved by the Exec Team/BOD.",
+    budgetConfirmText: "Yes, this expense has been budgeted for and is within the budgeted limits according to the latest edition of the budget that has been approved by the Exec Team/BOD.",
     truthTitle: "Declaration of Truth:",
     truthText: "I hereby affirm that the information provided in this submission is true, complete, and accurate to the best of my knowledge.",
     
@@ -279,7 +279,7 @@ export const translations = {
     
     // Confirmations
     budgetConfirmTitle: "Veuillez confirmer la nature de la dépense ci-dessous :",
-    budgetConfirmText: "Oui, cette dépense a été budgétisée et se situe dans les limites budgétaires selon la dernière édition du budget 2025-26 qui a été approuvé par l'équipe exécutive/Conseil d'administration.",
+    budgetConfirmText: "Oui, cette dépense a été budgétisée et se situe dans les limites budgétaires selon la dernière édition du budget qui a été approuvé par l'équipe exécutive/Conseil d'administration.",
     truthTitle: "Déclaration de vérité :",
     truthText: "Je certifie par la présente que les informations fournies dans cette soumission sont vraies, complètes et exactes à ma connaissance.",
     
