@@ -86,10 +86,12 @@ function buildEquipmentSummary(equipmentItems) {
     return 'No equipment selected';
   }
 
-  return equipmentItems
+  const listItems = equipmentItems
     .filter((item) => Number(item.quantity || 0) > 0)
-    .map((item) => `${item.description || 'Item'} x${Number(item.quantity || 0)}`)
-    .join(', ');
+    .map((item) => `• ${item.description || 'Item'} x${Number(item.quantity || 0)}`)
+    .join('\n');
+
+  return `\n\n${listItems}\n\n`;
 }
 
 function buildEventDateTime(date, time, timeZone) {
@@ -153,16 +155,16 @@ async function createSharedCalendarEvent(payload, equipmentItems, submissionId) 
   const eventPayload = {
     summary: `[Prêt d'équipement / Equipment Loan] ${organizationName}`,
     description: [
-      `ID de soumission / Submission ID: ${submissionId}`,
-      `Emprunteur / Borrower: ${borrowerName}`,
-      `Courriel / Email: ${payload.email || 'N/A'}`,
-      `Téléphone / Phone: ${payload.phone || 'N/A'}`,
-      `Organisation / Organization: ${organizationName}`,
-      `Lieu d'utilisation / Usage location: ${usageLocation}`,
-      `Assistance sur place / On-Site Assistance: ${onSiteAssistanceBilingual}`,
-      `Utilisation / Usage: ${payload.equipmentUsage || 'N/A'}`,
-      `Équipement / Equipment: ${buildEquipmentSummary(equipmentItems)}`,
-      `Commentaires / Comments: ${payload.finalComments || 'N/A'}`
+      `<b>ID de soumission / Submission ID:</b> ${submissionId}`,
+      `<b>Emprunteur / Borrower:</b> ${borrowerName}`,
+      `<b>Courriel / Email:</b> ${payload.email || 'N/A'}`,
+      `<b>Téléphone / Phone:</b> ${payload.phone || 'N/A'}`,
+      `<b>Organisation / Organization:</b> ${organizationName}`,
+      `<b>Lieu d'utilisation / Usage location:</b> ${usageLocation}`,
+      `<b>Assistance sur place / On-Site Assistance:</b> ${onSiteAssistanceBilingual}`,
+      `<b>Utilisation / Usage:</b> ${payload.equipmentUsage || 'N/A'}`,
+      `<b>Équipement / Equipment:</b>${buildEquipmentSummary(equipmentItems)}`,
+      `<b>Commentaires / Comments:</b> ${payload.finalComments || 'N/A'}`
     ].join('\n'),
     start,
     end,
