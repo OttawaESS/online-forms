@@ -143,6 +143,18 @@ function EquipmentForm() {
     
     if (!formData.pickupTime) newErrors.pickupTime = true;
     if (!formData.dropoffTime) newErrors.dropoffTime = true;
+    if (
+      formData.startDate &&
+      formData.endDate &&
+      formData.pickupTime &&
+      formData.dropoffTime
+    ) {
+      const startDateTime = new Date(`${formData.startDate}T${formData.pickupTime}:00`);
+      const endDateTime = new Date(`${formData.endDate}T${formData.dropoffTime}:00`);
+      if (endDateTime <= startDateTime) {
+        newErrors.dropoffTime = 'invalidTimeRange';
+      }
+    }
     if (!formData.onCampus) newErrors.onCampus = true;
     if (!formData.equipmentUsage.trim()) newErrors.equipmentUsage = true;
     if (!formData.needsOnSiteAssistance) newErrors.needsOnSiteAssistance = true;
@@ -683,7 +695,11 @@ function EquipmentForm() {
                               value={formData.dropoffTime}
                               onChange={handleChange}
                             />
-                            {errors.dropoffTime && <div className="invalid-feedback">{t('required')}</div>}
+                            {errors.dropoffTime && (
+                              <div className="invalid-feedback">
+                                {t(errors.dropoffTime === true ? 'required' : errors.dropoffTime)}
+                              </div>
+                            )}
                           </div>
                         </div>
 

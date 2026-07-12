@@ -1,5 +1,9 @@
 export const translations = {
   en: {
+    // Common
+    adminLogin: "Admin Login",
+    backHome: "← Home",
+
     // Patch Archive
     patchArchive: "Patch Archive",
     availablePatches: "Available Patches",
@@ -154,6 +158,7 @@ export const translations = {
     invalidEmail: "Please enter a valid email",
     invalidStartDate: "Start date cannot be in the past",
     invalidEndDate: "End date must be after start date",
+    invalidTimeRange: "Drop-off date/time must be after pickup date/time",
     selectEquipment: "Please select at least one piece of equipment",
     acceptBbqTerms: "You must accept the terms to borrow the BBQ",
     thankYou: "Thank you for your submission!",
@@ -363,6 +368,7 @@ export const translations = {
     invalidEmail: "Veuillez entrer une adresse e-mail valide",
     invalidStartDate: "La date de début ne peut pas être dans le passé",
     invalidEndDate: "La date de fin doit être postérieure à la date de début",
+    invalidTimeRange: "La date/heure de retour doit être après la date/heure de ramassage",
     selectEquipment: "Veuillez sélectionner au moins un équipement",
     acceptBbqTerms: "Vous devez accepter les conditions pour emprunter le barbecue",
     thankYou: "Merci pour votre soumission !",

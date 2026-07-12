@@ -101,6 +101,26 @@ function buildEventDateTime(date, time, timeZone) {
   };
 }
 
+function buildLoanDateTime(date, time, defaultTime) {
+  if (!date) return null;
+  const normalizedTime = time || defaultTime;
+  const dateTime = new Date(`${date}T${normalizedTime}:00`);
+  return Number.isNaN(dateTime.getTime()) ? null : dateTime;
+}
+
+function hasValidLoanDateRange(payload) {
+  const startDate = payload.startDate || payload.date;
+  const endDate = payload.endDate || startDate;
+  const startDateTime = buildLoanDateTime(startDate, payload.pickupTime, '09:00');
+  const endDateTime = buildLoanDateTime(endDate, payload.dropoffTime, '17:00');
+
+  if (!startDateTime || !endDateTime) {
+    return false;
+  }
+
+  return endDateTime > startDateTime;
+}
+
 async function createSharedCalendarEvent(payload, equipmentItems, submissionId) {
   const calendarId = process.env.GOOGLE_CALENDAR_ID;
   if (!calendarId) {
@@ -207,6 +227,15 @@ export default async function handler(req, res) {
       equipmentItems,
       timestamp: new Date().toISOString()
     };
+
+    if (!hasValidLoanDateRange(payload)) {
+      res.setHeader('Content-Type', 'application/json');
+      res.statusCode = 400;
+      return res.end(JSON.stringify({
+        error: 'Invalid loan date/time range',
+        code: 'INVALID_TIME_RANGE'
+      }));
+    }
 
     await saveSubmission(payload);
 
