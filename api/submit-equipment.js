@@ -159,7 +159,7 @@ async function createSharedCalendarEvent(payload, equipmentItems, submissionId) 
       `Courriel / Email: ${payload.email || 'N/A'}`,
       `Téléphone / Phone: ${payload.phone || 'N/A'}`,
       `Organisation / Organization: ${organizationName}`,
-      `Sur le campus / On Campus: ${onCampusBilingual}`,
+      `Lieu d'utilisation / Usage location: ${onCampusBilingual}`,
       `Assistance sur place / On-Site Assistance: ${onSiteAssistanceBilingual}`,
       `Utilisation / Usage: ${payload.equipmentUsage || 'N/A'}`,
       `Équipement / Equipment: ${buildEquipmentSummary(equipmentItems)}`,

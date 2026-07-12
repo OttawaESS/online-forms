@@ -732,7 +732,7 @@ function EquipmentForm() {
                               onChange={handleChange}
                             />
                             <label className="form-check-label" htmlFor="onCampusYes">
-                              {t('yes')}
+                                {language === 'en' ? 'On campus' : 'Sur le campus'}
                             </label>
                           </div>
                           <div className="form-check">
@@ -746,7 +746,7 @@ function EquipmentForm() {
                               onChange={handleChange}
                             />
                             <label className="form-check-label" htmlFor="onCampusNo">
-                              {t('no')}
+                                {language === 'en' ? 'Off campus' : 'Hors campus'}
                             </label>
                           </div>
                           {errors.onCampus && <div className="text-danger small mt-1">{t('required')}</div>}

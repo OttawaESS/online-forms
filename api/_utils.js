@@ -426,16 +426,32 @@ export async function sendEmail(to, subject, html, cc = null) {
     try {
       await transporter.verify();
     } catch (verifyError) {
-      console.error('SMTP verification failed:', verifyError.message);
+      const verifyMessage = String(verifyError?.message || '');
+      const isBadCredentials = verifyMessage.includes('535') || verifyMessage.toLowerCase().includes('badcredentials');
+
+      console.error('SMTP verification failed:', verifyMessage);
+      if (isBadCredentials) {
+        console.error(
+          'Gmail/Google Workspace rejected the SMTP login. Use a valid SMTP_USER and an app password in SMTP_PASS, or configure a non-Gmail SMTP provider.'
+        );
+      }
       return false;
     }
 
-    const info = await transporter.sendMail(mailOptions);
+    await transporter.sendMail(mailOptions);
     return true;
   } catch (error) {
-    console.error('Email send error:', error);
+    const errorMessage = String(error?.message || error);
+    const isBadCredentials = errorMessage.includes('535') || errorMessage.toLowerCase().includes('badcredentials');
+
+    console.error('Email send error:', errorMessage);
     console.error('Error code:', error.code);
     console.error('Error response:', error.response);
+    if (isBadCredentials) {
+      console.error(
+        'SMTP auth failed. For Gmail, use a Google App Password instead of your normal account password. For Google Workspace, confirm SMTP_USER, SMTP_PASS, and SMTP_FROM are all valid for the mailbox.'
+      );
+    }
     return false;
   }
 }
