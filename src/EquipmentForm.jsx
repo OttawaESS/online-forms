@@ -356,6 +356,20 @@ function EquipmentForm() {
     });
   };
 
+  const formatTime = (timeString) => {
+    if (!timeString) return '';
+    const [hours, minutes] = timeString.split(':');
+    if (hours === undefined || minutes === undefined) return timeString;
+
+    const date = new Date();
+    date.setHours(Number(hours), Number(minutes), 0, 0);
+
+    return date.toLocaleTimeString(language === 'en' ? 'en-US' : 'fr-FR', {
+      hour: 'numeric',
+      minute: '2-digit'
+    });
+  };
+
   const getTodayFormatted = () => {
     const today = new Date();
     return today.toLocaleDateString(language === 'en' ? 'en-US' : 'fr-FR', { 
@@ -1292,7 +1306,7 @@ function EquipmentForm() {
                               <p className="text-center fw-bold mb-3">{getTodayFormatted()}</p>
                               <h6 className="fw-bold">EQUIPMENT RENTAL AGREEMENT</h6>
                               <p><strong>RENT AND REGISTRATION.</strong> The rent for the Equipment will be subject to the Vice President of Services per item, per day (the "Rent") and the Rent will be paid prior to the Renter taking possession of the Equipment.</p>
-                              <p><strong>TERM.</strong> The Agreement commences on {formatDate(formData.startDate) || '<<start>>'} and will continue until {formatDate(formData.endDate) || '<<end>>'} (the "Term").</p>
+                              <p><strong>TERM.</strong> The Agreement commences on {formatDate(formData.startDate) || '<<start>>'} at {formatTime(formData.pickupTime) || '<<start time>>'} and will continue until {formatDate(formData.endDate) || '<<end>>'} at {formatTime(formData.dropoffTime) || '<<end time>>'} (the "Term").</p>
                               <p><strong>REPAIR AND MAINTENANCE.</strong> The Renter will use the Equipment in a good and careful manner and will comply with all of the manufacturer's requirements and recommendations respecting the Equipment and with any applicable law, whether local, state or federal respecting the use of the Equipment, including, but not limited to, environmental and copyright law. The Renter will use the Equipment for the purpose for which it was designed and not for any other purpose.</p>
                               <p><strong>WARRANTIES.</strong> The Equipment will be in good working order and good condition upon delivery. The Equipment is of merchantable quality and is fit for the following purpose: events, extracurriculars, etc.</p>
                               <p><strong>LOSS AND DAMAGE.</strong> If the Equipment is lost or damaged, the Renter will continue paying Rent, will provide the Owner with prompt written notice of such loss or damage and will, if the Equipment is repairable, put or cause the Equipment to be put in a state of good repair, appearance and condition.</p>
@@ -1306,7 +1320,7 @@ function EquipmentForm() {
                               <p className="text-center fw-bold mb-3">{getTodayFormatted()}</p>
                               <h6 className="fw-bold">CONTRAT DE LOCATION D'ÉQUIPEMENT</h6>
                               <p><strong>LOYER ET INSCRIPTION.</strong> Le loyer pour l'équipement sera soumis au vice-président des services par article, par jour (le « loyer ») et le loyer sera payé avant que le locataire prenne possession de l'équipement.</p>
-                              <p><strong>DURÉE.</strong> L'accord commence au {formatDate(formData.startDate) || '<<start>>'} et se poursuivra jusqu'à la {formatDate(formData.endDate) || '<<end>>'} (la « durée »).</p>
+                              <p><strong>DURÉE.</strong> L'accord commence le {formatDate(formData.startDate) || '<<start>>'} à {formatTime(formData.pickupTime) || '<<heure de début>>'} et se poursuivra jusqu'au {formatDate(formData.endDate) || '<<end>>'} à {formatTime(formData.dropoffTime) || '<<heure de fin>>'} (la « durée »).</p>
                               <p><strong>RÉPARATION ET ENTRETIEN.</strong> Le locataire utilisera l'équipement de manière soignée et prudente et se conformera à toutes les exigences et recommandations du fabricant concernant l'équipement ainsi qu'à toute loi applicable, qu'elle soit locale, étatique ou fédérale, incluant, mais sans s'y limiter, les lois environnementales et de droit d'auteur. Le locataire utilisera l'équipement uniquement pour les fins pour lesquelles il a été conçu et non à d'autres fins.</p>
                               <p><strong>GARANTIES.</strong> L'équipement sera en bon état de fonctionnement et en bonne condition lors de la livraison. L'équipement est de qualité marchande et adapté pour les fins suivantes : événements, activités parascolaires, etc.</p>
                               <p><strong>PERTE ET DOMMAGE.</strong> Si l'équipement est perdu ou endommagé, le locataire continuera de payer le loyer, fournira au propriétaire un avis écrit immédiat de cette perte ou de ce dommage et, si l'équipement est réparable, le remettra ou fera en sorte que l'équipement soit remis en bon état de fonctionnement, d'apparence et de condition.</p>
