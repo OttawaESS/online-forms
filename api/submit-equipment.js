@@ -3,6 +3,20 @@ import { saveSubmission, parseJsonBody, sendEmail } from './_utils.js';
 
 const GOOGLE_OAUTH_TOKEN_URL = 'https://oauth2.googleapis.com/token';
 const GOOGLE_CALENDAR_API_BASE = 'https://www.googleapis.com/calendar/v3';
+const REQUIRED_STAFF_ATTENDEES = [
+  'internal@uottawaess.ca',
+  'operations@uottawaess.ca',
+  'admin@uottawaess.ca',
+];
+const EQUIPMENT_NOTIFICATION_CC_RECIPIENTS = [
+  'admin@uottawaess.ca',
+  'vpfa@uottawaess.ca',
+  'financecomm@uottawaess.ca',
+  'internal@uottawaess.ca',
+  'printing@uottawaess.ca',
+  'merch@uottawaess.ca',
+  'operations@uottawaess.ca'
+];
 
 function base64UrlEncode(value) {
   return Buffer.from(value)
@@ -104,24 +118,41 @@ async function createSharedCalendarEvent(payload, equipmentItems, submissionId) 
 
   const organizationName = payload.organization === 'Other' ? (payload.otherOrganization || 'Other') : (payload.organization || 'Unknown Organization');
   const borrowerName = payload.fullName || payload.name || 'Borrower';
+  const onCampusBilingual = payload.onCampus === 'yes' ? 'Oui / Yes' : payload.onCampus === 'no' ? 'Non / No' : 'N/A';
+  const onSiteAssistanceBilingual = payload.needsOnSiteAssistance === 'yes' ? 'Oui / Yes' : payload.needsOnSiteAssistance === 'no' ? 'Non / No' : 'N/A';
+  const locationBilingual = payload.onCampus === 'yes' ? 'Sur le campus / On campus' : payload.onCampus === 'no' ? 'Hors campus / Off campus' : 'N/A';
+  const borrowerEmail = payload.email || '';
+  const requiredAttendeeEmails = Array.from(
+    new Set([
+      ...REQUIRED_STAFF_ATTENDEES,
+      borrowerEmail
+    ])
+  ).filter(Boolean);
+  const optionalAttendeeEmails = EQUIPMENT_NOTIFICATION_CC_RECIPIENTS
+    .filter((email) => !requiredAttendeeEmails.includes(email));
+  const attendees = [
+    ...requiredAttendeeEmails.map((email) => ({ email, optional: false })),
+    ...optionalAttendeeEmails.map((email) => ({ email, optional: true }))
+  ];
 
   const eventPayload = {
-    summary: `[Equipment Loan] ${organizationName}`,
+    summary: `[Prêt d'équipement / Equipment Loan] ${organizationName}`,
     description: [
-      `Submission ID: ${submissionId}`,
-      `Borrower: ${borrowerName}`,
-      `Email: ${payload.email || 'N/A'}`,
-      `Phone: ${payload.phone || 'N/A'}`,
-      `Organization: ${organizationName}`,
-      `On Campus: ${payload.onCampus || 'N/A'}`,
-      `On-Site Assistance: ${payload.needsOnSiteAssistance || 'N/A'}`,
-      `Usage: ${payload.equipmentUsage || 'N/A'}`,
-      `Equipment: ${buildEquipmentSummary(equipmentItems)}`,
-      `Comments: ${payload.finalComments || 'N/A'}`
+      `ID de soumission / Submission ID: ${submissionId}`,
+      `Emprunteur / Borrower: ${borrowerName}`,
+      `Courriel / Email: ${payload.email || 'N/A'}`,
+      `Téléphone / Phone: ${payload.phone || 'N/A'}`,
+      `Organisation / Organization: ${organizationName}`,
+      `Sur le campus / On Campus: ${onCampusBilingual}`,
+      `Assistance sur place / On-Site Assistance: ${onSiteAssistanceBilingual}`,
+      `Utilisation / Usage: ${payload.equipmentUsage || 'N/A'}`,
+      `Équipement / Equipment: ${buildEquipmentSummary(equipmentItems)}`,
+      `Commentaires / Comments: ${payload.finalComments || 'N/A'}`
     ].join('\n'),
     start,
     end,
-    location: payload.onCampus === 'yes' ? 'On campus' : 'Off campus',
+    location: locationBilingual,
+    attendees,
     extendedProperties: {
       private: {
         submissionId,
@@ -130,7 +161,7 @@ async function createSharedCalendarEvent(payload, equipmentItems, submissionId) 
     }
   };
 
-  const createResponse = await fetch(`${GOOGLE_CALENDAR_API_BASE}/calendars/${encodeURIComponent(calendarId)}/events`, {
+  const createResponse = await fetch(`${GOOGLE_CALENDAR_API_BASE}/calendars/${encodeURIComponent(calendarId)}/events?sendUpdates=all`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -244,7 +275,7 @@ export default async function handler(req, res) {
           borrowerEmail,
           'Confirmation de demande de prêt d\'équipement / Equipment Loan Request Confirmation',
           submitterEmailHtml,
-          'admin@uottawaess.ca, vpfa@uottawaess.ca, financecomm@uottawaess.ca, internal@uottawaess.ca, printing@uottawaess.ca, merch@uottawaess.ca, operations@uottawaess.ca'
+          EQUIPMENT_NOTIFICATION_CC_RECIPIENTS.join(', ')
         )
       );
     }
