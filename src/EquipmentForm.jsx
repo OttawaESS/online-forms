@@ -721,34 +721,15 @@ function EquipmentForm() {
                           <label className="form-label fw-bold">
                             {t('onCampus')} <span className="text-danger">*</span>
                           </label>
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="radio"
-                              name="onCampus"
-                              id="onCampusYes"
-                              value="yes"
-                              checked={formData.onCampus === 'yes'}
-                              onChange={handleChange}
-                            />
-                            <label className="form-check-label" htmlFor="onCampusYes">
-                                {language === 'en' ? 'On campus' : 'Sur le campus'}
-                            </label>
-                          </div>
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="radio"
-                              name="onCampus"
-                              id="onCampusNo"
-                              value="no"
-                              checked={formData.onCampus === 'no'}
-                              onChange={handleChange}
-                            />
-                            <label className="form-check-label" htmlFor="onCampusNo">
-                                {language === 'en' ? 'Off campus' : 'Hors campus'}
-                            </label>
-                          </div>
+                          <input
+                            type="text"
+                            className={`form-control ${errors.onCampus ? 'is-invalid' : ''}`}
+                            id="onCampus"
+                            name="onCampus"
+                            value={formData.onCampus}
+                            onChange={handleChange}
+                            placeholder={language === 'en' ? 'Enter the building, room, or venue where the equipment will be used' : 'Entrez le bâtiment, la salle ou le lieu où l\'équipement sera utilisé'}
+                          />
                           {errors.onCampus && <div className="text-danger small mt-1">{t('required')}</div>}
                         </div>
 

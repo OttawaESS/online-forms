@@ -134,9 +134,8 @@ async function createSharedCalendarEvent(payload, equipmentItems, submissionId) 
 
   const organizationName = payload.organization === 'Other' ? (payload.otherOrganization || 'Other') : (payload.organization || 'Unknown Organization');
   const borrowerName = payload.fullName || payload.name || 'Borrower';
-  const onCampusBilingual = payload.onCampus === 'yes' ? 'Oui / Yes' : payload.onCampus === 'no' ? 'Non / No' : 'N/A';
   const onSiteAssistanceBilingual = payload.needsOnSiteAssistance === 'yes' ? 'Oui / Yes' : payload.needsOnSiteAssistance === 'no' ? 'Non / No' : 'N/A';
-  const locationBilingual = payload.onCampus === 'yes' ? 'Sur le campus / On campus' : payload.onCampus === 'no' ? 'Hors campus / Off campus' : 'N/A';
+  const usageLocation = payload.onCampus || 'N/A';
   const borrowerEmail = payload.email || '';
   const requiredAttendeeEmails = Array.from(
     new Set([
@@ -159,7 +158,7 @@ async function createSharedCalendarEvent(payload, equipmentItems, submissionId) 
       `Courriel / Email: ${payload.email || 'N/A'}`,
       `Téléphone / Phone: ${payload.phone || 'N/A'}`,
       `Organisation / Organization: ${organizationName}`,
-      `Lieu d'utilisation / Usage location: ${onCampusBilingual}`,
+      `Lieu d'utilisation / Usage location: ${usageLocation}`,
       `Assistance sur place / On-Site Assistance: ${onSiteAssistanceBilingual}`,
       `Utilisation / Usage: ${payload.equipmentUsage || 'N/A'}`,
       `Équipement / Equipment: ${buildEquipmentSummary(equipmentItems)}`,
@@ -167,7 +166,7 @@ async function createSharedCalendarEvent(payload, equipmentItems, submissionId) 
     ].join('\n'),
     start,
     end,
-    location: locationBilingual,
+    location: usageLocation,
     attendees,
     extendedProperties: {
       private: {
