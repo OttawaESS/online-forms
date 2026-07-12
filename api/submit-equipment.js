@@ -123,11 +123,7 @@ function hasValidLoanDateRange(payload) {
 
 async function createSharedCalendarEvent(payload, equipmentItems, submissionId) {
   const calendarId = process.env.GOOGLE_CALENDAR_ID;
-  if (!calendarId) {
-    throw new Error('Missing GOOGLE_CALENDAR_ID env var');
-  }
-
-  const accessToken = await getGoogleCalendarAccessToken();
+  const appsScriptWebhookUrl = process.env.GOOGLE_APPS_SCRIPT_WEBHOOK_URL;
   const timeZone = process.env.GOOGLE_CALENDAR_TIMEZONE || 'America/Toronto';
   const start = buildEventDateTime(payload.startDate || payload.date, payload.pickupTime, timeZone);
   const end = buildEventDateTime(payload.endDate || payload.startDate || payload.date, payload.dropoffTime || '17:00', timeZone);
@@ -180,6 +176,43 @@ async function createSharedCalendarEvent(payload, equipmentItems, submissionId) 
       }
     }
   };
+
+  if (appsScriptWebhookUrl) {
+    const webhookResponse = await fetch(appsScriptWebhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        calendarId,
+        sendUpdates: 'all',
+        event: eventPayload
+      })
+    });
+
+    if (!webhookResponse.ok) {
+      const errorBody = await webhookResponse.text();
+      throw new Error(`Apps Script webhook calendar sync failed: ${webhookResponse.status} ${errorBody}`);
+    }
+
+    // Accept arbitrary JSON shape from webhook while preserving link if provided.
+    const responseText = await webhookResponse.text();
+    if (!responseText) {
+      return { htmlLink: null };
+    }
+
+    try {
+      return JSON.parse(responseText);
+    } catch {
+      return { htmlLink: null };
+    }
+  }
+
+  if (!calendarId) {
+    throw new Error('Missing GOOGLE_CALENDAR_ID env var');
+  }
+
+  const accessToken = await getGoogleCalendarAccessToken();
 
   const createResponse = await fetch(`${GOOGLE_CALENDAR_API_BASE}/calendars/${encodeURIComponent(calendarId)}/events?sendUpdates=all`, {
     method: 'POST',
