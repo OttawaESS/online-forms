@@ -298,7 +298,6 @@ export async function loadSubmissions() {
       b.pathname.endsWith('.json') && (
         b.pathname.startsWith(`${EXPENSE_TYPE}/submission-`) ||
         b.pathname.startsWith(`${EQUIPMENT_LOAN_TYPE}/submission-`) ||
-        b.pathname.startsWith(`${CONTRACT_TYPE}/submission-`) ||
         b.pathname.startsWith('submission-')
       )
     );
@@ -359,8 +358,7 @@ export async function loadSubmissionById(id) {
     const submissionBlob =
       blobs.find((b) => b.pathname === getSubmissionBlobPath(id, EXPENSE_TYPE)) ||
       blobs.find((b) => b.pathname === getSubmissionBlobPath(id, EQUIPMENT_LOAN_TYPE)) ||
-        blobs.find((b) => b.pathname === getSubmissionBlobPath(id, CONTRACT_TYPE)) ||
-        blobs.find((b) => b.pathname === `submission-${id}.json`);
+      blobs.find((b) => b.pathname === `submission-${id}.json`);
 
     if (!submissionBlob) {
       return null;
@@ -374,7 +372,7 @@ export async function loadSubmissionById(id) {
 
     const submission = await submissionResponse.json();
     const type = getSubmissionType(submission, submissionBlob.pathname);
-      return type === EXPENSE_TYPE ? submission : { ...submission, type };
+    return type === EXPENSE_TYPE ? submission : { ...submission, type };
   } catch (err) {
     console.error('Error loading submission by ID:', id, err);
     return null;
