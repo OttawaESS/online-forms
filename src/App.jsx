@@ -6,7 +6,6 @@ import { LanguageProvider } from './LanguageContext';
 const LandingPage = lazy(() => import('./LandingPage'));
 const ExpenseReportForm = lazy(() => import('./ExpenseReportForm'));
 const EquipmentForm = lazy(() => import('./EquipmentForm'));
-const ParticipantContractForm = lazy(() => import('./ParticipantContractForm'));
 const LockerStatus = lazy(() => import('./LockerStatus'));
 const Login = lazy(() => import('./Login'));
 const PatchArchive = lazy(() => import('./PatchArchive'));
@@ -21,7 +20,6 @@ export default function App() {
               <Route path="/" element={<LandingPage />} />
               <Route path="/expense-report" element={<ExpenseReportForm />} />
               <Route path="/equipment-loan" element={<EquipmentForm />} />
-              <Route path="/101er-contract" element={<ParticipantContractForm />} />
               <Route path="/locker-status" element={<LockerStatus />} />
               <Route path="/login" element={<Login />} />
               <Route path="/patch-archive" element={<PatchArchive />} />

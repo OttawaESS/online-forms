@@ -166,13 +166,9 @@ export function requireAdmin(req, res) {
 
 export const EQUIPMENT_LOAN_TYPE = 'equipment-loan';
 export const EXPENSE_TYPE = 'expense';
-export const CONTRACT_TYPE = '101-week-contract';
-
 function getSubmissionType(submission = {}, pathname = '') {
   if (submission?.type === EQUIPMENT_LOAN_TYPE) return EQUIPMENT_LOAN_TYPE;
-  if (submission?.type === CONTRACT_TYPE) return CONTRACT_TYPE;
   if (pathname.startsWith(`${EQUIPMENT_LOAN_TYPE}/`)) return EQUIPMENT_LOAN_TYPE;
-  if (pathname.startsWith(`${CONTRACT_TYPE}/`)) return CONTRACT_TYPE;
   return EXPENSE_TYPE;
 }
 
@@ -199,8 +195,6 @@ function normalizeSubmissionForStorage(submission) {
     ) {
       delete normalized.items;
     }
-  } else if (type === CONTRACT_TYPE) {
-    normalized.type = CONTRACT_TYPE;
   } else {
     delete normalized.type;
   }
@@ -221,7 +215,6 @@ export async function loadSubmission(submissionId) {
     const submissionBlob =
       blobs.find((b) => b.pathname === getSubmissionBlobPath(submissionId, EXPENSE_TYPE)) ||
       blobs.find((b) => b.pathname === getSubmissionBlobPath(submissionId, EQUIPMENT_LOAN_TYPE)) ||
-      blobs.find((b) => b.pathname === getSubmissionBlobPath(submissionId, CONTRACT_TYPE)) ||
       blobs.find((b) => b.pathname === `submission-${submissionId}.json`);
 
     if (!submissionBlob) return null;

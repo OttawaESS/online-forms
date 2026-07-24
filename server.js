@@ -17,7 +17,6 @@ const routeModulePaths = new Map([
   ['/api/payments', './api/payments.js'],
   ['/api/pdf', './api/pdf.js'],
   ['/api/submit', './api/submit.js'],
-  ['/api/submit-contract', './api/submit-contract.js'],
   ['/api/submit-equipment', './api/submit-equipment.js'],
   ['/login', './api/login.js'],
   ['/logout', './api/logout.js'],
