@@ -1,4 +1,4 @@
-import { loadSubmissions, requireAdmin } from './_utils.js';
+import { CONTRACT_TYPE, loadSubmissions, requireAdmin } from './_utils.js';
 
 export default async function handler(req, res) {
   if (!requireAdmin(req, res)) {
@@ -10,7 +10,11 @@ export default async function handler(req, res) {
   const query = req.url.split('?')[1] || '';
   const params = new URLSearchParams(query);
   const sortBy = params.get('sort') || 'recent';
-  const view = params.get('view') === 'equipment' ? 'equipment' : 'expense';
+  const view = params.get('view') === 'equipment'
+    ? 'equipment'
+    : params.get('view') === 'contract'
+      ? 'contract'
+      : 'expense';
 
   let submissions = [];
   try {
@@ -33,8 +37,9 @@ export default async function handler(req, res) {
     }
   });
 
-  const expenseSubmissions = submissions.filter((s) => s.type !== 'equipment-loan');
+  const expenseSubmissions = submissions.filter((s) => s.type !== 'equipment-loan' && s.type !== CONTRACT_TYPE);
   const equipmentSubmissions = submissions.filter((s) => s.type === 'equipment-loan');
+  const contractSubmissions = submissions.filter((s) => s.type === CONTRACT_TYPE);
 
   const totalAmount = expenseSubmissions.reduce((sum, s) => {
     const sTotal = typeof s.total === 'number'
@@ -177,6 +182,73 @@ export default async function handler(req, res) {
     })
     .join('');
 
+  const contractRowsHtml = contractSubmissions
+    .map((s, idx) => {
+      const submissionDate = s.timestamp
+        ? new Date(s.timestamp).toLocaleString('en-US', { timeZone: 'America/Toronto' }) + ' Toronto'
+        : (s.participantSignatureDate || s.date || 'N/A');
+      const emergencyContact = [s.emergencyName, s.emergencyPhone].filter(Boolean).join(' / ') || 'N/A';
+      const agreementStatus = [
+        { label: 'Code', value: s.code },
+        { label: 'Bag Checks', value: s.bag },
+        { label: 'Insurance', value: s.insurance },
+        { label: 'Misc', value: s.misc },
+        { label: 'Waiver', value: s.waiver },
+      ];
+
+      return `
+        <tr data-bs-toggle="collapse" data-bs-target="#contract-details-${idx}" style="cursor: pointer;">
+          <td>${submissionDate}</td>
+          <td>${s.name || `${s.firstName || ''} ${s.lastName || ''}`.trim()}</td>
+          <td>${s.program || 'N/A'}</td>
+          <td>${emergencyContact}</td>
+        </tr>
+        <tr class="collapse" id="contract-details-${idx}">
+          <td colspan="4">
+            <div class="p-3 bg-light rounded">
+              <div class="row g-4">
+                <div class="col-md-6">
+                  <h3>Participant Information</h3>
+                  <p><strong>Name:</strong> ${s.firstName || ''} ${s.lastName || ''}</p>
+                  <p><strong>Date of Birth:</strong> ${s.dateOfBirth || 'N/A'}</p>
+                  <p><strong>Pronouns:</strong> ${s.pronouns || 'N/A'}</p>
+                  <p><strong>Language(s):</strong> ${s.languages || 'N/A'}</p>
+                  <p><strong>Program:</strong> ${s.program || 'N/A'}</p>
+                  <p><strong>RSG 1:</strong> ${s.rsg1 || 'N/A'}</p>
+                  <p><strong>RSG 2:</strong> ${s.rsg2 || 'N/A'}</p>
+                  <p><strong>Email:</strong> ${s.email || 'N/A'}</p>
+                  <p><strong>Phone:</strong> ${formatPhone(s.phone)}</p>
+                  <p><strong>Under 18:</strong> ${s.under18 ? 'Yes' : 'No'}</p>
+                  <p><strong>Medical Restrictions:</strong> ${s.medicalRestrictions || 'N/A'}</p>
+                  <p><strong>Accessibility Requests:</strong> ${s.accessibilityRequests || 'N/A'}</p>
+                </div>
+                <div class="col-md-6">
+                  <h3>Emergency Contact & Agreements</h3>
+                  <p><strong>Emergency Contact:</strong> ${s.emergencyName || 'N/A'}</p>
+                  <p><strong>Emergency Phone:</strong> ${formatPhone(s.emergencyPhone)}</p>
+                  <p><strong>Relationship:</strong> ${s.emergencyRelationship || 'N/A'}</p>
+                  <div class="mb-3">
+                    <strong>Agreement Status:</strong>
+                    <div class="d-flex flex-wrap gap-2 mt-2">
+                      ${agreementStatus.map((item) => `<span class="badge ${item.value ? 'text-bg-success' : 'text-bg-secondary'}">${item.label}: ${item.value ? 'Yes' : 'No'}</span>`).join(' ')}
+                    </div>
+                  </div>
+                  <p><strong>Submitted:</strong> ${submissionDate}</p>
+                  ${s.participantSignature ? `<p><strong>Participant Signature:</strong><br><img src="${s.participantSignature}" alt="Participant signature" style="max-width: 300px; max-height: 150px; border: 1px solid #ccc; margin-top: 5px;"></p>` : ''}
+                  <p><strong>Participant Legal Name:</strong> ${s.participantLegalName || 'N/A'}</p>
+                  ${s.participantSignatureDate ? `<p><strong>Participant Signature Date:</strong> ${s.participantSignatureDate}</p>` : ''}
+                  ${s.under18 && s.guardianSignature ? `<p><strong>Guardian Signature:</strong><br><img src="${s.guardianSignature}" alt="Guardian signature" style="max-width: 300px; max-height: 150px; border: 1px solid #ccc; margin-top: 5px;"></p>` : ''}
+                  ${s.under18 ? `<p><strong>Guardian Legal Name:</strong> ${s.guardianLegalName || 'N/A'}</p>` : ''}
+                  ${s.under18 && s.guardianSignatureDate ? `<p><strong>Guardian Signature Date:</strong> ${s.guardianSignatureDate}</p>` : ''}
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      `;
+    })
+    .join('');
+
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.statusCode = 200;
   res.end(`
@@ -198,7 +270,7 @@ export default async function handler(req, res) {
           </span>
           <div class="d-flex align-items-center gap-2">
             <a href="/" class="btn btn-outline-primary btn-sm me-2">Back to Form</a>
-            ${view === 'expense' ? `<span class="text-muted">Total: $${Number(totalAmount).toFixed(2)}</span>` : `<span class="text-muted">Equipment Requests: ${equipmentSubmissions.length}</span>`}
+            ${view === 'expense' ? `<span class="text-muted">Total: $${Number(totalAmount).toFixed(2)}</span>` : view === 'equipment' ? `<span class="text-muted">Equipment Requests: ${equipmentSubmissions.length}</span>` : `<span class="text-muted">Contract Submissions: ${contractSubmissions.length}</span>`}
             <a class="btn btn-outline-secondary btn-sm" href="/logout">Logout</a>
           </div>
         </div>
@@ -208,13 +280,14 @@ export default async function handler(req, res) {
         <div class="mb-3 d-flex gap-2">
           <a href="/admin?view=expense&sort=${sortBy}" class="btn ${view === 'expense' ? 'btn-primary' : 'btn-outline-primary'}">Expense Reports</a>
           <a href="/admin?view=equipment&sort=${sortBy}" class="btn ${view === 'equipment' ? 'btn-primary' : 'btn-outline-primary'}">Equipment Loans</a>
+          <a href="/admin?view=contract&sort=${sortBy}" class="btn ${view === 'contract' ? 'btn-primary' : 'btn-outline-primary'}">101 Week Contracts</a>
         </div>
         <div class="card shadow-sm">
           <div class="card-body">
             <div class="row g-3 align-items-center mb-3">
               <div class="col-md-6">
-                <h5 class="mb-0">${view === 'expense' ? 'Expense Submissions' : 'Equipment Loan Submissions'}</h5>
-                <small class="text-muted">${view === 'expense' ? 'Search by name, email, or budget' : 'Search by name, email, organization, or details'}</small>
+                <h5 class="mb-0">${view === 'expense' ? 'Expense Submissions' : view === 'equipment' ? 'Equipment Loan Submissions' : '101 Week Contract Submissions'}</h5>
+                <small class="text-muted">${view === 'expense' ? 'Search by name, email, or budget' : view === 'equipment' ? 'Search by name, email, organization, or details' : 'Search by name, email, program, or emergency contact'}</small>
               </div>
               <div class="col-md-6">
                 <input id="search" class="form-control" placeholder="Search..." />
@@ -234,7 +307,7 @@ export default async function handler(req, res) {
                     ${expenseRowsHtml || '<tr><td colspan="3" class="text-center text-muted">No expense submissions yet</td></tr>'}
                   </tbody>
                 </table>
-              ` : `
+              ` : view === 'equipment' ? `
                 <table class="table table-striped align-middle" id="submissionsTable">
                   <thead class="table-light">
                     <tr>
@@ -246,6 +319,20 @@ export default async function handler(req, res) {
                   </thead>
                   <tbody>
                     ${equipmentRowsHtml || '<tr><td colspan="4" class="text-center text-muted">No equipment loan submissions yet</td></tr>'}
+                  </tbody>
+                </table>
+              ` : `
+                <table class="table table-striped align-middle" id="submissionsTable">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Submission Date</th>
+                      <th>Name</th>
+                      <th>Program</th>
+                      <th>Emergency Contact</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${contractRowsHtml || '<tr><td colspan="4" class="text-center text-muted">No contract submissions yet</td></tr>'}
                   </tbody>
                 </table>
               `}

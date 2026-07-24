@@ -119,7 +119,7 @@ export default function LandingPage() {
                   </div>
                 </div>
               </div>
-              
+
               {/* VEMS Request Form */}
               <div className="col-md-3 mb-4">
                 <div 

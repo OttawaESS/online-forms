@@ -61,7 +61,12 @@ All emails include submission details and links to the admin dashboard for revie
    - Keep `GOOGLE_CALENDAR_TIMEZONE` (and optionally `GOOGLE_CALENDAR_ID` if your script uses it)
    - When webhook URL is set, the API will send event details to Apps Script instead of using service-account auth
 
-3. Start the development server:
+3. Start the local full-stack server:
+   ```bash
+   npm start
+   ```
+
+   If you only want the Vite frontend dev server, use:
    ```bash
    npm run dev
    ```

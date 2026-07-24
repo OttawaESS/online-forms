@@ -164,12 +164,15 @@ export function requireAdmin(req, res) {
   return true;
 }
 
-const EQUIPMENT_LOAN_TYPE = 'equipment-loan';
-const EXPENSE_TYPE = 'expense';
+export const EQUIPMENT_LOAN_TYPE = 'equipment-loan';
+export const EXPENSE_TYPE = 'expense';
+export const CONTRACT_TYPE = '101-week-contract';
 
 function getSubmissionType(submission = {}, pathname = '') {
   if (submission?.type === EQUIPMENT_LOAN_TYPE) return EQUIPMENT_LOAN_TYPE;
+  if (submission?.type === CONTRACT_TYPE) return CONTRACT_TYPE;
   if (pathname.startsWith(`${EQUIPMENT_LOAN_TYPE}/`)) return EQUIPMENT_LOAN_TYPE;
+  if (pathname.startsWith(`${CONTRACT_TYPE}/`)) return CONTRACT_TYPE;
   return EXPENSE_TYPE;
 }
 
@@ -196,6 +199,8 @@ function normalizeSubmissionForStorage(submission) {
     ) {
       delete normalized.items;
     }
+  } else if (type === CONTRACT_TYPE) {
+    normalized.type = CONTRACT_TYPE;
   } else {
     delete normalized.type;
   }
@@ -216,6 +221,7 @@ export async function loadSubmission(submissionId) {
     const submissionBlob =
       blobs.find((b) => b.pathname === getSubmissionBlobPath(submissionId, EXPENSE_TYPE)) ||
       blobs.find((b) => b.pathname === getSubmissionBlobPath(submissionId, EQUIPMENT_LOAN_TYPE)) ||
+      blobs.find((b) => b.pathname === getSubmissionBlobPath(submissionId, CONTRACT_TYPE)) ||
       blobs.find((b) => b.pathname === `submission-${submissionId}.json`);
 
     if (!submissionBlob) return null;
@@ -299,6 +305,7 @@ export async function loadSubmissions() {
       b.pathname.endsWith('.json') && (
         b.pathname.startsWith(`${EXPENSE_TYPE}/submission-`) ||
         b.pathname.startsWith(`${EQUIPMENT_LOAN_TYPE}/submission-`) ||
+        b.pathname.startsWith(`${CONTRACT_TYPE}/submission-`) ||
         b.pathname.startsWith('submission-')
       )
     );
@@ -314,7 +321,7 @@ export async function loadSubmissions() {
 
         const submission = await submissionResponse.json();
         const type = getSubmissionType(submission, blob.pathname);
-        submissions.push(type === EQUIPMENT_LOAN_TYPE ? { ...submission, type } : submission);
+        submissions.push(type === EXPENSE_TYPE ? submission : { ...submission, type });
       } catch (err) {
         console.error(`Error loading submission from ${blob.pathname}:`, err);
       }
@@ -359,7 +366,8 @@ export async function loadSubmissionById(id) {
     const submissionBlob =
       blobs.find((b) => b.pathname === getSubmissionBlobPath(id, EXPENSE_TYPE)) ||
       blobs.find((b) => b.pathname === getSubmissionBlobPath(id, EQUIPMENT_LOAN_TYPE)) ||
-      blobs.find((b) => b.pathname === `submission-${id}.json`);
+        blobs.find((b) => b.pathname === getSubmissionBlobPath(id, CONTRACT_TYPE)) ||
+        blobs.find((b) => b.pathname === `submission-${id}.json`);
 
     if (!submissionBlob) {
       return null;
@@ -373,7 +381,7 @@ export async function loadSubmissionById(id) {
 
     const submission = await submissionResponse.json();
     const type = getSubmissionType(submission, submissionBlob.pathname);
-    return type === EQUIPMENT_LOAN_TYPE ? { ...submission, type } : submission;
+      return type === EXPENSE_TYPE ? submission : { ...submission, type };
   } catch (err) {
     console.error('Error loading submission by ID:', id, err);
     return null;
