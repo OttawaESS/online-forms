@@ -171,7 +171,7 @@ export default function EquipmentListPage() {
         item.label.toLowerCase().includes(normalizedSearch) ||
         row.entries.some((entry) => (entry.organization || '').toLowerCase().includes(normalizedSearch));
 
-      if (matchesSearch) {
+      if (row.total > 0 && matchesSearch) {
         groups[item.category].items.push(row);
       }
     });
