@@ -28,6 +28,28 @@ const formatTime = (timeString) => {
   }).format(date);
 };
 
+const formatDateRange = (startDate, endDate) => {
+  if (!startDate && !endDate) return '';
+  if (!endDate || startDate === endDate) return formatDate(startDate);
+
+  const start = new Date(`${startDate}T12:00:00`);
+  const end = new Date(`${endDate}T12:00:00`);
+
+  const sameMonth = start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear();
+
+  const startText = new Intl.DateTimeFormat('en-US', {
+    month: sameMonth ? undefined : 'short',
+    day: 'numeric'
+  }).format(start);
+
+  const endText = new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric'
+  }).format(end);
+
+  return `${startText} - ${endText}`;
+};
+
 const isBookingOnDate = (booking, targetDate) => {
   const target = new Date(`${targetDate}T12:00:00`);
   const start = new Date(`${booking.startDate || targetDate}T00:00:00`);
@@ -112,6 +134,8 @@ export default function EquipmentListPage() {
           return {
             organization,
             quantity: Number(entry.quantity || 1),
+            startDate: details.startDate || booking.startDate || selectedDate,
+            endDate: details.endDate || booking.endDate || details.startDate || booking.startDate || selectedDate,
             pickupTime: details.pickupTime || booking.pickupTime,
             dropoffTime: details.dropoffTime || booking.dropoffTime,
           };
@@ -222,13 +246,20 @@ export default function EquipmentListPage() {
 
                               {row.total > 0 ? (
                                 <ul className="mb-0 mt-2 ps-3 small text-secondary">
-                                  {row.entries.map((entry, index) => (
-                                    <li key={`${row.label}-${entry.organization}-${index}`} className="mb-1">
-                                      {row.label === 'Cooler' ? '1 x Igloo - Maxcold Latitude 90QT Rolling Cooler' : `${entry.organization} — ${entry.quantity} item${entry.quantity > 1 ? 's' : ''}`}
-                                      {row.label !== 'Cooler' && entry.pickupTime && entry.dropoffTime ? ` (${formatTime(entry.pickupTime)} - ${formatTime(entry.dropoffTime)})` : ''}
-                                      {row.label === 'Cooler' && entry.organization ? ` — ${entry.organization}` : ''}
-                                    </li>
-                                  ))}
+                                  {row.entries.map((entry, index) => {
+                                    const dateLabel = entry.startDate && entry.endDate && entry.startDate !== entry.endDate
+                                      ? ` • ${formatDateRange(entry.startDate, entry.endDate)}`
+                                      : '';
+
+                                    return (
+                                      <li key={`${row.label}-${entry.organization}-${index}`} className="mb-1">
+                                        {row.label === 'Cooler' ? '1 x Igloo - Maxcold Latitude 90QT Rolling Cooler' : `${entry.organization} — ${entry.quantity} item${entry.quantity > 1 ? 's' : ''}`}
+                                        {dateLabel}
+                                        {row.label !== 'Cooler' && entry.pickupTime && entry.dropoffTime ? ` (${formatTime(entry.pickupTime)} - ${formatTime(entry.dropoffTime)})` : ''}
+                                        {row.label === 'Cooler' && entry.organization ? ` — ${entry.organization}` : ''}
+                                      </li>
+                                    );
+                                  })}
                                 </ul>
                               ) : (
                                 <div className="text-muted small mt-2">{t('noBookingsForEquipment')} {formatDate(selectedDate)}.</div>
