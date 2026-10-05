@@ -38,12 +38,12 @@ const formatDateRange = (startDate, endDate) => {
   const sameMonth = start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear();
 
   const startText = new Intl.DateTimeFormat('en-US', {
-    month: sameMonth ? undefined : 'short',
+    month: 'short',
     day: 'numeric'
   }).format(start);
 
   const endText = new Intl.DateTimeFormat('en-US', {
-    month: 'short',
+    month: sameMonth ? 'short' : 'short',
     day: 'numeric'
   }).format(end);
 
@@ -143,12 +143,13 @@ export default function EquipmentListPage() {
       });
 
       const signedOutTotal = signedOut.reduce((sum, entry) => sum + entry.quantity, 0);
+      const inStock = Math.max(0, item.inventory - signedOutTotal);
       const row = {
         key: item.key,
         label: item.label,
         total: signedOutTotal,
-        inStock: item.inventory,
-        available: Math.max(0, item.inventory - signedOutTotal),
+        inStock,
+        available: inStock,
         entries: signedOut,
       };
 
@@ -237,7 +238,7 @@ export default function EquipmentListPage() {
                               <div className="d-flex justify-content-between align-items-start gap-3">
                                 <div className="fw-semibold" style={{ color: '#2b2b2b' }}>{row.label}</div>
                                 <div className="text-end small">
-                                  <span className="badge rounded-pill bg-light text-dark border mb-1 d-block">{row.inStock} {t('inStock')}</span>
+                                  <span className="badge rounded-pill bg-light text-dark border mb-1 d-block">{row.total > 0 ? 0 : row.inStock} {t('inStock')}</span>
                                   <span className={`badge rounded-pill ${row.total > 0 ? 'bg-secondary-subtle text-secondary' : 'bg-success-subtle text-success'} d-block`}>
                                     {row.total > 0 ? `${row.total} ${t('signedOut')}` : t('notSignedOut')}
                                   </span>
