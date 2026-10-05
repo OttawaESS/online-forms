@@ -35,19 +35,33 @@ const formatDateRange = (startDate, endDate) => {
   const start = new Date(`${startDate}T12:00:00`);
   const end = new Date(`${endDate}T12:00:00`);
 
-  const sameMonth = start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear();
-
   const startText = new Intl.DateTimeFormat('en-US', {
     month: 'short',
     day: 'numeric'
   }).format(start);
 
   const endText = new Intl.DateTimeFormat('en-US', {
-    month: sameMonth ? 'short' : 'short',
+    month: 'short',
     day: 'numeric'
   }).format(end);
 
   return `${startText} - ${endText}`;
+};
+
+const formatBookingTimeRange = (startDate, endDate, pickupTime, dropoffTime) => {
+  if (!startDate && !endDate && !pickupTime && !dropoffTime) return '';
+
+  if (startDate && endDate && startDate !== endDate) {
+    const startText = pickupTime ? `${formatDate(startDate)} ${formatTime(pickupTime)}` : formatDate(startDate);
+    const endText = dropoffTime ? `${formatDate(endDate)} ${formatTime(dropoffTime)}` : formatDate(endDate);
+    return `${startText} - ${endText}`;
+  }
+
+  if (pickupTime && dropoffTime) {
+    return `${formatTime(pickupTime)} - ${formatTime(dropoffTime)}`;
+  }
+
+  return '';
 };
 
 const isBookingOnDate = (booking, targetDate) => {
@@ -248,15 +262,17 @@ export default function EquipmentListPage() {
                               {row.total > 0 ? (
                                 <ul className="mb-0 mt-2 ps-3 small text-secondary">
                                   {row.entries.map((entry, index) => {
-                                    const dateLabel = entry.startDate && entry.endDate && entry.startDate !== entry.endDate
-                                      ? ` • ${formatDateRange(entry.startDate, entry.endDate)}`
-                                      : '';
+                                    const bookingTimeLabel = formatBookingTimeRange(
+                                      entry.startDate,
+                                      entry.endDate,
+                                      entry.pickupTime,
+                                      entry.dropoffTime
+                                    );
 
                                     return (
                                       <li key={`${row.label}-${entry.organization}-${index}`} className="mb-1">
                                         {row.label === 'Cooler' ? '1 x Igloo - Maxcold Latitude 90QT Rolling Cooler' : `${entry.organization} — ${entry.quantity} item${entry.quantity > 1 ? 's' : ''}`}
-                                        {dateLabel}
-                                        {row.label !== 'Cooler' && entry.pickupTime && entry.dropoffTime ? ` (${formatTime(entry.pickupTime)} - ${formatTime(entry.dropoffTime)})` : ''}
+                                        {bookingTimeLabel ? ` • ${bookingTimeLabel}` : ''}
                                         {row.label === 'Cooler' && entry.organization ? ` — ${entry.organization}` : ''}
                                       </li>
                                     );
