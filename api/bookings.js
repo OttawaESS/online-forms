@@ -11,6 +11,8 @@ export default async function handler(req, res) {
     const equipmentBookings = submissions
       .filter(s => s.type === 'equipment-loan')
       .map(s => {
+        const organizationName = s.organization === 'Other' ? (s.otherOrganization || 'Other') : (s.organization || 'Unknown');
+
         // Create start datetime
         const startDateTime = s.pickupTime 
           ? new Date(`${s.startDate}T${s.pickupTime}`)
@@ -30,14 +32,14 @@ export default async function handler(req, res) {
 
         return {
           id: s.id,
-          title: `${s.organization || 'Unknown'}`,
+          title: organizationName,
           start: startDateTime.toISOString(),
           end: endDateTime.toISOString(),
           allDay: false,
           extendedProps: {
             email: s.email,
             phone: s.phone,
-            organization: s.organization,
+            organization: organizationName,
             startDate: s.startDate,
             endDate: s.endDate,
             pickupTime: s.pickupTime,

@@ -4,10 +4,16 @@ import { loadSubmissions, parseJsonBody } from './_utils.js';
 const EQUIPMENT_AVAILABILITY = {
   projector: 1,      // 1 projector available
   microphones: 2,    // 2 microphones available
+  podcastMicrophones: 2, // 2 podcast mics available
   microphoneStands: 2, // 2 microphone stands available
   speakers: 2,       // 2 speakers available
   speakerStands: 2,  // 2 speaker stands available
   subwoofers: 2,     // 2 subwoofers available
+  foldingTable6Ft: 2, // 2 six-foot folding tables available
+  foldingTable8Ft: 2, // 2 eight-foot folding tables available
+  canopy13x13: 1,    // 1 13x13 canopy available
+  canopy8x8: 1,      // 1 8x8 canopy available
+  cooler: 3,         // 3 coolers available
   mixer: 1,          // 1 audio mixer available
   bbq: 1,            // 1 BBQ available
   griddleBlackDecker: 1, // 1 BLACK + DECKER griddle available
@@ -63,7 +69,9 @@ export default async function handler(req, res) {
               case 'projector':
                 return desc.includes('projector') || desc.includes('projecteur');
               case 'microphones':
-                return desc.includes('microphone');
+                return desc.includes('microphone') && !desc.includes('podcast');
+              case 'podcastMicrophones':
+                return desc.includes('podcast') && (desc.includes('microphone') || desc.includes('mic') || desc.includes('usb connected')) || desc.includes('usb connected') && desc.includes('condenser');
               case 'microphoneStands':
                 return desc.includes('microphone stand') || desc.includes('support pour microphone');
               case 'speakers':
@@ -72,6 +80,16 @@ export default async function handler(req, res) {
                 return desc.includes('speaker stand') || desc.includes('support de haut-parleur');
               case 'subwoofers':
                 return desc.includes('subwoofer') || desc.includes('caisson de basse');
+              case 'foldingTable6Ft':
+                return desc.includes('folding table (6 ft)') || desc.includes('table pliante (6 pi)') || desc.includes('6 ft') || desc.includes('6ft');
+              case 'foldingTable8Ft':
+                return desc.includes('folding table (8 ft)') || desc.includes('table pliante (8 pi)') || desc.includes('8 ft') || desc.includes('8ft');
+              case 'canopy13x13':
+                return desc.includes('13x13') || desc.includes('13 x 13') || desc.includes('13 x 13 canopy');
+              case 'canopy8x8':
+                return desc.includes('8x8') || desc.includes('8 x 8') || desc.includes('8 x 8 canopy');
+              case 'cooler':
+                return desc.includes('igloo') && desc.includes('cooler') || desc.includes('maxcold') || desc.includes('latitude 90qt');
               case 'mixer':
                 return desc.includes('audio mixer') || desc.includes('mixeur audio');
               case 'bbq':

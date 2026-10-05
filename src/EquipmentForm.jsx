@@ -2,10 +2,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from './LanguageContext';
 import '../styles/EquipmentForm.css';
-import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import interactionPlugin from '@fullcalendar/interaction';
 
 function EquipmentForm() {
   const { language, toggleLanguage, t } = useLanguage();
@@ -28,10 +24,16 @@ function EquipmentForm() {
     // Step 2 - Equipment
     projector: 0,
     microphones: 0,
+    podcastMicrophones: 0,
     microphoneStands: '',
     speakers: 0,
     speakerStands: '',
     subwoofers: 0,
+    foldingTable6Ft: 0,
+    foldingTable8Ft: 0,
+    canopy13x13: false,
+    canopy8x8: false,
+    cooler: 0,
     mixer: '',
     bbq: false,
     bbqTerm1: false,
@@ -55,14 +57,6 @@ function EquipmentForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [equipmentAvailability, setEquipmentAvailability] = useState({});
-  const [bookings, setBookings] = useState([]);
-
-  useEffect(() => {
-    fetch('/api/bookings')
-      .then(res => res.json())
-      .then(data => setBookings(data))
-      .catch(err => console.error('Failed to load bookings:', err));
-  }, []);
 
   const checkEquipmentAvailability = async () => {
     try {
@@ -105,6 +99,13 @@ function EquipmentForm() {
     'PERSONNEL - look out for an email from merch@uottawaess.ca for a quote',
     'Other',
   ];
+
+  const getMinBookingDateString = () => {
+    const today = new Date();
+    const torontoToday = new Date(today.toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+    torontoToday.setHours(0, 0, 0, 0);
+    return torontoToday.toLocaleDateString('sv-SE', { timeZone: 'America/Toronto' });
+  };
 
   const validateStep1 = () => {
     const newErrors = {};
@@ -165,9 +166,10 @@ function EquipmentForm() {
 
   const validateStep2 = () => {
     const newErrors = {};
-    const hasEquipment = formData.projector > 0 || formData.microphones > 0 ||
+    const hasEquipment = formData.projector > 0 || formData.microphones > 0 || formData.podcastMicrophones > 0 ||
                         formData.microphoneStands === 'yes' || formData.speakers > 0 || formData.speakerStands === 'yes' ||
-                        formData.subwoofers > 0 || formData.mixer === 'yes' || formData.bbq || formData.griddleBlackDecker || formData.griddleStarfrit;
+                        formData.subwoofers > 0 || formData.foldingTable6Ft > 0 || formData.foldingTable8Ft > 0 || formData.canopy13x13 || formData.canopy8x8 ||
+                        formData.cooler > 0 || formData.mixer === 'yes' || formData.bbq || formData.griddleBlackDecker || formData.griddleStarfrit;
     
     if (!hasEquipment) newErrors.equipment = true;
     if (formData.bbq && (!formData.bbqTerm1 || !formData.bbqTerm2 || !formData.bbqTerm3 || !formData.bbqTermsAccepted)) {
@@ -205,7 +207,7 @@ function EquipmentForm() {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    const numericFields = ['projector', 'microphones', 'speakers', 'subwoofers'];
+    const numericFields = ['projector', 'microphones', 'podcastMicrophones', 'speakers', 'subwoofers', 'foldingTable6Ft', 'cooler'];
     setFormData((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : (type === 'number' || (type === 'radio' && numericFields.includes(name)) || (type === 'select-one' && numericFields.includes(name)) ? parseInt(value) : value),
@@ -219,18 +221,29 @@ function EquipmentForm() {
     }
   };
 
+  const getGriddleName = (type) => {
+    if (type === 'griddleBlackDecker') return t('griddleBlackDeckerName');
+    return t('griddleStarfritName');
+  };
+
   const buildEquipmentItems = (data) => {
     const items = [];
     if (data.projector > 0) items.push({ description: 'Projector', quantity: data.projector, amount: 0, receipts: [] });
     if (data.microphones > 0) items.push({ description: 'Microphones', quantity: data.microphones, amount: 0, receipts: [] });
+    if (data.podcastMicrophones > 0) items.push({ description: `${t('podcastMicrophones')} (${t('podcastMicrophonesDescription')})`, quantity: data.podcastMicrophones, amount: 0, receipts: [] });
     if (data.microphoneStands === 'yes') items.push({ description: 'Microphone Stands', quantity: 1, amount: 0, receipts: [] });
     if (data.speakers > 0) items.push({ description: 'Speakers', quantity: data.speakers, amount: 0, receipts: [] });
     if (data.speakerStands === 'yes') items.push({ description: 'Speaker Stands', quantity: 1, amount: 0, receipts: [] });
     if (data.subwoofers > 0) items.push({ description: 'Subwoofers', quantity: data.subwoofers, amount: 0, receipts: [] });
+    if (data.foldingTable6Ft > 0) items.push({ description: 'Folding Table (6 ft)', quantity: data.foldingTable6Ft, amount: 0, receipts: [] });
+    if (data.foldingTable8Ft > 0) items.push({ description: 'Folding Table (8 ft)', quantity: data.foldingTable8Ft, amount: 0, receipts: [] });
+    if (data.canopy13x13) items.push({ description: '13x13 Canopy', quantity: 1, amount: 0, receipts: [] });
+    if (data.canopy8x8) items.push({ description: '8x8 Canopy', quantity: 1, amount: 0, receipts: [] });
+    if (data.cooler > 0) items.push({ description: 'Cooler', quantity: data.cooler, amount: 0, receipts: [] });
     if (data.mixer === 'yes') items.push({ description: 'Audio Mixer', quantity: 1, amount: 0, receipts: [] });
     if (data.bbq) items.push({ description: 'Barbecue', quantity: 1, amount: 0, receipts: [] });
-    if (data.griddleBlackDecker) items.push({ description: 'BLACK + DECKER Family-Sized Electric Griddle (18" x 10")', quantity: 1, amount: 0, receipts: [] });
-    if (data.griddleStarfrit) items.push({ description: 'Starfrit The Rock Electric Griddle (19" x 13") - 1500W', quantity: 1, amount: 0, receipts: [] });
+    if (data.griddleBlackDecker) items.push({ description: `${getGriddleName('griddleBlackDecker')} (18" x 10")`, quantity: 1, amount: 0, receipts: [] });
+    if (data.griddleStarfrit) items.push({ description: `${getGriddleName('griddleStarfrit')} (19" x 13") - 1500W`, quantity: 1, amount: 0, receipts: [] });
     return items;
   };
 
@@ -238,14 +251,20 @@ function EquipmentForm() {
     const items = [];
     if (formData.projector > 0) items.push({ name: t('projectors'), qty: formData.projector });
     if (formData.microphones > 0) items.push({ name: t('microphones'), qty: formData.microphones });
+    if (formData.podcastMicrophones > 0) items.push({ name: t('podcastMicrophones'), qty: formData.podcastMicrophones });
     if (formData.microphoneStands === 'yes') items.push({ name: t('microphoneStands'), qty: 1 });
     if (formData.speakers > 0) items.push({ name: t('speakers'), qty: formData.speakers });
     if (formData.speakerStands === 'yes') items.push({ name: t('speakerStands'), qty: 1 });
     if (formData.subwoofers > 0) items.push({ name: t('subwoofers'), qty: formData.subwoofers });
+    if (formData.foldingTable6Ft > 0) items.push({ name: t('foldingTable6Ft'), qty: formData.foldingTable6Ft });
+    if (formData.foldingTable8Ft > 0) items.push({ name: t('foldingTable8Ft'), qty: formData.foldingTable8Ft });
+    if (formData.canopy13x13) items.push({ name: t('canopy13x13'), qty: 1 });
+    if (formData.canopy8x8) items.push({ name: t('canopy8x8'), qty: 1 });
+    if (formData.cooler > 0) items.push({ name: t('cooler'), qty: formData.cooler });
     if (formData.mixer === 'yes') items.push({ name: t('audioMixer'), qty: 1 });
     if (formData.bbq) items.push({ name: t('bbq'), qty: 1 });
-    if (formData.griddleBlackDecker) items.push({ name: 'BLACK + DECKER Family-Sized Electric Griddle', qty: 1 });
-    if (formData.griddleStarfrit) items.push({ name: 'Starfrit The Rock Electric Griddle - Family Size (19" x 13") - Rock.Tec Non-Stick - Variable Temperature Control - 1500W', qty: 1 });
+    if (formData.griddleBlackDecker) items.push({ name: getGriddleName('griddleBlackDecker'), qty: 1 });
+    if (formData.griddleStarfrit) items.push({ name: `${getGriddleName('griddleStarfrit')} (19" x 13")`, qty: 1 });
     return items;
   };
 
@@ -265,10 +284,16 @@ function EquipmentForm() {
       needsOnSiteAssistance: '',
       projector: 0,
       microphones: 0,
+      podcastMicrophones: 0,
       microphoneStands: '',
       speakers: 0,
       speakerStands: '',
       subwoofers: 0,
+      foldingTable6Ft: 0,
+      foldingTable8Ft: 0,
+      canopy13x13: false,
+      canopy8x8: false,
+      cooler: 0,
       mixer: '',
       bbq: false,
       bbqTerm1: false,
@@ -445,13 +470,86 @@ function EquipmentForm() {
   };
 
   const getEquipmentOptions = (equipmentType, maxOptions) => {
-    const available = equipmentAvailability[equipmentType]?.available || maxOptions;
+    const available = equipmentAvailability[equipmentType]?.available ?? maxOptions;
     const options = [];
     for (let i = 0; i <= Math.min(available, maxOptions); i++) {
       options.push(<option key={i} value={i}>{i}</option>);
     }
     return options;
   };
+
+  const equipmentAvailabilityOrder = [
+    'projector',
+    'microphones',
+    'podcastMicrophones',
+    'microphoneStands',
+    'speakers',
+    'speakerStands',
+    'subwoofers',
+    'foldingTable6Ft',
+    'foldingTable8Ft',
+    'canopy13x13',
+    'canopy8x8',
+    'cooler',
+    'mixer',
+    'bbq',
+    'griddleBlackDecker',
+    'griddleStarfrit'
+  ];
+
+  const availabilityLabelMap = {
+    projector: t('projectors'),
+    microphones: t('microphones'),
+    podcastMicrophones: t('podcastMicrophones'),
+    microphoneStands: t('microphoneStands'),
+    speakers: t('speakers'),
+    speakerStands: t('speakerStands'),
+    subwoofers: t('subwoofers'),
+    foldingTable6Ft: t('foldingTable6Ft'),
+    foldingTable8Ft: t('foldingTable8Ft'),
+    canopy13x13: t('canopy13x13'),
+    canopy8x8: t('canopy8x8'),
+    cooler: t('cooler'),
+    mixer: t('audioMixer'),
+    bbq: t('bbq'),
+    griddleBlackDecker: t('griddleBlackDeckerName'),
+    griddleStarfrit: t('griddleStarfritName')
+  };
+
+  const groupedEquipmentAvailability = equipmentAvailabilityOrder
+    .filter((equipmentType) => equipmentAvailability[equipmentType])
+    .reduce((groups, equipmentType) => {
+      const griddleTypes = ['griddleBlackDecker', 'griddleStarfrit'];
+      const canopyTypes = ['canopy13x13', 'canopy8x8'];
+      const tableTypes = ['foldingTable6Ft', 'foldingTable8Ft'];
+      const groupKey = griddleTypes.includes(equipmentType)
+        ? 'griddles'
+        : canopyTypes.includes(equipmentType)
+          ? 'canopies'
+          : tableTypes.includes(equipmentType)
+            ? 'tables'
+            : equipmentType;
+
+      const existingGroup = groups.find((group) => group.key === groupKey);
+      if (existingGroup) {
+        existingGroup.equipmentTypes.push(equipmentType);
+        return groups;
+      }
+
+      groups.push({
+        key: groupKey,
+        label: groupKey === 'griddles'
+          ? t('griddles')
+          : groupKey === 'canopies'
+            ? t('canopies')
+            : groupKey === 'tables'
+              ? t('table')
+              : (availabilityLabelMap[equipmentType] || equipmentType),
+        equipmentTypes: [equipmentType]
+      });
+
+      return groups;
+    }, []);
 
   return (
     <div className=""style={{ background: 'linear-gradient(120deg, #2d0a4e 0%, #52009a 50%, #ffffff 100%)', padding: '0 0' }}>
@@ -536,33 +634,11 @@ function EquipmentForm() {
 
                 {/* Form Body */}
                 <div className="card-body p-4">
-                  {/* Equipment Bookings Calendar */}
-                  <div className="mb-4">
-                    <h4 className="mb-3">{t('bookingsCalendar')}</h4>
-                    <div className="bg-light p-3 rounded">
-                      <FullCalendar
-                        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-                        initialView="timeGridWeek"
-                        events={bookings}
-                        timeZone="America/New_York"
-                        headerToolbar={{
-                          left: 'prev,next today',
-                          center: 'title',
-                          right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                        }}
-                        height="600px"
-                        slotMinTime="00:00:00"
-                        slotMaxTime="24:00:00"
-                        scrollTime="09:00:00"
-                        slotDuration="00:30:00"
-                        allDaySlot={false}
-                      />
-                    </div>
-                  </div>
-
                   <form onSubmit={handleSubmit}>
                     {step === 1 && (
                       <>
+                        <div className="alert alert-danger mb-3" dangerouslySetInnerHTML={{ __html: t('bookingLeadTimeNotice') }} />
+
                         {/* Step 1: Contact Information */}
                         <div className="mb-3">
                           <label htmlFor="fullName" className="form-label fw-bold">
@@ -661,6 +737,7 @@ function EquipmentForm() {
                               name="startDate"
                               value={formData.startDate}
                               onChange={handleChange}
+                              min={getMinBookingDateString()}
                             />
                             {errors.startDate && <div className="invalid-feedback">{t(errors.startDate === 'required' ? 'required' : errors.startDate)}</div>}
                           </div>
@@ -676,6 +753,7 @@ function EquipmentForm() {
                               name="endDate"
                               value={formData.endDate}
                               onChange={handleChange}
+                              min={formData.startDate || getMinBookingDateString()}
                             />
                             {errors.endDate && <div className="invalid-feedback">{t(errors.endDate === 'required' ? 'required' : errors.endDate)}</div>}
                           </div>
@@ -797,36 +875,59 @@ function EquipmentForm() {
 
                         {/* Equipment Availability Display */}
                         {equipmentAvailability && Object.keys(equipmentAvailability).length > 0 && (
-                          <div className="alert alert-success mb-4">
+                          <div className="alert alert-success mb-4 equipment-availability-panel">
                             <h6 className="mb-3">{t('equipmentAvailability')}</h6>
-                            <div className="row">
-                              {Object.entries(equipmentAvailability).map(([equipmentType, data]) => {
-                                const { available, bookings } = data;
+                            <div className="equipment-availability-grid">
+                              {groupedEquipmentAvailability.map(({ key, label, equipmentTypes }) => {
                                 const equipmentNames = {
                                   projector: t('projectors'),
                                   microphones: t('microphones'),
+                                  podcastMicrophones: t('podcastMicrophones'),
                                   microphoneStands: t('microphoneStands'),
                                   speakers: t('speakers'),
                                   speakerStands: t('speakerStands'),
                                   subwoofers: t('subwoofers'),
+                                  foldingTable6Ft: t('foldingTable6Ft'),
+                                  foldingTable8Ft: t('foldingTable8Ft'),
+                                  canopy13x13: t('canopy13x13'),
+                                  canopy8x8: t('canopy8x8'),
+                                  cooler: t('cooler'),
                                   mixer: t('audioMixer'),
                                   bbq: t('bbq'),
-                                  griddleBlackDecker: 'BLACK + DECKER Family-Sized Electric Griddle',
-                                  griddleStarfrit: 'Starfrit The Rock Electric Griddle'
+                                  griddleBlackDecker: t('griddleBlackDeckerName'),
+                                  griddleStarfrit: t('griddleStarfritName')
                                 };
 
+                                const available = equipmentTypes.reduce(
+                                  (total, equipmentType) => total + (equipmentAvailability[equipmentType]?.available ?? 0),
+                                  0
+                                );
+                                const bookings = equipmentTypes.flatMap((equipmentType) => equipmentAvailability[equipmentType]?.bookings ?? []);
+                                const visibleNames = equipmentTypes.map((equipmentType) => equipmentNames[equipmentType] || equipmentType);
+                                const showDetailList = key !== 'griddles' && visibleNames.length > 1;
+
                                 return (
-                                  <div key={equipmentType} className="col-md mb-2">
-                                    <div className={available === 0 ? 'text-danger' : 'text-success'}>
-                                      <strong>{equipmentNames[equipmentType] || equipmentType}:</strong> {available} {t('available')}
+                                  <div key={key} className="equipment-availability-item">
+                                    <div className="equipment-availability-header">
+                                      <div className={available === 0 ? 'text-danger' : 'text-success'}>
+                                        <strong>{label}</strong>
+                                        {showDetailList && (
+                                          <div className="equipment-availability-details">
+                                            {visibleNames.map((name, index) => (
+                                              <span key={`${name}-${index}`}>{name}</span>
+                                            ))}
+                                          </div>
+                                        )}
+                                      </div>
+                                      <div className={available === 0 ? 'text-danger fw-semibold' : 'text-success fw-semibold'}>
+                                        {available} {t('available')}
+                                      </div>
                                     </div>
                                     {available === 0 && bookings.length > 0 && (
-                                      <div className="mt-1 small">
-                                        <div className="text-muted">
-                                          {t('bookedBy')}
-                                        </div>
+                                      <div className="mt-1 small text-muted">
+                                        <div className="fw-semibold">{t('bookedBy')}</div>
                                         {bookings.map((booking, index) => (
-                                          <div key={index} className="ms-2">
+                                          <div key={`${booking.organization}-${index}`} className="ms-2">
                                             • {booking.organization} ({booking.startDate} {booking.pickupTime} - {booking.endDate || booking.startDate} {booking.dropoffTime})
                                           </div>
                                         ))}
@@ -836,7 +937,7 @@ function EquipmentForm() {
                                 );
                               })}
                             </div>
-                            <small className="text-muted mt-2 d-block">
+                            <small className="text-muted mt-3 d-block">
                               {t('availabilityNote')}
                             </small>
                           </div>
@@ -891,6 +992,29 @@ function EquipmentForm() {
                               disabled={equipmentAvailability.microphones?.available === 0}
                             >
                               {getEquipmentOptions('microphones', 2)}
+                            </select>
+                          </div>
+                        </div>
+
+                        {/* Podcast Mics */}
+                        <div className={`card mb-2 ${equipmentAvailability.podcastMicrophones?.available === 0 ? 'border-danger' : ''}`}>
+                          <div className="card-body py-3">
+                            <label className="form-label fw-bold mb-2" htmlFor="podcastMicrophones">{t('podcastMicrophones')}</label>
+                            <small className="text-muted d-block mb-2">{t('podcastMicrophonesDescription')}</small>
+                            {equipmentAvailability.podcastMicrophones?.available === 0 && (
+                              <div className="alert alert-danger py-1 px-2 mb-2 small">
+                                {t('notAvailableForDates')}
+                              </div>
+                            )}
+                            <select
+                              className="form-select"
+                              id="podcastMicrophones"
+                              name="podcastMicrophones"
+                              value={formData.podcastMicrophones}
+                              onChange={handleChange}
+                              disabled={equipmentAvailability.podcastMicrophones?.available === 0}
+                            >
+                              {getEquipmentOptions('podcastMicrophones', 2)}
                             </select>
                           </div>
                         </div>
@@ -1032,6 +1156,112 @@ function EquipmentForm() {
                             >
                               {getEquipmentOptions('subwoofers', 2)}
                             </select>
+                          </div>
+                        </div>
+
+                        {/* Folding Tables */}
+                        <div className="card mb-2">
+                          <div className="card-body py-3">
+                            <label className="form-label fw-bold mb-2">{t('foldingTables')}</label>
+                            <div className="row g-3">
+                              <div className="col-md-12">
+                                <label className="form-label small fw-bold mb-1" htmlFor="foldingTable6Ft">{t('foldingTable6Ft')}</label>
+                                <select
+                                  className="form-select"
+                                  id="foldingTable6Ft"
+                                  name="foldingTable6Ft"
+                                  value={formData.foldingTable6Ft}
+                                  onChange={handleChange}
+                                >
+                                  {getEquipmentOptions('foldingTable6Ft', 2)}
+                                </select>
+                              </div>
+                              <div className="col-md-12">
+                                <label className="form-label small fw-bold mb-1" htmlFor="foldingTable8Ft">{t('foldingTable8Ft')}</label>
+                                <select
+                                  className="form-select"
+                                  id="foldingTable8Ft"
+                                  name="foldingTable8Ft"
+                                  value={formData.foldingTable8Ft}
+                                  onChange={handleChange}
+                                >
+                                  {getEquipmentOptions('foldingTable8Ft', 2)}
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Canopy */}
+                        <div className="card mb-2">
+                          <div className="card-body py-3">
+                            <div className="form-check mb-3">
+                              <input
+                                className="form-check-input"
+                                type="checkbox"
+                                name="canopy13x13"
+                                id="canopy13x13"
+                                checked={formData.canopy13x13}
+                                onChange={handleChange}
+                              />
+                              <label className="form-check-label" htmlFor="canopy13x13">
+                                <strong>{t('canopy13x13')}</strong>
+                                <br />
+                                <small className="text-muted">1 x 13' x 13' canopy</small>
+                              </label>
+                              {equipmentAvailability.canopy13x13?.available === 0 && (
+                                <div className="alert alert-danger py-1 px-2 mt-2 mb-0 small">
+                                  {t('notAvailableForDates')}
+                                </div>
+                              )}
+                            </div>
+
+                            <div className="form-check">
+                              <input
+                                className="form-check-input"
+                                type="checkbox"
+                                name="canopy8x8"
+                                id="canopy8x8"
+                                checked={formData.canopy8x8}
+                                onChange={handleChange}
+                              />
+                              <label className="form-check-label" htmlFor="canopy8x8">
+                                <strong>{t('canopy8x8')}</strong>
+                                <br />
+                                <small className="text-muted">1 x 8' x 8' canopy</small>
+                              </label>
+                              {equipmentAvailability.canopy8x8?.available === 0 && (
+                                <div className="alert alert-danger py-1 px-2 mt-2 mb-0 small">
+                                  {t('notAvailableForDates')}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Cooler */}
+                        <div className="card mb-2">
+                          <div className="card-body py-3">
+                            <label className="form-label fw-bold mb-2" htmlFor="cooler">{t('cooler')}</label>
+                            <small className="text-muted d-block mb-2">
+                              • {t('coolerRollingLabel')}<br />
+                              • {t('coolerNonRollingLabel')}
+                            </small>
+                            <select
+                              className="form-select"
+                              id="cooler"
+                              name="cooler"
+                              value={formData.cooler}
+                              onChange={handleChange}
+                              disabled={equipmentAvailability.cooler?.available === 0}
+                            >
+                              {getEquipmentOptions('cooler', 3)}
+                            </select>
+                            {equipmentAvailability.cooler?.available === 0 && (
+                              <div className="alert alert-danger py-1 px-2 mt-2 mb-0 small">
+                                {t('notAvailableForDates')}
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -1230,7 +1460,7 @@ function EquipmentForm() {
                                   disabled={equipmentAvailability.griddleBlackDecker?.available === 0}
                                 />
                                 <label className="form-check-label" htmlFor="griddleBlackDecker">
-                                  BLACK + DECKER Electric Griddle (18" x 10")
+                                  {t('griddleBlackDeckerName')} (18" x 10")
                                   {equipmentAvailability.griddleBlackDecker?.available === 0 && (
                                     <span className="text-danger small"> ({t('notAvailableForDates')})</span>
                                   )}
@@ -1247,7 +1477,7 @@ function EquipmentForm() {
                                   disabled={equipmentAvailability.griddleStarfrit?.available === 0}
                                 />
                                 <label className="form-check-label" htmlFor="griddleStarfrit">
-                                  Starfrit The Rock Electric Griddle (19" x 13") - 1500W
+                                  {t('griddleStarfritName')} (19" x 13") - 1500W
                                   {equipmentAvailability.griddleStarfrit?.available === 0 && (
                                     <span className="text-danger small"> ({t('notAvailableForDates')})</span>
                                   )}
