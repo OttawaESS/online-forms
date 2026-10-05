@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { list, put } from '@vercel/blob';
+import { list, put, del } from '@vercel/blob';
 import { parse as parseCookie, serialize as serializeCookie } from 'cookie';
 import fs from 'fs/promises';
 import { jsPDF } from 'jspdf';
@@ -348,6 +348,32 @@ export async function saveSubmissions(submissions) {
   } catch (err) {
     // Local file write is optional, don't fail if it errors
     console.error('Failed to save submissions to local file:', err);
+  }
+}
+
+export async function deleteSubmissionById(id, type) {
+  if (!id) return false;
+
+  const candidatePaths = new Set([
+    `${type || EXPENSE_TYPE}/submission-${id}.json`,
+    `${type || EQUIPMENT_LOAN_TYPE}/submission-${id}.json`,
+    `submission-${id}.json`
+  ]);
+
+  try {
+    const { blobs } = await list();
+    const matches = blobs.filter((blob) => candidatePaths.has(blob.pathname));
+
+    await Promise.allSettled(matches.map((blob) => del(blob.pathname)));
+
+    if (matches.length === 0) {
+      return false;
+    }
+
+    return true;
+  } catch (err) {
+    console.error('Error deleting submission by ID:', id, err);
+    return false;
   }
 }
 

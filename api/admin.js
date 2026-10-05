@@ -1,10 +1,25 @@
-import { loadSubmissions, requireAdmin } from './_utils.js';
+import { deleteSubmissionById, loadSubmissions, parseFormBody, requireAdmin } from './_utils.js';
 
 export default async function handler(req, res) {
   if (!requireAdmin(req, res)) {
     res.statusCode = 302;
     res.setHeader('Location', '/login?error=2');
     return res.end();
+  }
+
+  if (req.method === 'POST' || req.method === 'DELETE') {
+    const body = await parseFormBody(req);
+    const action = body.action;
+    const id = body.id;
+    const type = body.type;
+
+    if (action === 'delete' && id) {
+      await deleteSubmissionById(id, type);
+      const redirectView = body.view === 'equipment' ? 'equipment' : 'expense';
+      res.statusCode = 303;
+      res.setHeader('Location', `/admin?view=${redirectView}`);
+      return res.end();
+    }
   }
 
   const [, queryString = ''] = req.url.split('?');
@@ -139,6 +154,15 @@ export default async function handler(req, res) {
         <tr class="collapse" id="equipment-details-${idx}">
           <td colspan="4">
             <div class="p-3 bg-light rounded">
+              <div class="d-flex justify-content-end mb-3">
+                <form method="post" action="/admin" onsubmit="return confirm('Remove this equipment booking?');">
+                  <input type="hidden" name="action" value="delete" />
+                  <input type="hidden" name="id" value="${s.id || ''}" />
+                  <input type="hidden" name="type" value="equipment-loan" />
+                  <input type="hidden" name="view" value="equipment" />
+                  <button type="submit" class="btn btn-outline-danger btn-sm">Remove booking</button>
+                </form>
+              </div>
               <div class="row">
                 <div class="col-md-6">
                   <h3>Borrower Information</h3>
