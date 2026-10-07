@@ -86,6 +86,8 @@ const equipmentCatalog = [
   { key: 'speakers', label: 'Speakers', inventory: 2, category: 'av', match: (description) => description.toLowerCase().includes('speaker') && !description.toLowerCase().includes('stand') && !description.toLowerCase().includes('subwoofer') },
   { key: 'speakerStands', label: 'Speaker Stands', inventory: 2, category: 'av', match: (description) => description.toLowerCase().includes('speaker stand') },
   { key: 'subwoofers', label: 'Subwoofers', inventory: 2, category: 'av', match: (description) => description.toLowerCase().includes('subwoofer') },
+  { key: 'tvCbyA04', label: 'CBY A04 TV', inventory: 1, category: 'av', match: (description) => description.toLowerCase().includes('cby a04 tv') },
+  { key: 'tvCart', label: 'Cart', inventory: 1, category: 'event', match: (description) => description.toLowerCase() === 'cart' || description.toLowerCase().includes('tv cart') },
   { key: 'mixer', label: 'Audio Mixer', inventory: 1, category: 'av', match: (description) => description.toLowerCase().includes('audio mixer') || description.toLowerCase().includes('mixeur audio') },
   { key: 'foldingTables', label: 'Folding Tables', inventory: 4, category: 'event', match: (description) => description.toLowerCase().includes('folding table') || description.toLowerCase().includes('table pliante') || description.toLowerCase().includes('6 ft') || description.toLowerCase().includes('8 ft') },
   { key: 'canopies', label: 'Canopies', inventory: 2, category: 'event', match: (description) => description.toLowerCase().includes('canopy') || description.toLowerCase().includes('voile') || description.toLowerCase().includes('13x13') || description.toLowerCase().includes('8x8') || description.toLowerCase().includes('6x6') },

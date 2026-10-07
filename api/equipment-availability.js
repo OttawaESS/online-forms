@@ -9,6 +9,8 @@ const EQUIPMENT_AVAILABILITY = {
   speakers: 2,       // 2 speakers available
   speakerStands: 2,  // 2 speaker stands available
   subwoofers: 2,     // 2 subwoofers available
+  tvCbyA04: 1,       // 1 CBY A04 TV available
+  tvCart: 1,          // 1 TV cart available
   foldingTable6Ft: 2, // 2 six-foot folding tables available
   foldingTable8Ft: 2, // 2 eight-foot folding tables available
   canopy13x13: 1,    // 1 13x13 canopy available
@@ -80,6 +82,10 @@ export default async function handler(req, res) {
                 return desc.includes('speaker stand') || desc.includes('support de haut-parleur');
               case 'subwoofers':
                 return desc.includes('subwoofer') || desc.includes('caisson de basse');
+              case 'tvCbyA04':
+                return desc.includes('cby a04 tv') || desc.includes('cby a04 tv and cart');
+              case 'tvCart':
+                return desc === 'cart' || desc.includes('tv cart') || desc.includes('cby a04 tv and cart');
               case 'foldingTable6Ft':
                 return desc.includes('folding table (6 ft)') || desc.includes('table pliante (6 pi)') || desc.includes('6 ft') || desc.includes('6ft');
               case 'foldingTable8Ft':

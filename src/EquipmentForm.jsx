@@ -29,6 +29,8 @@ function EquipmentForm() {
     speakers: 0,
     speakerStands: '',
     subwoofers: 0,
+    tvCbyA04: false,
+    tvCart: false,
     foldingTable6Ft: 0,
     foldingTable8Ft: 0,
     canopy13x13: false,
@@ -180,7 +182,7 @@ function EquipmentForm() {
     const newErrors = {};
     const hasEquipment = formData.projector > 0 || formData.microphones > 0 || formData.podcastMicrophones > 0 ||
                         formData.microphoneStands === 'yes' || formData.speakers > 0 || formData.speakerStands === 'yes' ||
-                        formData.subwoofers > 0 || formData.foldingTable6Ft > 0 || formData.foldingTable8Ft > 0 || formData.canopy13x13 || formData.canopy8x8 ||
+                        formData.subwoofers > 0 || formData.tvCbyA04 || formData.tvCart || formData.foldingTable6Ft > 0 || formData.foldingTable8Ft > 0 || formData.canopy13x13 || formData.canopy8x8 ||
                         formData.cooler > 0 || formData.mixer === 'yes' || formData.bbq || formData.griddleBlackDecker || formData.griddleStarfrit;
     
     if (!hasEquipment) newErrors.equipment = true;
@@ -247,6 +249,8 @@ function EquipmentForm() {
     if (data.speakers > 0) items.push({ description: 'Speakers', quantity: data.speakers, amount: 0, receipts: [] });
     if (data.speakerStands === 'yes') items.push({ description: 'Speaker Stands', quantity: 1, amount: 0, receipts: [] });
     if (data.subwoofers > 0) items.push({ description: 'Subwoofers', quantity: data.subwoofers, amount: 0, receipts: [] });
+    if (data.tvCbyA04) items.push({ description: 'CBY A04 TV', quantity: 1, amount: 0, receipts: [] });
+    if (data.tvCart) items.push({ description: 'Cart', quantity: 1, amount: 0, receipts: [] });
     if (data.foldingTable6Ft > 0) items.push({ description: 'Folding Table (6 ft)', quantity: data.foldingTable6Ft, amount: 0, receipts: [] });
     if (data.foldingTable8Ft > 0) items.push({ description: 'Folding Table (8 ft)', quantity: data.foldingTable8Ft, amount: 0, receipts: [] });
     if (data.canopy13x13) items.push({ description: '13x13 Canopy', quantity: 1, amount: 0, receipts: [] });
@@ -268,6 +272,8 @@ function EquipmentForm() {
     if (formData.speakers > 0) items.push({ name: t('speakers'), qty: formData.speakers });
     if (formData.speakerStands === 'yes') items.push({ name: t('speakerStands'), qty: 1 });
     if (formData.subwoofers > 0) items.push({ name: t('subwoofers'), qty: formData.subwoofers });
+    if (formData.tvCbyA04) items.push({ name: t('tvCbyA04'), qty: 1 });
+    if (formData.tvCart) items.push({ name: t('tvCart'), qty: 1 });
     if (formData.foldingTable6Ft > 0) items.push({ name: t('foldingTable6Ft'), qty: formData.foldingTable6Ft });
     if (formData.foldingTable8Ft > 0) items.push({ name: t('foldingTable8Ft'), qty: formData.foldingTable8Ft });
     if (formData.canopy13x13) items.push({ name: t('canopy13x13'), qty: 1 });
@@ -301,6 +307,8 @@ function EquipmentForm() {
       speakers: 0,
       speakerStands: '',
       subwoofers: 0,
+      tvCbyA04: false,
+      tvCart: false,
       foldingTable6Ft: 0,
       foldingTable8Ft: 0,
       canopy13x13: false,
@@ -498,6 +506,8 @@ function EquipmentForm() {
     'speakers',
     'speakerStands',
     'subwoofers',
+    'tvCbyA04',
+    'tvCart',
     'foldingTable6Ft',
     'foldingTable8Ft',
     'canopy13x13',
@@ -517,6 +527,8 @@ function EquipmentForm() {
     speakers: t('speakers'),
     speakerStands: t('speakerStands'),
     subwoofers: t('subwoofers'),
+    tvCbyA04: t('tvCbyA04'),
+    tvCart: t('tvCart'),
     foldingTable6Ft: t('foldingTable6Ft'),
     foldingTable8Ft: t('foldingTable8Ft'),
     canopy13x13: t('canopy13x13'),
@@ -899,6 +911,8 @@ function EquipmentForm() {
                                   speakers: t('speakers'),
                                   speakerStands: t('speakerStands'),
                                   subwoofers: t('subwoofers'),
+                                  tvCbyA04: t('tvCbyA04'),
+                                  tvCart: t('tvCart'),
                                   foldingTable6Ft: t('foldingTable6Ft'),
                                   foldingTable8Ft: t('foldingTable8Ft'),
                                   canopy13x13: t('canopy13x13'),
@@ -1168,6 +1182,56 @@ function EquipmentForm() {
                             >
                               {getEquipmentOptions('subwoofers', 2)}
                             </select>
+                          </div>
+                        </div>
+
+                        {/* CBY A04 TV */}
+                        <div className={`card mb-2 ${equipmentAvailability.tvCbyA04?.available === 0 ? 'border-danger' : ''}`}>
+                          <div className="card-body py-3">
+                            <div className="form-check">
+                              <input
+                                className="form-check-input"
+                                type="checkbox"
+                                name="tvCbyA04"
+                                id="tvCbyA04"
+                                checked={formData.tvCbyA04}
+                                onChange={handleChange}
+                                disabled={equipmentAvailability.tvCbyA04?.available === 0}
+                              />
+                              <label className="form-check-label" htmlFor="tvCbyA04">
+                                <strong>{t('tvCbyA04')}</strong>
+                              </label>
+                            </div>
+                            {equipmentAvailability.tvCbyA04?.available === 0 && (
+                              <div className="alert alert-danger py-1 px-2 mt-2 mb-0 small">
+                                {t('notAvailableForDates')}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Cart */}
+                        <div className={`card mb-2 ${equipmentAvailability.tvCart?.available === 0 ? 'border-danger' : ''}`}>
+                          <div className="card-body py-3">
+                            <div className="form-check">
+                              <input
+                                className="form-check-input"
+                                type="checkbox"
+                                name="tvCart"
+                                id="tvCart"
+                                checked={formData.tvCart}
+                                onChange={handleChange}
+                                disabled={equipmentAvailability.tvCart?.available === 0}
+                              />
+                              <label className="form-check-label" htmlFor="tvCart">
+                                <strong>{t('tvCart')}</strong>
+                              </label>
+                            </div>
+                            {equipmentAvailability.tvCart?.available === 0 && (
+                              <div className="alert alert-danger py-1 px-2 mt-2 mb-0 small">
+                                {t('notAvailableForDates')}
+                              </div>
+                            )}
                           </div>
                         </div>
 
