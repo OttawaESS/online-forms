@@ -306,6 +306,8 @@ export default async function handler(req, res) {
       </ul>
       <p><strong>Équipement demandé:</strong></p>
       <ul>${selectedItemsHtml}</ul>
+
+      <p>Veuillez retourner toutes les clés empruntées après votre événement dans la boîte de dépôt des clés au bureau de l'AÉG (CBY A05).</p>
       <p><strong>Procédure opérationnelle standard pour l'équipement:</strong> <a href="https://docs.google.com/document/d/1DIWm48rJwUKE8kA478f9o84BgBrrskJF1u9XuFjAi8A/edit?tab=t.0">Consultez la procédure opérationnelle standard pour l'équipement ici</a></p>
       <p>Notre équipe examinera votre demande et vous contactera si nécessaire.</p>
       <p>Si vous avez des questions, veuillez contacter operations@uottawaess.ca.</p>
@@ -326,6 +328,8 @@ export default async function handler(req, res) {
       </ul>
       <p><strong>Requested Equipment:</strong></p>
       <ul>${selectedItemsHtml}</ul>
+
+      <p>Please return any borrowed keys after your event in the key dropbox at the ESS office (CBY A05).</p>
       <p><strong>Standard Operating Procedure for Audio-Visual Equipment:</strong> <a href="https://docs.google.com/document/d/1DIWm48rJwUKE8kA478f9o84BgBrrskJF1u9XuFjAi8A/edit?tab=t.0">View the Standard Operating Procedure for Equipment here</a></p>
       <p>Our team will review your request and contact you if needed.</p>
       <p>If you have any questions, please contact operations@uottawaess.ca.</p>

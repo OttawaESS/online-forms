@@ -1,5 +1,14 @@
 import { loadSubmissions } from './_utils.js';
 
+function getTorontoDateString() {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Toronto',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).format(new Date());
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
     res.statusCode = 405;
@@ -8,8 +17,14 @@ export default async function handler(req, res) {
 
   try {
     const submissions = await loadSubmissions();
+    const today = getTorontoDateString();
     const equipmentBookings = submissions
-      .filter(s => s.type === 'equipment-loan')
+      .filter(s => {
+        if (s.type !== 'equipment-loan') return false;
+
+        const bookingEndDate = s.endDate || s.startDate;
+        return Boolean(bookingEndDate) && bookingEndDate >= today;
+      })
       .map(s => {
         const organizationName = s.organization === 'Other' ? (s.otherOrganization || 'Other') : (s.organization || 'Unknown');
 
