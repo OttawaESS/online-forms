@@ -223,9 +223,14 @@ function EquipmentForm() {
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     const numericFields = ['projector', 'microphones', 'podcastMicrophones', 'speakers', 'subwoofers', 'foldingTable6Ft', 'cooler', 'bluetoothReceivers'];
+    const booleanRadioFields = ['tvCbyA04', 'tvCart'];
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : (type === 'number' || (type === 'radio' && numericFields.includes(name)) || (type === 'select-one' && numericFields.includes(name)) ? parseInt(value) : value),
+      [name]: type === 'checkbox'
+        ? checked
+        : booleanRadioFields.includes(name)
+          ? value === 'yes'
+          : (type === 'number' || (type === 'radio' && numericFields.includes(name)) || (type === 'select-one' && numericFields.includes(name)) ? parseInt(value) : value),
     }));
     // Clear error for this field when user starts typing
     if (errors[name]) {
@@ -1198,25 +1203,42 @@ function EquipmentForm() {
                         {/* CBY A04 TV */}
                         <div className={`card mb-2 ${equipmentAvailability.tvCbyA04?.available === 0 ? 'border-danger' : ''}`} style={{ order: 8 }}>
                           <div className="card-body py-3">
-                            <div className="form-check">
-                              <input
-                                className="form-check-input"
-                                type="checkbox"
-                                name="tvCbyA04"
-                                id="tvCbyA04"
-                                checked={formData.tvCbyA04}
-                                onChange={handleChange}
-                                disabled={equipmentAvailability.tvCbyA04?.available === 0}
-                              />
-                              <label className="form-check-label" htmlFor="tvCbyA04">
-                                <strong>{t('tvCbyA04')}</strong>
-                              </label>
-                            </div>
+                            <label className="form-label fw-bold mb-2">{t('tvCbyA04')}</label>
+                            <small className="text-muted d-block mb-2">1 x CBY A04 TV</small>
                             {equipmentAvailability.tvCbyA04?.available === 0 && (
-                              <div className="alert alert-danger py-1 px-2 mt-2 mb-0 small">
+                              <div className="alert alert-danger py-1 px-2 mb-2 small">
                                 {t('notAvailableForDates')}
                               </div>
                             )}
+                            <div className="form-check">
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                name="tvCbyA04"
+                                id="tvCbyA04Yes"
+                                value="yes"
+                                checked={formData.tvCbyA04 === true}
+                                onChange={handleChange}
+                                disabled={equipmentAvailability.tvCbyA04?.available === 0}
+                              />
+                              <label className="form-check-label" htmlFor="tvCbyA04Yes">
+                                {t('yes')}
+                              </label>
+                            </div>
+                            <div className="form-check">
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                name="tvCbyA04"
+                                id="tvCbyA04No"
+                                value="no"
+                                checked={formData.tvCbyA04 === false}
+                                onChange={handleChange}
+                              />
+                              <label className="form-check-label" htmlFor="tvCbyA04No">
+                                {t('no')}
+                              </label>
+                            </div>
                           </div>
                         </div>
 
@@ -1266,7 +1288,7 @@ function EquipmentForm() {
                         <div className={`card mb-2 ${equipmentAvailability.bluetoothReceivers?.available === 0 ? 'border-danger' : ''}`} style={{ order: 9 }}>
                           <div className="card-body py-3">
                             <label className="form-label fw-bold mb-2" htmlFor="bluetoothReceivers">{t('bluetoothReceivers')}</label>
-                            <small className="text-muted d-block mb-2">2 x Bluetooth Receiver</small>
+                            <small className="text-muted d-block mb-2">{t('bluetoothReceiverDetails')}</small>
                             {equipmentAvailability.bluetoothReceivers?.available === 0 && (
                               <div className="alert alert-danger py-1 px-2 mb-2 small">
                                 {t('notAvailableForDates')}
@@ -1293,25 +1315,42 @@ function EquipmentForm() {
                         {/* Cart */}
                         <div className={`card mb-2 ${equipmentAvailability.tvCart?.available === 0 ? 'border-danger' : ''}`}>
                           <div className="card-body py-3">
-                            <div className="form-check">
-                              <input
-                                className="form-check-input"
-                                type="checkbox"
-                                name="tvCart"
-                                id="tvCart"
-                                checked={formData.tvCart}
-                                onChange={handleChange}
-                                disabled={equipmentAvailability.tvCart?.available === 0}
-                              />
-                              <label className="form-check-label" htmlFor="tvCart">
-                                <strong>{t('tvCart')}</strong>
-                              </label>
-                            </div>
+                            <label className="form-label fw-bold mb-2">{t('tvCart')}</label>
+                            <small className="text-muted d-block mb-2">{t('utilityServiceCartDetails')}</small>
                             {equipmentAvailability.tvCart?.available === 0 && (
-                              <div className="alert alert-danger py-1 px-2 mt-2 mb-0 small">
+                              <div className="alert alert-danger py-1 px-2 mb-2 small">
                                 {t('notAvailableForDates')}
                               </div>
                             )}
+                            <div className="form-check">
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                name="tvCart"
+                                id="tvCartYes"
+                                value="yes"
+                                checked={formData.tvCart === true}
+                                onChange={handleChange}
+                                disabled={equipmentAvailability.tvCart?.available === 0}
+                              />
+                              <label className="form-check-label" htmlFor="tvCartYes">
+                                {t('yes')}
+                              </label>
+                            </div>
+                            <div className="form-check">
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                name="tvCart"
+                                id="tvCartNo"
+                                value="no"
+                                checked={formData.tvCart === false}
+                                onChange={handleChange}
+                              />
+                              <label className="form-check-label" htmlFor="tvCartNo">
+                                {t('no')}
+                              </label>
+                            </div>
                           </div>
                         </div>
 
