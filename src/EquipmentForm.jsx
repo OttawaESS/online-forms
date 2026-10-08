@@ -37,6 +37,7 @@ function EquipmentForm() {
     canopy8x8: false,
     cooler: 0,
     mixer: '',
+    bluetoothReceivers: 0,
     bbq: false,
     bbqTerm1: false,
     bbqTerm2: false,
@@ -183,7 +184,7 @@ function EquipmentForm() {
     const hasEquipment = formData.projector > 0 || formData.microphones > 0 || formData.podcastMicrophones > 0 ||
                         formData.microphoneStands === 'yes' || formData.speakers > 0 || formData.speakerStands === 'yes' ||
                         formData.subwoofers > 0 || formData.tvCbyA04 || formData.tvCart || formData.foldingTable6Ft > 0 || formData.foldingTable8Ft > 0 || formData.canopy13x13 || formData.canopy8x8 ||
-                        formData.cooler > 0 || formData.mixer === 'yes' || formData.bbq || formData.griddleBlackDecker || formData.griddleStarfrit;
+                        formData.cooler > 0 || formData.mixer === 'yes' || formData.bluetoothReceivers > 0 || formData.bbq || formData.griddleBlackDecker || formData.griddleStarfrit;
     
     if (!hasEquipment) newErrors.equipment = true;
     if (formData.bbq && (!formData.bbqTerm1 || !formData.bbqTerm2 || !formData.bbqTerm3 || !formData.bbqTermsAccepted)) {
@@ -221,7 +222,7 @@ function EquipmentForm() {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    const numericFields = ['projector', 'microphones', 'podcastMicrophones', 'speakers', 'subwoofers', 'foldingTable6Ft', 'cooler'];
+    const numericFields = ['projector', 'microphones', 'podcastMicrophones', 'speakers', 'subwoofers', 'foldingTable6Ft', 'cooler', 'bluetoothReceivers'];
     setFormData((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : (type === 'number' || (type === 'radio' && numericFields.includes(name)) || (type === 'select-one' && numericFields.includes(name)) ? parseInt(value) : value),
@@ -257,6 +258,7 @@ function EquipmentForm() {
     if (data.canopy8x8) items.push({ description: '8x8 Canopy', quantity: 1, amount: 0, receipts: [] });
     if (data.cooler > 0) items.push({ description: 'Cooler', quantity: data.cooler, amount: 0, receipts: [] });
     if (data.mixer === 'yes') items.push({ description: 'Audio Mixer', quantity: 1, amount: 0, receipts: [] });
+    if (data.bluetoothReceivers > 0) items.push({ description: 'Bluetooth Receivers', quantity: data.bluetoothReceivers, amount: 0, receipts: [] });
     if (data.bbq) items.push({ description: 'Barbecue', quantity: 1, amount: 0, receipts: [] });
     if (data.griddleBlackDecker) items.push({ description: `${getGriddleName('griddleBlackDecker')} (18" x 10")`, quantity: 1, amount: 0, receipts: [] });
     if (data.griddleStarfrit) items.push({ description: `${getGriddleName('griddleStarfrit')} (19" x 13") - 1500W`, quantity: 1, amount: 0, receipts: [] });
@@ -280,6 +282,7 @@ function EquipmentForm() {
     if (formData.canopy8x8) items.push({ name: t('canopy8x8'), qty: 1 });
     if (formData.cooler > 0) items.push({ name: t('cooler'), qty: formData.cooler });
     if (formData.mixer === 'yes') items.push({ name: t('audioMixer'), qty: 1 });
+    if (formData.bluetoothReceivers > 0) items.push({ name: t('bluetoothReceivers'), qty: formData.bluetoothReceivers });
     if (formData.bbq) items.push({ name: t('bbq'), qty: 1 });
     if (formData.griddleBlackDecker) items.push({ name: getGriddleName('griddleBlackDecker'), qty: 1 });
     if (formData.griddleStarfrit) items.push({ name: `${getGriddleName('griddleStarfrit')} (19" x 13")`, qty: 1 });
@@ -315,6 +318,7 @@ function EquipmentForm() {
       canopy8x8: false,
       cooler: 0,
       mixer: '',
+      bluetoothReceivers: 0,
       bbq: false,
       bbqTerm1: false,
       bbqTerm2: false,
@@ -514,6 +518,7 @@ function EquipmentForm() {
     'canopy8x8',
     'cooler',
     'mixer',
+    'bluetoothReceivers',
     'bbq',
     'griddleBlackDecker',
     'griddleStarfrit'
@@ -535,6 +540,7 @@ function EquipmentForm() {
     canopy8x8: t('canopy8x8'),
     cooler: t('cooler'),
     mixer: t('audioMixer'),
+    bluetoothReceivers: t('bluetoothReceivers'),
     bbq: t('bbq'),
     griddleBlackDecker: t('griddleBlackDeckerName'),
     griddleStarfrit: t('griddleStarfritName')
@@ -919,6 +925,7 @@ function EquipmentForm() {
                                   canopy8x8: t('canopy8x8'),
                                   cooler: t('cooler'),
                                   mixer: t('audioMixer'),
+                                  bluetoothReceivers: t('bluetoothReceivers'),
                                   bbq: t('bbq'),
                                   griddleBlackDecker: t('griddleBlackDeckerName'),
                                   griddleStarfrit: t('griddleStarfritName')
@@ -974,6 +981,9 @@ function EquipmentForm() {
                         )}
 
                         {/* Equipment Items */}
+                        <details className="equipment-category mb-3">
+                          <summary>{t('audioVisualEquipment')}</summary>
+                          <div className="equipment-category-content">
                         {[ { name: 'projector', label: t('projectors'), detail: '1 x Epson Projector' },
                         ].map((item) => (
                           <div key={item.name} className={`card mb-2 ${equipmentAvailability[item.name]?.available === 0 ? 'border-danger' : ''}`}>
@@ -1210,6 +1220,76 @@ function EquipmentForm() {
                           </div>
                         </div>
 
+                        {/* Audio Mixer */}
+                        <div className={`card mb-2 ${equipmentAvailability.mixer?.available === 0 ? 'border-danger' : ''}`}>
+                          <div className="card-body py-3">
+                            <label className="form-label fw-bold mb-2">{t('audioMixer')}</label>
+                            <small className="text-muted d-block mb-2">1 x Allen & Heath W4 16:2</small>
+                            {equipmentAvailability.mixer?.available === 0 && (
+                              <div className="alert alert-danger py-1 px-2 mb-2 small">
+                                {t('notAvailableForDates')}
+                              </div>
+                            )}
+                            <div className="form-check">
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                name="mixer"
+                                id="mixerYes"
+                                value="yes"
+                                checked={formData.mixer === 'yes'}
+                                onChange={handleChange}
+                                disabled={equipmentAvailability.mixer?.available === 0}
+                              />
+                              <label className="form-check-label" htmlFor="mixerYes">
+                                {t('yes')}
+                              </label>
+                            </div>
+                            <div className="form-check">
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                name="mixer"
+                                id="mixerNo"
+                                value="no"
+                                checked={formData.mixer === 'no'}
+                                onChange={handleChange}
+                              />
+                              <label className="form-check-label" htmlFor="mixerNo">
+                                {t('no')}
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Bluetooth Receivers */}
+                        <div className={`card mb-2 ${equipmentAvailability.bluetoothReceivers?.available === 0 ? 'border-danger' : ''}`}>
+                          <div className="card-body py-3">
+                            <label className="form-label fw-bold mb-2" htmlFor="bluetoothReceivers">{t('bluetoothReceivers')}</label>
+                            <small className="text-muted d-block mb-2">2 x Bluetooth Receiver</small>
+                            {equipmentAvailability.bluetoothReceivers?.available === 0 && (
+                              <div className="alert alert-danger py-1 px-2 mb-2 small">
+                                {t('notAvailableForDates')}
+                              </div>
+                            )}
+                            <select
+                              className="form-select"
+                              id="bluetoothReceivers"
+                              name="bluetoothReceivers"
+                              value={formData.bluetoothReceivers}
+                              onChange={handleChange}
+                              disabled={equipmentAvailability.bluetoothReceivers?.available === 0}
+                            >
+                              {getEquipmentOptions('bluetoothReceivers', 2)}
+                            </select>
+                          </div>
+                        </div>
+                          </div>
+                        </details>
+
+                        <details className="equipment-category mb-3">
+                          <summary>{t('eventEquipment')}</summary>
+                          <div className="equipment-category-content">
                         {/* Cart */}
                         <div className={`card mb-2 ${equipmentAvailability.tvCart?.available === 0 ? 'border-danger' : ''}`}>
                           <div className="card-body py-3">
@@ -1341,49 +1421,13 @@ function EquipmentForm() {
                           </div>
                         </div>
 
-                        {/* Audio Mixer */}
-                        <div className={`card mb-2 ${equipmentAvailability.mixer?.available === 0 ? 'border-danger' : ''}`}>
-                          <div className="card-body py-3">
-                            <label className="form-label fw-bold mb-2">{t('audioMixer')}</label>
-                            <small className="text-muted d-block mb-2">1 x Allen & Heath W4 16:2</small>
-                            {equipmentAvailability.mixer?.available === 0 && (
-                              <div className="alert alert-danger py-1 px-2 mb-2 small">
-                                {t('notAvailableForDates')}
-                              </div>
-                            )}
-                            <div className="form-check">
-                              <input
-                                className="form-check-input"
-                                type="radio"
-                                name="mixer"
-                                id="mixerYes"
-                                value="yes"
-                                checked={formData.mixer === 'yes'}
-                                onChange={handleChange}
-                                disabled={equipmentAvailability.mixer?.available === 0}
-                              />
-                              <label className="form-check-label" htmlFor="mixerYes">
-                                {t('yes')}
-                              </label>
-                            </div>
-                            <div className="form-check">
-                              <input
-                                className="form-check-input"
-                                type="radio"
-                                name="mixer"
-                                id="mixerNo"
-                                value="no"
-                                checked={formData.mixer === 'no'}
-                                onChange={handleChange}
-                              />
-                              <label className="form-check-label" htmlFor="mixerNo">
-                                {t('no')}
-                              </label>
-                            </div>
-                          </div>
-                        </div>
-
                         {/* BBQ */}
+                          </div>
+                        </details>
+
+                        <details className="equipment-category mb-3">
+                          <summary>{t('cookingEquipment')}</summary>
+                          <div className="equipment-category-content">
                         <div className={`card mb-2 border-warning ${equipmentAvailability.bbq?.available === 0 ? 'border-danger' : ''}`}>
                           <div className="card-body py-3">
                             {equipmentAvailability.bbq?.available === 0 && (
@@ -1562,6 +1606,8 @@ function EquipmentForm() {
                             </div>
                           </div>
                         </div>
+                          </div>
+                        </details>
 
                         {/* Final Comments */}
                         <div className="mb-3">
