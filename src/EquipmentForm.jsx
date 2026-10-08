@@ -986,7 +986,7 @@ function EquipmentForm() {
                           <div className="equipment-category-content">
                         {[ { name: 'projector', label: t('projectors'), detail: '1 x Epson Projector' },
                         ].map((item) => (
-                          <div key={item.name} className={`card mb-2 ${equipmentAvailability[item.name]?.available === 0 ? 'border-danger' : ''}`}>
+                          <div key={item.name} className={`card mb-2 ${equipmentAvailability[item.name]?.available === 0 ? 'border-danger' : ''}`} style={{ order: 10 }}>
                             <div className="card-body py-3">
                               <label className="form-label fw-bold mb-2" htmlFor={item.name}>{item.label}</label>
                               <small className="text-muted d-block mb-2">{item.detail}</small>
@@ -1010,7 +1010,7 @@ function EquipmentForm() {
                         ))}
 
                         {/* Microphones */}
-                        <div className={`card mb-2 ${equipmentAvailability.microphones?.available === 0 ? 'border-danger' : ''}`}>
+                        <div className={`card mb-2 ${equipmentAvailability.microphones?.available === 0 ? 'border-danger' : ''}`} style={{ order: 4 }}>
                           <div className="card-body py-3">
                             <label className="form-label fw-bold mb-2" htmlFor="microphones">{t('microphones')}</label>
                             <small className="text-muted d-block mb-2">2 x Shure SM58</small>
@@ -1033,7 +1033,7 @@ function EquipmentForm() {
                         </div>
 
                         {/* Podcast Mics */}
-                        <div className={`card mb-2 ${equipmentAvailability.podcastMicrophones?.available === 0 ? 'border-danger' : ''}`}>
+                        <div className={`card mb-2 ${equipmentAvailability.podcastMicrophones?.available === 0 ? 'border-danger' : ''}`} style={{ order: 6 }}>
                           <div className="card-body py-3">
                             <label className="form-label fw-bold mb-2" htmlFor="podcastMicrophones">{t('podcastMicrophones')}</label>
                             <small className="text-muted d-block mb-2">{t('podcastMicrophonesDescription')}</small>
@@ -1056,7 +1056,7 @@ function EquipmentForm() {
                         </div>
 
                         {/* Microphone Stands */}
-                        <div className={`card mb-2 ${equipmentAvailability.microphones?.available === 0 || formData.microphones === 0 ? 'border-warning' : ''}`}>
+                        <div className={`card mb-2 ${equipmentAvailability.microphones?.available === 0 || formData.microphones === 0 ? 'border-warning' : ''}`} style={{ order: 5 }}>
                           <div className="card-body py-3">
                             <label className="form-label fw-bold mb-2">{t('microphoneStands')}</label>
                             <small className="text-muted d-block mb-2">2 x Yorkville MS608B</small>
@@ -1103,7 +1103,7 @@ function EquipmentForm() {
                         </div>
 
                         {/* Speakers */}
-                        <div className={`card mb-2 ${equipmentAvailability.speakers?.available === 0 ? 'border-danger' : ''}`}>
+                        <div className={`card mb-2 ${equipmentAvailability.speakers?.available === 0 ? 'border-danger' : ''}`} style={{ order: 1 }}>
                           <div className="card-body py-3">
                             <label className="form-label fw-bold mb-2" htmlFor="speakers">{t('speakers')}</label>
                             <small className="text-muted d-block mb-2">2 x Yorkville PS12P</small>
@@ -1127,7 +1127,7 @@ function EquipmentForm() {
                         </div>
 
                         {/* Speaker Stands */}
-                        <div className={`card mb-2 ${equipmentAvailability.speakers?.available === 0 || formData.speakers === 0 ? 'border-warning' : ''}`}>
+                        <div className={`card mb-2 ${equipmentAvailability.speakers?.available === 0 || formData.speakers === 0 ? 'border-warning' : ''}`} style={{ order: 2 }}>
                           <div className="card-body py-3">
                             <label className="form-label fw-bold mb-2">{t('speakerStands')}</label>
                             <small className="text-muted d-block mb-2">{t('speakerStandsNote')}</small>
@@ -1173,7 +1173,7 @@ function EquipmentForm() {
                         </div>
 
                         {/* Subwoofers */}
-                        <div className={`card mb-2 ${equipmentAvailability.subwoofers?.available === 0 ? 'border-danger' : ''}`}>
+                        <div className={`card mb-2 ${equipmentAvailability.subwoofers?.available === 0 ? 'border-danger' : ''}`} style={{ order: 3 }}>
                           <div className="card-body py-3">
                             <label className="form-label fw-bold mb-2" htmlFor="subwoofers">{t('subwoofers')}</label>
                             <small className="text-muted d-block mb-2">2 x Yorkville PSA1S</small>
@@ -1196,7 +1196,7 @@ function EquipmentForm() {
                         </div>
 
                         {/* CBY A04 TV */}
-                        <div className={`card mb-2 ${equipmentAvailability.tvCbyA04?.available === 0 ? 'border-danger' : ''}`}>
+                        <div className={`card mb-2 ${equipmentAvailability.tvCbyA04?.available === 0 ? 'border-danger' : ''}`} style={{ order: 8 }}>
                           <div className="card-body py-3">
                             <div className="form-check">
                               <input
@@ -1221,7 +1221,7 @@ function EquipmentForm() {
                         </div>
 
                         {/* Audio Mixer */}
-                        <div className={`card mb-2 ${equipmentAvailability.mixer?.available === 0 ? 'border-danger' : ''}`}>
+                        <div className={`card mb-2 ${equipmentAvailability.mixer?.available === 0 ? 'border-danger' : ''}`} style={{ order: 7 }}>
                           <div className="card-body py-3">
                             <label className="form-label fw-bold mb-2">{t('audioMixer')}</label>
                             <small className="text-muted d-block mb-2">1 x Allen & Heath W4 16:2</small>
@@ -1263,7 +1263,7 @@ function EquipmentForm() {
                         </div>
 
                         {/* Bluetooth Receivers */}
-                        <div className={`card mb-2 ${equipmentAvailability.bluetoothReceivers?.available === 0 ? 'border-danger' : ''}`}>
+                        <div className={`card mb-2 ${equipmentAvailability.bluetoothReceivers?.available === 0 ? 'border-danger' : ''}`} style={{ order: 9 }}>
                           <div className="card-body py-3">
                             <label className="form-label fw-bold mb-2" htmlFor="bluetoothReceivers">{t('bluetoothReceivers')}</label>
                             <small className="text-muted d-block mb-2">2 x Bluetooth Receiver</small>
